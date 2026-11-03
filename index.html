@@ -8,7 +8,7 @@
 <meta name="description" content="Portfolio of a graphic designer: clothing, merchandise, and brand design.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500&family=Inter+Tight:ital,wght@0,500;1,500&family=Archivo+Narrow:wght@500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500&family=Archivo+Narrow:wght@500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
 <style>
   /* ========== WARNA & FONT: ubah di sini, berubah di seluruh website ========== */
   :root {
@@ -21,7 +21,6 @@
     --body: "DM Sans", "Helvetica Neue", Arial, sans-serif;
     --hero-bg: #0D0D0E;   /* warna latar halaman headline */
     --hero-ink: #ECECE8;  /* warna teks headline */
-    --hero-font: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
     --serif: "Instrument Serif", Georgia, serif; /* font untuk kata 'hi!' dan 'portfolio.' */
     --small-font: "Archivo Narrow", "Arial Narrow", Arial, sans-serif;
     --marquee-speed: 28s; /* makin kecil angkanya, makin cepat teksnya berjalan */
@@ -49,8 +48,8 @@
   .stage nav ul a:hover { color: var(--hero-ink); }
 
   /* tiap baris headline bergeser kiri/kanan sesuai --p (progress scroll 0 sampai 1, diisi oleh JavaScript) */
-  .line { display: block; white-space: nowrap; font-family: var(--hero-font); font-weight: 500;
-          font-size: clamp(2.6rem, min(11vw, 13.5vh), 10.5rem); line-height: .95; letter-spacing: -.055em; padding-left: 5vw;
+  .line { display: block; white-space: nowrap; font-family: var(--head); font-weight: 500;
+          font-size: clamp(2.6rem, min(10.5vw, 13.5vh), 10.5rem); line-height: .95; letter-spacing: -.04em; padding-left: 5vw;
           translate: calc(var(--p, 0) * var(--dir, 1) * 115vw * var(--sp, 1)) 0; will-change: translate; }
   .serif { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.14em; letter-spacing: -.01em; }
   .l1, .l3, .l5 { --dir: -1; }  /* ke kiri */
@@ -58,7 +57,10 @@
   .l1 { --sp: .9; } .l2 { --sp: 1.1; } .l3 { --sp: 1; } .l4 { --sp: 1.25; } .l5 { --sp: .95; }  /* beda kecepatan */
 
   .tag { position: absolute; font-family: var(--small-font); font-size: 1rem; letter-spacing: .01em; z-index: 3; white-space: nowrap; }
-  .scroll-hint { display: block; padding-left: 5vw; margin-top: 2.4vh; font-family: var(--small-font); opacity: calc(1 - var(--p, 0) * 10); }
+  /* baris terakhir: "something good." lalu "Scroll to explore" tepat di kanan titik, sejajar di garis dasar huruf yang sama */
+  .l5 { display: flex; align-items: baseline; justify-content: flex-start; gap: .18em; }
+  .scroll-hint { font-family: var(--small-font); font-size: 1.0625rem; font-weight: 400; letter-spacing: 0; line-height: 1.2; white-space: nowrap; flex-shrink: 0; opacity: calc(1 - var(--p, 0) * 10); }
+  @media (max-width: 900px) { .scroll-hint { display: none; } } /* di layar sempit tidak muat, jadi disembunyikan */
 
   /* objek ilustrasi: .obj mengatur posisi + naik saat scroll, .wob membuatnya bergoyang terus (loop) */
   .obj { position: absolute; left: var(--x); top: var(--y); font-size: var(--s, clamp(3rem, 8vw, 6.5rem)); line-height: 1; z-index: 2;
@@ -173,8 +175,8 @@
     </nav>
 
     <!-- GANTI: teks kecil di sekitar headline -->
-    <span class="tag" style="left:20%; top:19%">© 2026</span>
-    <span class="tag" style="right:6%; top:19%">Creative graphic designer - Selected projects</span>
+    <span class="tag" style="left:34%; top:19%">© 2026</span>
+    <span class="tag" style="right:6%; top:23%">Creative graphic designer - Selected projects</span>
 
     <!--
       OBJEK ILUSTRASI (yang bergoyang)
@@ -196,13 +198,9 @@
       <span class="line l2">welcome to</span>
       <span class="line l3">my <span class="serif">portfolio.</span></span>
       <span class="line l4">let's make</span>
-      <span class="line l5">something good.</span>
+      <span class="line l5"><span>something good.</span><span class="scroll-hint" aria-hidden="true">Scroll to explore</span></span>
     </h1>
 
-    <span class="line l5">
-  <span>something good.</span>
-  <span class="scroll-hint" aria-hidden="true">Scroll to explore</span>
-</span>
   </div>
 </header>
 
