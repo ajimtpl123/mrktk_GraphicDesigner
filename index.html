@@ -126,15 +126,17 @@
 
   /* ========== EFEK KURSOR (hanya aktif di laptop/PC) ========== */
   .has-cursor, .has-cursor a { cursor: none; }
-  .dot, .ring { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 999; border-radius: 50%; opacity: 0; transition: opacity .2s; }
-  .dot { width: 8px; height: 8px; margin: -4px 0 0 -4px; background: var(--accent); }
-  .ring { width: 44px; height: 44px; margin: -22px 0 0 -22px; border: 1.5px solid transparent;
+  .brush, .ring { position: fixed; left: 0; top: 0; pointer-events: none; opacity: 0; transition: opacity .2s; }
+  /* kursor berbentuk kuas: margin negatif membuat UJUNG kuas tepat berada di posisi mouse */
+  .brush { z-index: 1000; width: 40px; height: 40px; margin: -36px 0 0 -4px; }
+  .brush svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
+  .ring { z-index: 999; border-radius: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; border: 1.5px solid transparent;
           display: grid; place-items: center; font-size: .8rem; font-weight: 500; color: transparent;
           transition: opacity .2s, width .25s, height .25s, margin .25s, background .25s, border-color .25s, color .2s; }
   .ring.is-link { width: 72px; height: 72px; margin: -36px 0 0 -36px; background: rgba(43,69,255,.12); border-color: var(--accent); }
   .ring.is-view { width: 92px; height: 92px; margin: -46px 0 0 -46px; background: var(--accent); border-color: var(--accent); color: #fff; }
   .show { opacity: 1; }
-  .crayon { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998; }
+  .paint { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998; opacity: .65; } /* opacity = transparansi cat */
 
   /* ========== HP / LAYAR KECIL ========== */
   @media (max-width: 720px) {
@@ -171,8 +173,8 @@
     </nav>
 
     <!-- GANTI: teks kecil di sekitar headline -->
-    <span class="tag" style="left:23%; top:19%">© 2026</span>
-    <span class="tag" style="right:6%; top:19%">Creative graphic designer - Selected projects</span>
+    <span class="tag" style="left:34%; top:19%">© 2026</span>
+    <span class="tag" style="right:6%; top:23%">Creative graphic designer - Selected projects</span>
 
     <!--
       OBJEK ILUSTRASI (yang bergoyang)
@@ -309,6 +311,12 @@
 <div class="wrap"><footer>© 2026 Your Name</footer></div>
 
 <script>
+  /* ===== 0. Saat halaman di-refresh, selalu mulai dari headline paling atas ===== */
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; /* matikan "ingat posisi scroll" bawaan browser */
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search); /* buang #work, #about, dst dari alamat */
+  window.scrollTo(0, 0);
+  window.addEventListener('pageshow', function (e) { if (e.persisted) window.scrollTo(0, 0); }); /* tombol Back/Forward */
+
   /* ===== 1. Membuat running text dari atribut data-text ===== */
   document.querySelectorAll('.marquee').forEach(function (el) {
     var text = el.dataset.text;
@@ -335,18 +343,29 @@
   var hasMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   if (hasMouse) {
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var dot = document.createElement('div'); dot.className = 'dot';
+    /* ----- Bentuk kursor: kuas (SVG). Ujung kuas ada di pojok kiri bawah ----- */
+    var BRUSH_SVG = '<svg viewBox="0 0 48 48" aria-hidden="true">'
+      + '<line x1="22" y1="26" x2="44" y2="4" stroke="#fff" stroke-width="9" stroke-linecap="round"/>'
+      + '<path d="M14.5 28.5L19.5 33.5L25.5 27.5L20.5 22.5Z" fill="#C9CED6" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>'
+      + '<path d="M5 43C9 37 11 31 14.5 28.5L19.5 33.5C15 36 10 40 5 43Z" fill="#14161A" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>'
+      + '<line x1="22" y1="26" x2="44" y2="4" stroke="#2B45FF" stroke-width="5" stroke-linecap="round"/>'
+      + '</svg>';
+    var brush = document.createElement('div'); brush.className = 'brush'; brush.innerHTML = BRUSH_SVG;
     var ring = document.createElement('div'); ring.className = 'ring'; ring.textContent = 'View';
-    document.body.append(ring, dot);
+    document.body.append(ring, brush);
     document.documentElement.classList.add('has-cursor');
 
-    var x = 0, y = 0, rx = 0, ry = 0;
+    var x = 0, y = 0, rx = 0, ry = 0, shown = false;
 
-    /* ----- Goresan crayon ----- */
-    var BRUSH = 5;      /* lebar goresan, makin besar makin tebal */
-    var FADE = 0.06;    /* kecepatan goresan menghilang, makin besar makin cepat hilang */
-    var COLORS = ['#2B45FF', '#2B45FF', '#2B45FF', '#4C63FF', '#14161A']; /* warna crayon */
-    var canvas = document.createElement('canvas'); canvas.className = 'crayon';
+    /* ----- Goresan kuas (garis mulus, bukan titik-titik) ----- */
+    var COLOR = '#2B45FF';  /* warna cat */
+    var BRUSH_MAX = 14;     /* ketebalan maksimal (saat kursor pelan) */
+    var BRUSH_MIN = 3;      /* ketebalan minimal (saat kursor cepat) */
+    var SMOOTH = 0.35;      /* kehalusan: makin kecil makin halus tapi makin tertinggal (0.1 sampai 0.6) */
+    var SOFT = 3;           /* kelembutan tepi goresan, 0 = tegas */
+    var FADE = 0.035;       /* kecepatan goresan menghilang, makin besar makin cepat hilang */
+
+    var canvas = document.createElement('canvas'); canvas.className = 'paint';
     document.body.append(canvas);
     var ctx = canvas.getContext('2d');
     function sizeCanvas() {
@@ -356,42 +375,42 @@
     }
     sizeCanvas(); window.addEventListener('resize', sizeCanvas);
 
-    var lastX = null, lastY = null;
-    function stamp(px, py) { /* taburan titik acak = tekstur crayon */
-      for (var i = 0; i < 14; i++) {
-        var a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * BRUSH;
-        ctx.globalAlpha = 0.25 + Math.random() * 0.6;
-        ctx.fillStyle = COLORS[Math.floor(Math.random() * COLORS.length)];
-        ctx.beginPath();
-        ctx.arc(px + Math.cos(a) * r, py + Math.sin(a) * r, 0.6 + Math.random() * 1.8, 0, 6.283);
-        ctx.fill();
-      }
+    var sx = 0, sy = 0, px = null, py = null, mx0 = 0, my0 = 0, bw = BRUSH_MAX;
+    function paintStep() {
+      if (!shown || reduce) return;
+      if (px === null) { sx = px = mx0 = x; sy = py = my0 = y; return; } /* awal goresan baru */
+      sx += (x - sx) * SMOOTH; sy += (y - sy) * SMOOTH;                  /* posisi cat dihaluskan */
+      var d = Math.hypot(sx - px, sy - py);
+      if (d < 0.4) return;
+      bw += (Math.max(BRUSH_MIN, BRUSH_MAX - d * 0.5) - bw) * 0.25;      /* cepat = tipis, pelan = tebal */
+      var mx = (px + sx) / 2, my = (py + sy) / 2;
+      ctx.strokeStyle = COLOR; ctx.shadowColor = COLOR; ctx.shadowBlur = SOFT;
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = bw;
+      ctx.beginPath(); ctx.moveTo(mx0, my0); ctx.quadraticCurveTo(px, py, mx, my); ctx.stroke(); /* kurva melalui titik tengah = mulus */
+      mx0 = mx; my0 = my; px = sx; py = sy;
     }
-    function trail(nx, ny) { /* isi jarak antar posisi kursor supaya goresan tidak putus */
-      if (lastX === null) { lastX = nx; lastY = ny; }
-      var dist = Math.hypot(nx - lastX, ny - lastY), steps = Math.max(1, Math.ceil(dist / 4));
-      for (var s = 1; s <= steps; s++) stamp(lastX + (nx - lastX) * s / steps, lastY + (ny - lastY) * s / steps);
-      lastX = nx; lastY = ny;
-    }
+
     window.addEventListener('mousemove', function (e) {
-      x = e.clientX; y = e.clientY;
-      if (!reduce) trail(x, y);
-      dot.style.transform = 'translate(' + x + 'px,' + y + 'px)';
-      dot.classList.add('show'); ring.classList.add('show');
+      x = e.clientX; y = e.clientY; shown = true;
+      brush.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+      brush.classList.add('show'); ring.classList.add('show');
     });
     document.addEventListener('mouseleave', function () {
-      dot.classList.remove('show'); ring.classList.remove('show'); lastX = null;
+      brush.classList.remove('show'); ring.classList.remove('show'); px = null; shown = false;
     });
 
-    // lingkaran mengikuti titik dengan sedikit "delay" supaya terasa halus
+    // lingkaran mengikuti kuas dengan sedikit "delay"; goresan memudar tiap frame
     (function follow() {
       rx += (x - rx) * (reduce ? 1 : 0.18);
       ry += (y - ry) * (reduce ? 1 : 0.18);
       ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px)';
+      ctx.shadowBlur = 0;
       ctx.globalCompositeOperation = 'destination-out';
       ctx.globalAlpha = FADE;
       ctx.fillRect(0, 0, innerWidth, innerHeight);
       ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+      paintStep();
       requestAnimationFrame(follow);
     })();
 
