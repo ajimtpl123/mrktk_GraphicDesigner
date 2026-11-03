@@ -51,6 +51,88 @@ function alignYear() {
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(alignYear); else alignYear();
 window.addEventListener('resize', alignYear);
 
+/* ===== 1d. Efek teks headline: huruf berputar seperti mesin slot lalu berhenti di huruf yang benar ===== */
+var TEXT_INTRO = true;    /* true = headline muncul dengan efek huruf berputar saat halaman dibuka */
+var IDLE_GLITCH = true;   /* true = sesekali huruf "i" berubah sebentar jadi "!" */
+(function () {
+  var root = document.documentElement;
+  var h1 = document.querySelector('.hero2 h1');
+  var noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* kalau efek dimatikan / browser tidak mendukung, tampilkan headline biasa */
+  if (!h1 || !TEXT_INTRO || noMotion || !h1.animate) { root.classList.add('fx-ready'); return; }
+
+  var CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEGHKMNRSTUVWXY'; /* huruf acak yang "berputar" sebelum berhenti */
+  var CELL = .95;                                                       /* tinggi satu huruf (dalam em), harus sama dengan .ch-cell di CSS */
+
+  function cell(c) { var d = document.createElement('span'); d.className = 'ch-cell'; d.textContent = c; return d; }
+
+  /* 1. Pecah teks headline menjadi huruf satu per satu (teks kecil, kursi, dan Scroll to explore tidak ikut dipecah) */
+  var walker = document.createTreeWalker(h1, NodeFilter.SHOW_TEXT, {
+    acceptNode: function (n) {
+      if (!n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      return n.parentElement.closest('.tag, .obj, .hint-wrap') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  var nodes = [], letters = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  h1.setAttribute('aria-label', nodes.map(function (n) { return n.nodeValue.trim(); }).join(' ')); /* pembaca layar tetap membaca kalimat utuh */
+  nodes.forEach(function (n) {
+    var frag = document.createDocumentFragment();
+    n.nodeValue.split('').forEach(function (c) {
+      if (/\s/.test(c)) { frag.appendChild(document.createTextNode(c)); return; }
+      var ch = document.createElement('span'); ch.className = 'ch'; ch.dataset.c = c;
+      var inEl = document.createElement('span'); inEl.className = 'ch-in'; inEl.appendChild(cell(c));
+      ch.appendChild(inEl); frag.appendChild(ch); letters.push(ch);
+    });
+    n.replaceWith(frag);
+  });
+
+  /* 2. Mulai: tiap huruf menggulung ke atas melewati beberapa huruf acak, lalu berhenti di huruf aslinya */
+  var finished = 0;
+  function start() {
+    root.classList.add('fx-ready');
+    letters.forEach(function (ch, i) {
+      var inEl = ch.firstElementChild, finalCell = inEl.firstElementChild;
+      var n = 4 + Math.floor(Math.random() * 4);                      /* jumlah huruf acak yang dilewati */
+      for (var k = 0; k < n; k++) inEl.insertBefore(cell(CHARS.charAt(Math.floor(Math.random() * CHARS.length))), finalCell);
+      var delay = 150 + (i / letters.length) * 900 + Math.random() * 450; /* giliran muncul: kira-kira dari kiri ke kanan, sedikit acak */
+      var anim = inEl.animate(
+        [{ transform: 'translateY(' + (CELL + .4) + 'em)' }, { transform: 'translateY(' + (-n * CELL) + 'em)' }],
+        { duration: 900 + Math.random() * 500, delay: delay, easing: 'cubic-bezier(.22,.9,.28,1)', fill: 'both' }
+      );
+      anim.onfinish = function () {
+        inEl.replaceChildren(finalCell); anim.cancel();                /* buang huruf acak, sisakan huruf asli */
+        ch.classList.add('done');
+        if (++finished === letters.length && IDLE_GLITCH) setTimeout(glitchLoop, 1500);
+      };
+    });
+  }
+
+  /* 3. Sesekali huruf "i" (yang bukan bagian dari tulisan miring) berubah sebentar jadi "!" lalu kembali */
+  var iTargets = letters.filter(function (ch) { return ch.dataset.c === 'i' && !ch.closest('.serif'); });
+  function glitch(ch) {
+    var inEl = ch.firstElementChild, orig = inEl.firstElementChild, alt = cell('!');
+    inEl.appendChild(alt); ch.classList.add('rolling');
+    var ease = 'cubic-bezier(.7,0,.3,1)';
+    var a = inEl.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(' + (-CELL) + 'em)' }], { duration: 260, easing: ease, fill: 'forwards' });
+    a.onfinish = function () {
+      setTimeout(function () {                                          /* tahan sebentar sebagai "!" */
+        var b = inEl.animate([{ transform: 'translateY(' + (-CELL) + 'em)' }, { transform: 'translateY(0)' }], { duration: 260, easing: ease, fill: 'forwards' });
+        b.onfinish = function () { a.cancel(); b.cancel(); alt.remove(); ch.classList.remove('rolling'); };
+      }, 800);
+    };
+  }
+  function glitchLoop() {
+    if (!document.hidden && window.scrollY < window.innerHeight * .6 && iTargets.length) {
+      glitch(iTargets[Math.floor(Math.random() * iTargets.length)]);
+    }
+    setTimeout(glitchLoop, 2800 + Math.random() * 2600);                /* jeda acak antar kejadian */
+  }
+
+  /* tunggu font selesai dimuat supaya posisi huruf tidak melompat */
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(start);
+})();
+
 /* ===== 2. Efek kursor (hanya untuk perangkat dengan mouse) ===== */
 var hasMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 if (hasMouse) {

@@ -75,6 +75,19 @@ nav ul a:hover { color: var(--ink); }
 .wob { display: block; animation: wob var(--t, 4s) ease-in-out infinite; animation-delay: var(--dl, 0s); }
 @keyframes wob { 0%, 100% { rotate: -10deg; translate: 0 0; } 50% { rotate: 10deg; translate: 0 -8px; } }
 
+/* ========== EFEK TEKS HEADLINE: huruf berputar seperti mesin slot ========== */
+/* sebelum efek mulai, headline disembunyikan supaya tidak "berkedip" (kelas "js" & "fx-ready" diatur di <head> dan script.js) */
+.js:not(.fx-ready) .hero2 h1 { visibility: hidden; }
+
+/* tiap huruf dibungkus .ch (jendela kecil/topeng), isinya .ch-in (gulungan) berisi beberapa .ch-cell (huruf acak lalu huruf asli) */
+.ch { display: inline-block; vertical-align: top; box-sizing: content-box; height: .95em; overflow: hidden;
+      padding: .1em .14em .25em; margin: -.1em -.14em -.25em; } /* padding & margin negatif: memperluas topeng supaya huruf yang menjulur (g, y, miring) tidak terpotong, tanpa menggeser posisi */
+.ch.done { overflow: visible; }      /* setelah huruf berhenti, topeng dilepas */
+.ch.rolling { overflow: hidden; }    /* dipakai lagi saat huruf "i" berubah jadi "!" */
+.ch-in { display: block; }
+.ch:not(.done) .ch-in { will-change: transform; }
+.ch-cell { display: block; height: .95em; line-height: .95; }
+
 /* ========== SECTION + EFEK HOVER ========== */
 .sec { padding-bottom: 112px; transition: opacity .35s ease; }
 h2 { font-family: var(--head); font-weight: 700; font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -0.02em; margin: 56px 0 32px; position: relative; width: fit-content; }

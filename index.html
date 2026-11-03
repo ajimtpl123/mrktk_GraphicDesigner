@@ -11,6 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500&family=Archivo+Narrow:wght@500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<!-- menandai bahwa JavaScript aktif (dipakai CSS untuk menyembunyikan headline sebelum efek huruf mulai); pengaman 2,5 detik kalau script gagal -->
+<script>document.documentElement.classList.add('js'); setTimeout(function () { document.documentElement.classList.add('fx-ready'); }, 2500);</script>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
