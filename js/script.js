@@ -54,12 +54,16 @@ window.addEventListener('resize', alignYear);
 /* ===== 1d. Efek teks headline: huruf berputar seperti mesin slot lalu berhenti di huruf yang benar ===== */
 var TEXT_INTRO = true;    /* true = headline muncul dengan efek huruf berputar saat halaman dibuka */
 var IDLE_GLITCH = true;   /* true = sesekali huruf "i" berubah sebentar jadi "!" */
+var WELCOME_FLIP = true;      /* true = huruf pada kata "welcome" terbalik-balik, berulang-ulang */
+var PORTFOLIO_COLOR = true;   /* true = warna biru & pink menjalar pada kata "portfolio", berulang-ulang */
+var COLOR_BLUE = '#0436C8';   /* warna yang menjalar dari kiri ke kanan */
+var COLOR_PINK = '#F22DAA';   /* warna yang menjalar dari kanan ke kiri */
 (function () {
   var root = document.documentElement;
   var h1 = document.querySelector('.hero2 h1');
   var noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   /* kalau efek dimatikan / browser tidak mendukung, tampilkan headline biasa */
-  if (!h1 || !TEXT_INTRO || noMotion || !h1.animate) { root.classList.add('fx-ready'); return; }
+  if (!h1 || noMotion || !h1.animate) { root.classList.add('fx-ready'); return; }
 
   var CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEGHKMNRSTUVWXY'; /* huruf acak yang "berputar" sebelum berhenti */
   var CELL = .95;                                                       /* tinggi satu huruf (dalam em), harus sama dengan .ch-cell di CSS */
@@ -78,19 +82,25 @@ var IDLE_GLITCH = true;   /* true = sesekali huruf "i" berubah sebentar jadi "!"
   h1.setAttribute('aria-label', nodes.map(function (n) { return n.nodeValue.trim(); }).join(' ')); /* pembaca layar tetap membaca kalimat utuh */
   nodes.forEach(function (n) {
     var frag = document.createDocumentFragment();
+    var w = 0;                                                       /* nomor kata di dalam teks ini (0 = kata pertama) */
     n.nodeValue.split('').forEach(function (c) {
-      if (/\s/.test(c)) { frag.appendChild(document.createTextNode(c)); return; }
-      var ch = document.createElement('span'); ch.className = 'ch'; ch.dataset.c = c;
+      if (/\s/.test(c)) { w++; frag.appendChild(document.createTextNode(c)); return; }
+      var ch = document.createElement('span'); ch.className = 'ch'; ch.dataset.c = c; ch.dataset.w = w;
       var inEl = document.createElement('span'); inEl.className = 'ch-in'; inEl.appendChild(cell(c));
       ch.appendChild(inEl); frag.appendChild(ch); letters.push(ch);
     });
     n.replaceWith(frag);
   });
 
+  /* kelompok huruf untuk efek berulang */
+  var welcomeLetters = letters.filter(function (ch) { return ch.closest('.l2') && ch.dataset.w === '0'; }); /* kata pertama di baris ke-2 = "welcome" */
+  var portfolioLetters = letters.filter(function (ch) { return ch.closest('.l3 .serif'); });               /* tulisan miring di baris ke-3 = "portfolio." */
+
   /* 2. Mulai: tiap huruf menggulung ke atas melewati beberapa huruf acak, lalu berhenti di huruf aslinya */
   var finished = 0;
   function start() {
     root.classList.add('fx-ready');
+    if (!TEXT_INTRO) { letters.forEach(function (ch) { ch.classList.add('done'); }); afterIntro(); return; }
     letters.forEach(function (ch, i) {
       var inEl = ch.firstElementChild, finalCell = inEl.firstElementChild;
       var n = 4 + Math.floor(Math.random() * 4);                      /* jumlah huruf acak yang dilewati */
@@ -103,7 +113,7 @@ var IDLE_GLITCH = true;   /* true = sesekali huruf "i" berubah sebentar jadi "!"
       anim.onfinish = function () {
         inEl.replaceChildren(finalCell); anim.cancel();                /* buang huruf acak, sisakan huruf asli */
         ch.classList.add('done');
-        if (++finished === letters.length && IDLE_GLITCH) setTimeout(glitchLoop, 1500);
+        if (++finished === letters.length) afterIntro();
       };
     });
   }
@@ -127,6 +137,57 @@ var IDLE_GLITCH = true;   /* true = sesekali huruf "i" berubah sebentar jadi "!"
       glitch(iTargets[Math.floor(Math.random() * iTargets.length)]);
     }
     setTimeout(glitchLoop, 2800 + Math.random() * 2600);                /* jeda acak antar kejadian */
+  }
+
+  /* 4. Efek yang berulang selama pengunjung masih berada di halaman headline */
+  var hero = document.querySelector('.hero2');
+  function onHeadline() {   /* true selama halaman headline masih terlihat (belum di-scroll jauh) dan tab sedang dibuka */
+    return !document.hidden && window.scrollY < (hero.offsetHeight - window.innerHeight) * .9;
+  }
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function allDone(anims) { return Promise.all(anims.map(function (a) { return a.finished.catch(function () {}); })); }
+
+  /* "welcome": huruf terbalik satu per satu (seperti gelombang), tahan sebentar terbalik, lalu kembali tegak */
+  async function flipLoop() {
+    while (true) {
+      if (!onHeadline()) { await wait(400); continue; }
+      var E = 'cubic-bezier(.65,0,.35,1)', P = 'perspective(600px) ';
+      await allDone(welcomeLetters.map(function (ch, i) {
+        return ch.animate([
+          { transform: P + 'rotateX(0deg)', easing: E },
+          { transform: P + 'rotateX(180deg)', offset: .38, easing: 'linear' },   /* terbalik */
+          { transform: P + 'rotateX(180deg)', offset: .62, easing: E },          /* ditahan sebentar */
+          { transform: P + 'rotateX(360deg)' }                                   /* kembali tegak */
+        ], { duration: 1500, delay: i * 110 });                                  /* 110 = jeda antar huruf (ms) */
+      }));
+      await wait(1400);                                                          /* istirahat sebelum gelombang berikutnya */
+    }
+  }
+
+  /* "portfolio.": warna menjalar huruf demi huruf, lalu kembali ke warna semula */
+  function sweep(color, fromRight) {
+    var base = getComputedStyle(h1).color, n = portfolioLetters.length;
+    return allDone(portfolioLetters.map(function (ch, i) {
+      return ch.animate([
+        { color: base },
+        { color: color, offset: .3 },
+        { color: color, offset: .65 },
+        { color: base }
+      ], { duration: 1100, delay: (fromRight ? n - 1 - i : i) * 110, easing: 'ease-in-out' });  /* 110 = kecepatan menjalar */
+    }));
+  }
+  async function colorLoop() {
+    while (true) {
+      if (!onHeadline()) { await wait(400); continue; }
+      await sweep(COLOR_BLUE, false);   /* biru: kiri ke kanan */
+      if (onHeadline()) await sweep(COLOR_PINK, true);    /* pink: kanan ke kiri */
+      await wait(900);
+    }
+  }
+  function afterIntro() {
+    if (IDLE_GLITCH) setTimeout(glitchLoop, 1500);
+    if (WELCOME_FLIP) flipLoop();
+    if (PORTFOLIO_COLOR) colorLoop();
   }
 
   /* tunggu font selesai dimuat supaya posisi huruf tidak melompat */

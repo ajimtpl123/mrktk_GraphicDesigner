@@ -82,6 +82,8 @@ nav ul a:hover { color: var(--ink); }
 /* tiap huruf dibungkus .ch (jendela kecil/topeng), isinya .ch-in (gulungan) berisi beberapa .ch-cell (huruf acak lalu huruf asli) */
 .ch { display: inline-block; vertical-align: top; box-sizing: content-box; height: .95em; overflow: hidden;
       padding: .1em .14em .25em; margin: -.1em -.14em -.25em; } /* padding & margin negatif: memperluas topeng supaya huruf yang menjulur (g, y, miring) tidak terpotong, tanpa menggeser posisi */
+/* titik putar saat huruf dibalik (di sekitar tengah huruf kecil) */
+.ch { transform-origin: 50% .58em; }
 .ch.done { overflow: visible; }      /* setelah huruf berhenti, topeng dilepas */
 .ch.rolling { overflow: hidden; }    /* dipakai lagi saat huruf "i" berubah jadi "!" */
 .ch-in { display: block; }
