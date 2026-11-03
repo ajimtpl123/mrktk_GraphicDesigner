@@ -8,7 +8,7 @@
 <meta name="description" content="Portfolio of a graphic designer: clothing, merchandise, and brand design.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500&family=Inter+Tight:ital,wght@0,500;1,500&family=Archivo+Narrow:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500&family=Inter+Tight:ital,wght@0,500;1,500&family=Archivo+Narrow:wght@500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
 <style>
   /* ========== WARNA & FONT: ubah di sini, berubah di seluruh website ========== */
   :root {
@@ -22,6 +22,7 @@
     --hero-bg: #0D0D0E;   /* warna latar halaman headline */
     --hero-ink: #ECECE8;  /* warna teks headline */
     --hero-font: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+    --serif: "Instrument Serif", Georgia, serif; /* font untuk kata 'hi!' dan 'portfolio.' */
     --small-font: "Archivo Narrow", "Arial Narrow", Arial, sans-serif;
     --marquee-speed: 28s; /* makin kecil angkanya, makin cepat teksnya berjalan */
   }
@@ -41,22 +42,23 @@
 
   /* ========== HERO: headline bergerak saat scroll ========== */
   .hero2 { height: 260vh; position: relative; background: var(--hero-bg); color: var(--hero-ink); }
-  .stage { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+  .stage { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; padding: clamp(96px, 15vh, 170px) 0 40px; }
   .stage nav { position: absolute; top: 0; left: 0; right: 0; padding: 24px 5vw; z-index: 5; }
+  .logo img { height: clamp(30px, 3.6vw, 44px); width: auto; display: block; }
   .stage nav ul a { color: rgba(236,236,232,.65); }
   .stage nav ul a:hover { color: var(--hero-ink); }
 
   /* tiap baris headline bergeser kiri/kanan sesuai --p (progress scroll 0 sampai 1, diisi oleh JavaScript) */
   .line { display: block; white-space: nowrap; font-family: var(--hero-font); font-weight: 500;
-          font-size: clamp(2.8rem, 11vw, 10.5rem); line-height: .95; letter-spacing: -.055em; padding-left: 5vw;
+          font-size: clamp(2.6rem, min(11vw, 13.5vh), 10.5rem); line-height: .95; letter-spacing: -.055em; padding-left: 5vw;
           translate: calc(var(--p, 0) * var(--dir, 1) * 115vw * var(--sp, 1)) 0; will-change: translate; }
-  .line em { font-style: italic; }
+  .serif { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.14em; letter-spacing: -.01em; }
   .l1, .l3, .l5 { --dir: -1; }  /* ke kiri */
   .l2, .l4 { --dir: 1; }        /* ke kanan */
   .l1 { --sp: .9; } .l2 { --sp: 1.1; } .l3 { --sp: 1; } .l4 { --sp: 1.25; } .l5 { --sp: .95; }  /* beda kecepatan */
 
-  .tag { position: absolute; font-family: var(--small-font); font-size: 1rem; letter-spacing: .01em; z-index: 3; }
-  .scroll-hint { position: absolute; left: 5vw; bottom: 28px; font-family: var(--small-font); opacity: calc(1 - var(--p, 0) * 10); }
+  .tag { position: absolute; font-family: var(--small-font); font-size: 1rem; letter-spacing: .01em; z-index: 3; white-space: nowrap; }
+  .scroll-hint { display: block; padding-left: 5vw; margin-top: 2.4vh; font-family: var(--small-font); opacity: calc(1 - var(--p, 0) * 10); }
 
   /* objek ilustrasi: .obj mengatur posisi + naik saat scroll, .wob membuatnya bergoyang terus (loop) */
   .obj { position: absolute; left: var(--x); top: var(--y); font-size: var(--s, clamp(3rem, 8vw, 6.5rem)); line-height: 1; z-index: 2;
@@ -158,8 +160,8 @@
   <div class="stage">
 
     <nav>
-      <!-- GANTI: namamu -->
-      <a class="logo" href="#top">Your Name</a>
+      <!-- GANTI: logo. Kalau mau pakai file lain, ubah nama file di src -->
+      <a class="logo" href="#top"><img src="images/logo-mrktk.png" alt="mrktk"></a>
       <ul>
         <li><a href="#work">Work</a></li>
         <li><a href="#about">About</a></li>
@@ -170,7 +172,7 @@
 
     <!-- GANTI: teks kecil di sekitar headline -->
     <span class="tag" style="left:34%; top:19%">© 2026</span>
-    <span class="tag" style="right:6%; top:23%">Graphic designer, selected projects</span>
+    <span class="tag" style="right:6%; top:23%">Creative graphic designer - Selected projects</span>
 
     <!--
       OBJEK ILUSTRASI (yang bergoyang)
@@ -188,9 +190,9 @@
 
     <!-- GANTI: kalimat headline, satu baris per .line -->
     <h1>
-      <span class="line l1">hi!</span>
+      <span class="line l1"><span class="serif">hi!</span></span>
       <span class="line l2">welcome to</span>
-      <span class="line l3">my <em>portfolio.</em></span>
+      <span class="line l3">my <span class="serif">portfolio.</span></span>
       <span class="line l4">let's make</span>
       <span class="line l5">something good.</span>
     </h1>
