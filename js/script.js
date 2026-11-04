@@ -100,6 +100,15 @@ var COLOR_PINK = '#F22DAA';   /* warna yang menjalar dari kanan ke kiri */
   var finished = 0;
   function start() {
     root.classList.add('fx-ready');
+    if (TEXT_INTRO && window.gsap) {   /* intro GSAP: huruf jatuh sambil berputar, memantul, lalu diam */
+      letters.forEach(function (ch) { ch.classList.add('done'); });
+      var dl = letters.map(function () { return .15 + Math.random() * .9; });   /* giliran acak tiap huruf (detik) */
+      var tl = gsap.timeline({ onComplete: function () { gsap.set(letters, { clearProps: 'transform,opacity' }); afterIntro(); } });
+      tl.from(letters, { y: function () { return -innerHeight * (.5 + Math.random() * .5); }, duration: 1.4, ease: 'bounce.out', delay: function (i) { return dl[i]; } }, 0)
+        .from(letters, { rotation: function () { return gsap.utils.random(-160, 160); }, duration: 1.2, ease: 'power3.out', delay: function (i) { return dl[i]; } }, 0)
+        .from(letters, { opacity: 0, duration: .25, delay: function (i) { return dl[i]; } }, 0);
+      return;
+    }
     if (!TEXT_INTRO) { letters.forEach(function (ch) { ch.classList.add('done'); }); afterIntro(); return; }
     letters.forEach(function (ch, i) {
       var inEl = ch.firstElementChild, finalCell = inEl.firstElementChild;
@@ -392,3 +401,23 @@ if (hasMouse) {
     ring.classList.toggle('is-link', !!onLink && !onCard);
   });
 }
+
+/* ===== 1e. Shape geometris: muncul (pop) lalu bergerak terus. Butuh GSAP; gerakan dipilih lewat data-m di index.html ===== */
+(function () {
+  var shapes = document.querySelectorAll('.shp'), hero = document.querySelector('.hero2');
+  if (!window.gsap || !shapes.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var MOVE = {
+    spin:  function (e) { gsap.to(e, { rotation: '+=360', duration: 16, ease: 'none', repeat: -1 }); },                          /* berputar terus */
+    swing: function (e) { gsap.to(e, { rotation: 24, duration: 2.2, ease: 'sine.inOut', yoyo: true, repeat: -1 }); },           /* mengayun kiri-kanan */
+    pulse: function (e) { gsap.to(e, { scale: 1.18, duration: 1.4, ease: 'sine.inOut', yoyo: true, repeat: -1 }); },            /* membesar-mengecil */
+    pop:   function (e) { gsap.timeline({ repeat: -1, repeatDelay: 1.6 })                                                       /* meletup lalu memantul */
+             .to(e, { scale: 1.3, rotation: '+=90', duration: .35, ease: 'power2.out' }).to(e, { scale: 1, duration: 1.2, ease: 'elastic.out(1,.35)' }); }
+  };
+  shapes.forEach(function (e, i) {
+    gsap.from(e, { scale: 0, rotation: -200, opacity: 0, duration: 1.1, ease: 'back.out(2.2)', delay: .7 + i * .12,
+      onComplete: function () { (MOVE[e.dataset.m] || MOVE.spin)(e); } });
+  });
+  /* hemat tenaga: semua animasi dijeda saat halaman headline sudah tidak terlihat */
+  var resumeEl = document.querySelector('#resume'), seen = new Map();
+  if ('IntersectionObserver' in window) { var io = new IntersectionObserver(function (en) { en.forEach(function (e) { seen.set(e.target, e.isIntersecting); }); gsap.globalTimeline.paused(![...seen.values()].some(Boolean)); }); [hero, resumeEl].forEach(function (t) { if (t) io.observe(t); }); }
+})();

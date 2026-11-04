@@ -6,7 +6,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- GANTI: judul tab browser -->
-<title>Your Name – Graphic Designer</title>
+<title>Mijil Taji (AJI) – Graphic Designer</title>
 <meta name="description" content="Portfolio of a graphic designer: clothing, merchandise, and brand design.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,6 +17,20 @@
 </head>
 <body>
 
+<!-- SHAPE GEOMETRIS: gradien, noise, dan 4 bentuk dasar. Dipakai lewat <use href="#s-..."> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="100"><stop offset="0" stop-color="#FF7A18"/><stop offset="1" stop-color="#F22DAA"/></linearGradient>
+  <linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="100"><stop offset="0" stop-color="#2B45FF"/><stop offset="1" stop-color="#B14CFF"/></linearGradient>
+  <linearGradient id="g3" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="100"><stop offset="0" stop-color="#C6FF3D"/><stop offset="1" stop-color="#00D4B8"/></linearGradient>
+  <linearGradient id="g4" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="100"><stop offset="0" stop-color="#FFD60A"/><stop offset="1" stop-color="#FF4D00"/></linearGradient>
+  <!-- noise: butiran halus di atas shape (makin besar angka .35, makin kasar) -->
+  <filter id="noise" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 -.3" result="g"/><feComposite in="g" in2="SourceAlpha" operator="in" result="gn"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="gn"/></feMerge></filter>
+  <symbol id="s-flower" viewBox="0 0 100 100"><circle cx="81.4" cy="63" r="16"/><circle cx="81.4" cy="37" r="16"/><circle cx="63" cy="81.4" r="16"/><circle cx="37" cy="81.4" r="16"/><circle cx="18.6" cy="63" r="16"/><circle cx="18.6" cy="37" r="16"/><circle cx="37" cy="18.6" r="16"/><circle cx="63" cy="18.6" r="16"/></symbol>
+  <symbol id="s-star" viewBox="0 0 100 100"><rect x="43" y="2" width="14" height="96"/><rect x="43" y="2" width="14" height="96" transform="rotate(45 50 50)"/><rect x="43" y="2" width="14" height="96" transform="rotate(90 50 50)"/><rect x="43" y="2" width="14" height="96" transform="rotate(135 50 50)"/></symbol>
+  <symbol id="s-wheel" viewBox="0 0 100 100"><path d="M0 0H48V48A48 48 0 0 1 0 0Z"/><path d="M100 0V48H52A48 48 0 0 1 100 0Z"/><path d="M0 52H48A48 48 0 0 1 0 100Z"/><path d="M100 100H52V52A48 48 0 0 1 100 100Z"/></symbol>
+  <symbol id="s-dots" viewBox="0 0 100 100"><g><circle cx="12.5" cy="12.5" r="12.5"/><circle cx="37.5" cy="12.5" r="12.5"/><circle cx="62.5" cy="12.5" r="12.5"/><circle cx="87.5" cy="12.5" r="12.5"/><circle cx="12.5" cy="37.5" r="12.5"/><circle cx="87.5" cy="37.5" r="12.5"/><circle cx="12.5" cy="62.5" r="12.5"/><circle cx="87.5" cy="62.5" r="12.5"/><circle cx="12.5" cy="87.5" r="12.5"/><circle cx="37.5" cy="87.5" r="12.5"/><circle cx="62.5" cy="87.5" r="12.5"/><circle cx="87.5" cy="87.5" r="12.5"/></g><g fill="#0D0D0E"><circle cx="25" cy="25" r="12.5"/><circle cx="50" cy="25" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="50" r="12.5"/><circle cx="75" cy="50" r="12.5"/><circle cx="25" cy="75" r="12.5"/><circle cx="50" cy="75" r="12.5"/><circle cx="75" cy="75" r="12.5"/></g><circle cx="37.5" cy="37.5" r="12.5"/><circle cx="62.5" cy="37.5" r="12.5"/><circle cx="37.5" cy="62.5" r="12.5"/><circle cx="62.5" cy="62.5" r="12.5"/><circle cx="50" cy="50" r="12.5" fill="#0D0D0E"/></symbol>
+</defs></svg>
+
 <header class="hero2" id="top">
   <div class="stage">
 
@@ -24,9 +38,9 @@
       <!-- GANTI: logo. Taruh file logomu di folder images, lalu samakan nama filenya di src -->
       <a class="logo" href="#top"><img src="images/logo-mrktk.png" alt="mrktk"></a>
       <ul>
+        <li><a href="#resume">Resume</a></li>
         <li><a href="#work">Work</a></li>
         <li><a href="#about">About</a></li>
-        <li><a href="#resume">Resume</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -37,25 +51,59 @@
       hapus emoji-nya, lalu tulis: <img src="images/kursi.png" alt="">
       --x dan --y = posisi (persen), --s = ukuran, --t = kecepatan goyang (detik), --dl = jeda mulai
     -->
-    <div class="obj" style="--x:27%; --y:19%; --s:7vw;  --lift:-40"><span class="wob" style="--t:3.8s">🥐</span></div>
-    <div class="obj" style="--x:50%; --y:7%;  --s:6vw;  --lift:-25; margin-left:-.6em"><span class="wob" style="--t:4.6s; --dl:-1s">☕</span></div>
-    <div class="obj" style="--x:78%; --y:13%; --s:7vw;  --lift:-35"><span class="wob" style="--t:3.4s; --dl:-2s">💡</span></div>
-    <div class="obj" style="--x:84%; --y:55%; --s:6vw;  --lift:-45"><span class="wob" style="--t:4.2s; --dl:-3s">🍎</span></div>
-    <div class="obj" style="--x:4%;  --y:72%; --s:7vw;  --lift:-30"><span class="wob" style="--t:4.8s; --dl:-1.5s">📚</span></div>
+    <div class="obj" style="--x:27%; --y:19%; --s:7vw;  --lift:-40"><span class="wob" style="--t:3.8s"><svg class="shp" data-m="spin" viewBox="0 0 100 100"><use href="#s-flower" fill="url(#g1)"/></svg></span></div>
+    <div class="obj" style="--x:50%; --y:7%;  --s:6vw;  --lift:-25; margin-left:-.6em"><span class="wob" style="--t:4.6s; --dl:-1s"><svg class="shp" data-m="pulse" viewBox="0 0 100 100" style="filter:url(#noise)"><use href="#s-star" fill="#C6FF3D"/></svg></span></div>
+    <div class="obj" style="--x:78%; --y:13%; --s:7vw;  --lift:-35"><span class="wob" style="--t:3.4s; --dl:-2s"><svg class="shp" data-m="swing" viewBox="0 0 100 100"><use href="#s-wheel" fill="url(#g2)"/></svg></span></div>
+    <div class="obj" style="--x:84%; --y:55%; --s:6vw;  --lift:-45"><span class="wob" style="--t:4.2s; --dl:-3s"><svg class="shp" data-m="pop" viewBox="0 0 100 100" style="filter:url(#noise)"><use href="#s-dots" fill="url(#g4)"/></svg></span></div>
 
+    <!-- OBJEK di atas sekarang shape SVG. Ganti warna lewat fill="url(#g1..g4)" atau kode warna, gerakan lewat data-m="spin|swing|pulse|pop", noise lewat style="filter:url(#noise)" -->
     <!-- GANTI: kalimat headline, satu baris per .line -->
     <h1>
       <span class="line l1"><span class="serif">hi!</span><!-- GANTI: teks kecil di sebelah "hi!" --><span class="tag tag-year">© 2026</span><span class="tag tag-right">Creative graphic designer - Selected projects</span></span>
       <span class="line l2">welcome to</span>
-      <span class="line l3"><span>my <span class="serif">portfolio.</span></span><span class="obj" aria-hidden="true" style="--s:1.15em; --lift:-20"><span class="wob" style="--t:5s; --dl:-.5s">🪑</span></span></span>
+      <span class="line l3"><span>my <span class="serif">portfolio.</span></span><span class="obj" aria-hidden="true" style="--s:1.15em; --lift:-20"><span class="wob" style="--t:5s; --dl:-.5s"><svg class="shp" data-m="pulse" viewBox="0 0 100 100"><use href="#s-dots" fill="url(#g3)"/></svg></span></span></span>
       <span class="line l4">let's make</span>
-      <span class="line l5"><span>something good.</span><span class="hint-wrap" aria-hidden="true"><span class="scroll-hint">Scroll to explore</span><span class="obj" style="--s:7vw; --lift:-38"><span class="wob" style="--t:3.6s; --dl:-2.5s">🪴</span></span></span></span>
+      <span class="line l5"><span>so<span class="under">m<span class="obj" aria-hidden="true" style="--s:6vw; --lift:-30"><span class="wob" style="--t:4.8s; --dl:-1.5s"><svg class="shp" data-m="spin" viewBox="0 0 100 100" style="filter:url(#noise)"><use href="#s-wheel" fill="#F22DAA"/></svg></span></span></span>ething good.</span><span class="hint-wrap" aria-hidden="true"><span class="scroll-hint">Scroll to explore</span><span class="obj" style="--s:7vw; --lift:-38"><span class="wob" style="--t:3.6s; --dl:-2.5s"><svg class="shp" data-m="swing" viewBox="0 0 100 100" style="filter:url(#noise)"><use href="#s-flower" fill="#FFD60A"/></svg></span></span></span></span>
     </h1>
 
   </div>
 </header>
 
 <!-- Teks yang berjalan diambil dari data-text. Ganti isinya kalau mau teks lain. -->
+
+<section class="sec resume" id="resume">
+  <div class="marquee" aria-hidden="true" data-text="Resume"></div>
+  <div class="wrap">
+    <div class="bio">
+      <figure class="portrait">
+        <img src="images/aji.webp" alt="Portrait of Mijil Taji (AJI)">
+        <span class="obj" aria-hidden="true" style="--x:80%; --y:-7%; --s:clamp(64px,8vw,112px)"><span class="wob" style="--t:4.4s"><svg class="shp" data-m="spin" viewBox="0 0 100 100"><use href="#s-flower" fill="url(#g1)"/></svg></span></span>
+        <span class="obj" aria-hidden="true" style="--x:-9%; --y:84%; --s:clamp(48px,6vw,84px)"><span class="wob" style="--t:3.8s; --dl:-1s"><svg class="shp" data-m="pulse" viewBox="0 0 100 100" style="filter:url(#noise)"><use href="#s-star" fill="#C6FF3D"/></svg></span></span>
+        <span class="stk" style="left:-4%; top:22%; --r:-8deg; background:#FFD60A">Branding</span>
+        <span class="stk" style="right:-5%; top:52%; --r:6deg; background:#F22DAA">Illustration</span>
+        <span class="stk" style="left:8%; bottom:7%; --r:-4deg; background:#ECECE8">Apparel</span>
+      </figure>
+      <div class="bio-text">
+        <p class="hello"><span class="serif">Hello!-</span></p>
+        <h2 class="name">I’m <b>Mijil Taji</b> or you can call me <b>AJI</b></h2>
+        <p class="lead">Graphic designer with two years of freelance and in-house experience across branding, social media design, digital illustration, and apparel. I create clean, consistent visual systems that hold up across logos, merchandise, and digital content, and my clothing designs draw on street culture references such as skate style and bootleg graphics. I value close collaboration and staying true to a client’s original vision, and I’m open to working with brands that want a distinct identity.</p>
+      </div>
+    </div>
+    <div class="cv">
+      <div class="cv-l">
+        <h2>Where I <em>learned?</em></h2>
+        <p class="edu"><strong>Widyatama University</strong><span>Visual Communication Design</span></p>
+        <h2 class="use">What I <em>use?</em></h2>
+        <div class="tools"><img src="images/tool-photoshop.png" alt="Photoshop" title="Photoshop"><img src="images/tool-illustrator.png" alt="Illustrator" title="Illustrator"><img src="images/tool-alight-motion.png" alt="Alight Motion" title="Alight Motion"><img src="images/tool-procreate.png" alt="Procreate" title="Procreate"><img src="images/tool-capcut.png" alt="CapCut" title="CapCut"><img class="wm" src="images/tool-chatgpt.png" alt="ChatGPT"><img class="wm" src="images/tool-gemini.png" alt="Gemini"></div>
+        <p class="note">…Exploration of various tools is still underway….</p>
+      </div>
+      <div class="cv-r">
+        <h2>Where I’ve <em>worked?</em></h2>
+        <ul class="jobs"><li><time>2026</time><div><h3><svg class="ast" viewBox="0 0 100 100" aria-hidden="true"><use href="#s-star" fill="currentColor"/></svg>Graphic Designer at PT. Spend Group International</h3><p>Creating design requirements for social media, marketing kits, and UI assets for a live-streaming application</p></div></li><li><time>2025</time><div><h3><svg class="ast" viewBox="0 0 100 100" aria-hidden="true"><use href="#s-star" fill="currentColor"/></svg>Freelance Pattern Designer at SATTKA</h3><p>Making patterns for pashmina products</p></div></li><li><time>2024</time><div><h3><svg class="ast" viewBox="0 0 100 100" aria-hidden="true"><use href="#s-star" fill="currentColor"/></svg>Warehouse Crew at PT. Yomart Rukun Selalu</h3><p>Warehouse Crew, Stock Opname</p></div></li><li><time>2023</time><div><h3><svg class="ast" viewBox="0 0 100 100" aria-hidden="true"><use href="#s-star" fill="currentColor"/></svg>Freelance Graphic Designer at HANSAMU RAMEN</h3><p>Designing ornaments and fixtures for the café</p></div></li></ul>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section class="sec" id="work">
   <div class="marquee" aria-hidden="true" data-text="Work"></div>
@@ -120,32 +168,6 @@
   </div>
 </section>
 
-<section class="sec" id="resume">
-  <div class="marquee" aria-hidden="true" data-text="Resume"></div>
-  <div class="wrap">
-    <h2>Experience</h2>
-    <!-- GANTI: isi dengan pengalaman kerjamu. Salin satu blok .job untuk menambah baris. -->
-    <div class="job">
-      <div class="when">2025 – Now</div>
-      <div>
-        <h3>Graphic Designer</h3>
-        <div class="where">Company Name, Full-time</div>
-        <p>One or two sentences about what you designed and what you were responsible for.</p>
-      </div>
-    </div>
-    <div class="job">
-      <div class="when">2024 – 2025</div>
-      <div>
-        <h3>Freelance Graphic Designer</h3>
-        <div class="where">Various clients</div>
-        <p>Logo digitization, social media design, and clothing graphics, including work for Variety Coffee.</p>
-      </div>
-    </div>
-    <!-- GANTI: taruh file CV-mu (misal cv.pdf) di folder yang sama dengan index.html -->
-    <a class="dl" href="cv.pdf" download>Download CV</a>
-  </div>
-</section>
-
 <section class="sec contact" id="contact">
   <div class="marquee" aria-hidden="true" data-text="Contact"></div>
   <div class="wrap">
@@ -160,8 +182,10 @@
   </div>
 </section>
 
-<div class="wrap"><footer>© 2026 Your Name</footer></div>
+<div class="wrap"><footer>© 2026 Mijil Taji</footer></div>
 
+<!-- GSAP (library animasi, gratis) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="js/script.js"></script>
 </body>
 </html>
