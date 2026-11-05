@@ -1,0 +1,2 @@
+Taruh file gambar karya (PNG) di folder ini.
+Setelah itu tulis nama filenya di file js/karya.js

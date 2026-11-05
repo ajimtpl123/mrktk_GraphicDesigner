@@ -130,6 +130,64 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   }).observe(cv);
 })();
 
+/* ===== 3. Galeri karya: klik folder -> jendela berisi gambar + video TikTok =====
+   Isinya diatur di js/karya.js (bukan di sini). */
+(function () {
+  var DIR = 'images/karya/', data = window.KARYA || {}, tt = window.TIKTOK_AKUN || '#';
+  var folders = document.querySelectorAll('.folder[data-folder]'); if (!folders.length) return;
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]; }); };
+
+  /* gambar pertama tiap folder otomatis jadi sampul folder */
+  folders.forEach(function (f) {
+    var d = data[f.dataset.folder], m = f.querySelector('.f-media');
+    if (d && d.gambar && d.gambar.length && m) m.innerHTML = '<img src="' + DIR + esc(d.gambar[0]) + '" alt="' + esc(f.querySelector('h3').textContent) + '" loading="lazy">';
+  });
+
+  var box = document.createElement('div'); box.className = 'gal'; box.hidden = true; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true');
+  document.body.appendChild(box);
+  var lastFocus = null;
+
+  function videoCard(v) {
+    var id = (String(v).match(/video\/(\d+)/) || [])[1], isTT = /^https?:/i.test(v);
+    var btn = '<a class="gal-btn" href="' + esc(isTT ? v : tt) + '" target="_blank" rel="noopener">Watch on TikTok &nearr;</a>';
+    if (isTT && id) return '<div class="gal-vid"><div class="gal-frame"><iframe src="https://www.tiktok.com/player/v1/' + id + '?rel=0" allow="fullscreen; encrypted-media" loading="lazy" title="TikTok video"></iframe></div>' + btn + '</div>';
+    if (isTT) return '<div class="gal-vid">' + btn + '</div>';                    /* link pendek/tanpa ID: cukup tombol */
+    return '<div class="gal-vid"><div class="gal-frame"><video src="' + DIR + esc(v) + '" controls playsinline preload="metadata"></video></div>' + btn + '</div>';   /* file .mp4 */
+  }
+
+  function open(f) {
+    var d = data[f.dataset.folder] || {}, pics = d.gambar || [], vids = d.video || [];
+    var c1 = f.style.getPropertyValue('--c1'), c2 = f.style.getPropertyValue('--c2'), fg = f.style.getPropertyValue('--fg');
+    var html = '<div class="gal-bg" data-close></div><div class="gal-box"><div class="gal-top" style="background:linear-gradient(135deg,' + c1 + ',' + c2 + ');color:' + fg + '">'
+      + '<div><span class="gal-n">' + esc(f.querySelector('.f-tab').textContent) + '</span><h3>' + f.querySelector('h3').innerHTML + '</h3></div>'
+      + '<a class="gal-btn gal-follow" href="' + esc(tt) + '" target="_blank" rel="noopener">Follow on TikTok &nearr;</a>'
+      + '<button class="gal-x" data-close aria-label="Close">&times;</button></div><div class="gal-body">';
+    if (pics.length) html += '<div class="gal-pics">' + pics.map(function (p) { return '<img src="' + DIR + esc(p) + '" alt="" loading="lazy">'; }).join('') + '</div>';
+    if (vids.length) html += '<h4 class="gal-h">Videos</h4><div class="gal-vids">' + vids.map(videoCard).join('') + '</div>';
+    if (!pics.length && !vids.length) html += '<p class="gal-empty">New work for this folder is coming soon.</p>';
+    box.innerHTML = html + '</div></div><div class="gal-zoom" hidden></div>';
+    lastFocus = document.activeElement; box.hidden = false; document.documentElement.style.overflow = 'hidden';
+    box.querySelector('.gal-x').focus();
+  }
+  function close() {
+    box.hidden = true; box.innerHTML = '';                      /* video ikut berhenti */
+    document.documentElement.style.overflow = ''; if (lastFocus) lastFocus.focus();
+  }
+
+  folders.forEach(function (f) { f.addEventListener('click', function (e) { e.preventDefault(); open(f); }); });
+  box.addEventListener('click', function (e) {
+    var z = box.querySelector('.gal-zoom');
+    if (e.target.closest('.gal-zoom')) { z.hidden = true; z.innerHTML = ''; return; }
+    if (e.target.closest('[data-close]')) return close();
+    var im = e.target.closest('.gal-pics img');                  /* klik gambar = tampil besar */
+    if (im) { z.innerHTML = '<img src="' + im.src + '" alt="">'; z.hidden = false; }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || box.hidden) return;
+    var z = box.querySelector('.gal-zoom'); if (z && !z.hidden) { z.hidden = true; z.innerHTML = ''; } else close();
+  });
+})();
+
 /* ===== 1b. Headline bergerak saat di-scroll: hitung progress 0 sampai 1 ===== */
 var hero = document.querySelector('.hero2');
 if (hero && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {

@@ -1,0 +1,40 @@
+CARA MENAMBAH KARYA KE WEBSITE (tanpa coding)
+=============================================
+
+A. SIAPKAN FILE
+   - Gambar: simpan sebagai PNG (atau JPG). Beri nama TANPA spasi, huruf kecil,
+     misalnya: merch-1.png, poster-2.png.
+   - Supaya website cepat, kecilkan dulu ukurannya (lebar sekitar 1600 px,
+     ukuran file di bawah 1 MB). Bisa pakai squoosh.app (gratis, lewat browser).
+
+B. UPLOAD GAMBAR KE GITHUB
+   1. Buka repository website-mu di github.com
+   2. Klik folder  images  lalu klik folder  karya
+   3. Klik tombol  Add file  ->  Upload files
+   4. Tarik (drag) gambar-gambarmu ke situ, lalu klik  Commit changes
+
+C. DAFTARKAN DI js/karya.js
+   1. Di repository, buka folder  js  lalu klik file  karya.js
+   2. Klik ikon pensil (Edit this file)
+   3. Cari folder yang sesuai, misalnya  merch  lalu tulis nama filenya:
+          gambar: [
+            'merch-1.png',
+            'merch-2.png',
+          ],
+      (nama harus sama persis dengan file yang di-upload)
+   4. Untuk video TikTok, tempel linknya di bagian  video:
+          video: [
+            'https://www.tiktok.com/@usernamekamu/video/1234567890123456789',
+          ],
+      Cara dapat link: buka videonya di TikTok lewat browser (tiktok.com),
+      lalu salin link dari address bar. Pakai link PANJANG yang ada tulisan
+      "/video/angka", bukan link pendek (vm.tiktok.com).
+   5. GANTI juga baris TIKTOK_AKUN di bagian paling atas dengan link
+      profil TikTok-mu.
+   6. Klik  Commit changes. Tunggu 1-2 menit, lalu refresh websitemu.
+
+HASILNYA
+   - Klik folder di website -> terbuka jendela berisi gambar dan video.
+   - Gambar pertama otomatis jadi sampul folder.
+   - Setiap video punya tombol "Watch on TikTok", dan ada tombol
+     "Follow on TikTok" yang membuka akun TikTok-mu.

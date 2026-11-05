@@ -1,0 +1,65 @@
+/* =====================================================================
+   FILE UNTUK MENAMBAH KARYA  (tidak perlu bisa coding, cukup copy-paste)
+   =====================================================================
+   LANGKAH SINGKAT:
+   1. Taruh file gambar (PNG) ke folder  images/karya/
+   2. Tulis nama filenya di daftar "gambar" di bawah ini (harus sama persis,
+      huruf besar-kecilnya juga, dan jangan pakai spasi, contoh: merch-1.png)
+   3. Untuk video TikTok, tempel LINK videonya di daftar "video"
+   4. Simpan. Selesai!
+
+   ATURAN PENTING:
+   - Setiap nama/link ditulis di dalam tanda kutip '...' dan diakhiri koma ,
+   - Tanda // di depan baris artinya baris itu DIABAIKAN (cuma catatan).
+     Hapus // untuk mengaktifkannya.
+   ===================================================================== */
+
+/* GANTI dengan link akun TikTok-mu (buka profil TikTok-mu, salin link-nya) */
+var TIKTOK_AKUN = 'https://www.tiktok.com/@usernamekamu';
+
+var KARYA = {
+
+  /* Folder 01: Merch & Clothing Design */
+  merch: {
+    gambar: [
+      // 'merch-1.png',
+      // 'merch-2.png',
+    ],
+    video: [
+      // 'https://www.tiktok.com/@usernamekamu/video/1234567890123456789',
+    ],
+  },
+
+  /* Folder 02: Social Media Design */
+  social: {
+    gambar: [
+      // 'social-1.png',
+    ],
+    video: [],
+  },
+
+  /* Folder 03: Branding */
+  branding: {
+    gambar: [
+      // 'branding-1.png',
+    ],
+    video: [],
+  },
+
+  /* Folder 04: Poster */
+  poster: {
+    gambar: [
+      // 'poster-1.png',
+    ],
+    video: [],
+  },
+
+  /* Folder 05: Digital Illustration */
+  illustration: {
+    gambar: [
+      // 'illustration-1.png',
+    ],
+    video: [],
+  },
+
+};

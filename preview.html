@@ -305,6 +305,36 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
   .f-text { align-items: flex-start; text-align: left; }
 }
 
+
+/* ========== GALERI KARYA (jendela yang terbuka saat folder diklik) ========== */
+.gal { position: fixed; inset: 0; z-index: 900; display: grid; place-items: center; padding: clamp(10px, 3vw, 40px); }
+.gal[hidden] { display: none; }
+.gal-bg { position: absolute; inset: 0; background: rgba(5,5,6,.82); backdrop-filter: blur(6px); }
+.gal-box { position: relative; width: min(1100px, 100%); max-height: 100%; display: flex; flex-direction: column; overflow: hidden; background: #131315; border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+.gal-top { display: flex; align-items: center; gap: 16px; padding: 22px clamp(18px, 3vw, 36px); }
+.gal-top > div { flex: 1; min-width: 0; }
+.gal-n { display: block; font: 800 .8rem/1 var(--head); letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
+.gal-top h3 { font-family: var(--head); font-weight: 800; font-size: clamp(1.4rem, 3.4vw, 2.4rem); line-height: 1.05; letter-spacing: -.03em; margin-top: 6px; }
+.gal-x { width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(13,13,14,.88); color: #fff; font-size: 1.7rem; line-height: 1; flex-shrink: 0; }
+.gal-btn { display: inline-block; padding: .6em 1.2em; border-radius: 999px; background: var(--ink); color: #0D0D0E; text-decoration: none; font-family: var(--head); font-weight: 700; font-size: .92rem; white-space: nowrap; }
+.gal-follow { background: #0D0D0E; color: #fff; }
+.gal-body { padding: clamp(18px, 3vw, 36px); overflow-y: auto; overscroll-behavior: contain; }
+.gal-pics { columns: 3 240px; column-gap: 16px; }
+.gal-pics img { display: block; width: 100%; height: auto; margin: 0 0 16px; border-radius: 12px; break-inside: avoid; background: var(--line); }
+.gal-h { margin: 28px 0 16px; font-family: var(--head); font-weight: 700; font-size: 1.4rem; }
+.gal-pics + .gal-h { margin-top: 12px; }
+.gal-body > .gal-h:first-child { margin-top: 0; }
+.gal-vids { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 24px; }
+.gal-vid { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.gal-frame { width: 100%; max-width: 300px; aspect-ratio: 9 / 16; border-radius: 16px; overflow: hidden; background: #000; }
+.gal-frame iframe, .gal-frame video { width: 100%; height: 100%; border: 0; display: block; }
+.gal-empty { padding: 48px 0; text-align: center; color: var(--muted); }
+.gal-zoom { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; padding: 24px; background: rgba(5,5,6,.94); }
+.gal-zoom[hidden] { display: none; }
+.gal-zoom img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 10px; }
+.folder:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+@media (max-width: 700px) { .gal-top { flex-wrap: wrap; } .gal-follow { order: 3; } }
+
 </style>
 </head>
 <body>
@@ -431,7 +461,7 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
         3. Hapus baris <span class="ph">
         Warna folder: --c1 dan --c2 (gradien), --fg = warna teks
       -->
-      <a class="folder" href="#" style="--i:0; --c1:#FF7A18; --c2:#F22DAA; --fg:#0D0D0E; --fg2:#FFFFFF">
+      <a class="folder" href="#" data-folder="merch" style="--i:0; --c1:#FF7A18; --c2:#F22DAA; --fg:#0D0D0E; --fg2:#FFFFFF">
         <span class="f-tab">Folder 01</span>
         <div class="f-media">
           <!-- <img src="images/merch.jpg" alt="Merch &amp; Clothing Design"> -->
@@ -443,7 +473,7 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
           <span class="f-btn">Open folder &rarr;</span>
         </div>
       </a>
-      <a class="folder" href="#" style="--i:1; --c1:#2B45FF; --c2:#B14CFF; --fg:#FFFFFF; --fg2:#0D0D0E">
+      <a class="folder" href="#" data-folder="social" style="--i:1; --c1:#2B45FF; --c2:#B14CFF; --fg:#FFFFFF; --fg2:#0D0D0E">
         <span class="f-tab">Folder 02</span>
         <div class="f-media">
           <!-- <img src="images/social.jpg" alt="Social Media Design"> -->
@@ -455,7 +485,7 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
           <span class="f-btn">Open folder &rarr;</span>
         </div>
       </a>
-      <a class="folder" href="#" style="--i:2; --c1:#C6FF3D; --c2:#00D4B8; --fg:#0D0D0E; --fg2:#FFFFFF">
+      <a class="folder" href="#" data-folder="branding" style="--i:2; --c1:#C6FF3D; --c2:#00D4B8; --fg:#0D0D0E; --fg2:#FFFFFF">
         <span class="f-tab">Folder 03</span>
         <div class="f-media">
           <!-- <img src="images/branding.jpg" alt="Branding"> -->
@@ -467,7 +497,7 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
           <span class="f-btn">Open folder &rarr;</span>
         </div>
       </a>
-      <a class="folder" href="#" style="--i:3; --c1:#FFD60A; --c2:#FF4D00; --fg:#0D0D0E; --fg2:#FFFFFF">
+      <a class="folder" href="#" data-folder="poster" style="--i:3; --c1:#FFD60A; --c2:#FF4D00; --fg:#0D0D0E; --fg2:#FFFFFF">
         <span class="f-tab">Folder 04</span>
         <div class="f-media">
           <!-- <img src="images/poster.jpg" alt="Poster"> -->
@@ -479,7 +509,7 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
           <span class="f-btn">Open folder &rarr;</span>
         </div>
       </a>
-      <a class="folder" href="#" style="--i:4; --c1:#F22DAA; --c2:#B14CFF; --fg:#FFFFFF; --fg2:#0D0D0E">
+      <a class="folder" href="#" data-folder="illustration" style="--i:4; --c1:#F22DAA; --c2:#B14CFF; --fg:#FFFFFF; --fg2:#0D0D0E">
         <span class="f-tab">Folder 05</span>
         <div class="f-media">
           <!-- <img src="images/illustration.jpg" alt="Digital Illustration"> -->
@@ -537,6 +567,74 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 
 <!-- GSAP (library animasi, gratis) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+/* =====================================================================
+   FILE UNTUK MENAMBAH KARYA  (tidak perlu bisa coding, cukup copy-paste)
+   =====================================================================
+   LANGKAH SINGKAT:
+   1. Taruh file gambar (PNG) ke folder  images/karya/
+   2. Tulis nama filenya di daftar "gambar" di bawah ini (harus sama persis,
+      huruf besar-kecilnya juga, dan jangan pakai spasi, contoh: merch-1.png)
+   3. Untuk video TikTok, tempel LINK videonya di daftar "video"
+   4. Simpan. Selesai!
+
+   ATURAN PENTING:
+   - Setiap nama/link ditulis di dalam tanda kutip '...' dan diakhiri koma ,
+   - Tanda // di depan baris artinya baris itu DIABAIKAN (cuma catatan).
+     Hapus // untuk mengaktifkannya.
+   ===================================================================== */
+
+/* GANTI dengan link akun TikTok-mu (buka profil TikTok-mu, salin link-nya) */
+var TIKTOK_AKUN = 'https://www.tiktok.com/@usernamekamu';
+
+var KARYA = {
+
+  /* Folder 01: Merch & Clothing Design */
+  merch: {
+    gambar: [
+      // 'merch-1.png',
+      // 'merch-2.png',
+    ],
+    video: [
+      // 'https://www.tiktok.com/@usernamekamu/video/1234567890123456789',
+    ],
+  },
+
+  /* Folder 02: Social Media Design */
+  social: {
+    gambar: [
+      // 'social-1.png',
+    ],
+    video: [],
+  },
+
+  /* Folder 03: Branding */
+  branding: {
+    gambar: [
+      // 'branding-1.png',
+    ],
+    video: [],
+  },
+
+  /* Folder 04: Poster */
+  poster: {
+    gambar: [
+      // 'poster-1.png',
+    ],
+    video: [],
+  },
+
+  /* Folder 05: Digital Illustration */
+  illustration: {
+    gambar: [
+      // 'illustration-1.png',
+    ],
+    video: [],
+  },
+
+};
+
+</script>
 <script>
 /* =====================================================================
    script.js  —  GERAKAN & INTERAKSI website
@@ -668,6 +766,64 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   new IntersectionObserver(function (e) {            /* hanya jalan saat komputernya terlihat di layar */
     if (e[0].isIntersecting) { last = performance.now(); raf = requestAnimationFrame(frame); } else cancelAnimationFrame(raf);
   }).observe(cv);
+})();
+
+/* ===== 3. Galeri karya: klik folder -> jendela berisi gambar + video TikTok =====
+   Isinya diatur di js/karya.js (bukan di sini). */
+(function () {
+  var DIR = 'images/karya/', data = window.KARYA || {}, tt = window.TIKTOK_AKUN || '#';
+  var folders = document.querySelectorAll('.folder[data-folder]'); if (!folders.length) return;
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]; }); };
+
+  /* gambar pertama tiap folder otomatis jadi sampul folder */
+  folders.forEach(function (f) {
+    var d = data[f.dataset.folder], m = f.querySelector('.f-media');
+    if (d && d.gambar && d.gambar.length && m) m.innerHTML = '<img src="' + DIR + esc(d.gambar[0]) + '" alt="' + esc(f.querySelector('h3').textContent) + '" loading="lazy">';
+  });
+
+  var box = document.createElement('div'); box.className = 'gal'; box.hidden = true; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true');
+  document.body.appendChild(box);
+  var lastFocus = null;
+
+  function videoCard(v) {
+    var id = (String(v).match(/video\/(\d+)/) || [])[1], isTT = /^https?:/i.test(v);
+    var btn = '<a class="gal-btn" href="' + esc(isTT ? v : tt) + '" target="_blank" rel="noopener">Watch on TikTok &nearr;</a>';
+    if (isTT && id) return '<div class="gal-vid"><div class="gal-frame"><iframe src="https://www.tiktok.com/player/v1/' + id + '?rel=0" allow="fullscreen; encrypted-media" loading="lazy" title="TikTok video"></iframe></div>' + btn + '</div>';
+    if (isTT) return '<div class="gal-vid">' + btn + '</div>';                    /* link pendek/tanpa ID: cukup tombol */
+    return '<div class="gal-vid"><div class="gal-frame"><video src="' + DIR + esc(v) + '" controls playsinline preload="metadata"></video></div>' + btn + '</div>';   /* file .mp4 */
+  }
+
+  function open(f) {
+    var d = data[f.dataset.folder] || {}, pics = d.gambar || [], vids = d.video || [];
+    var c1 = f.style.getPropertyValue('--c1'), c2 = f.style.getPropertyValue('--c2'), fg = f.style.getPropertyValue('--fg');
+    var html = '<div class="gal-bg" data-close></div><div class="gal-box"><div class="gal-top" style="background:linear-gradient(135deg,' + c1 + ',' + c2 + ');color:' + fg + '">'
+      + '<div><span class="gal-n">' + esc(f.querySelector('.f-tab').textContent) + '</span><h3>' + f.querySelector('h3').innerHTML + '</h3></div>'
+      + '<a class="gal-btn gal-follow" href="' + esc(tt) + '" target="_blank" rel="noopener">Follow on TikTok &nearr;</a>'
+      + '<button class="gal-x" data-close aria-label="Close">&times;</button></div><div class="gal-body">';
+    if (pics.length) html += '<div class="gal-pics">' + pics.map(function (p) { return '<img src="' + DIR + esc(p) + '" alt="" loading="lazy">'; }).join('') + '</div>';
+    if (vids.length) html += '<h4 class="gal-h">Videos</h4><div class="gal-vids">' + vids.map(videoCard).join('') + '</div>';
+    if (!pics.length && !vids.length) html += '<p class="gal-empty">New work for this folder is coming soon.</p>';
+    box.innerHTML = html + '</div></div><div class="gal-zoom" hidden></div>';
+    lastFocus = document.activeElement; box.hidden = false; document.documentElement.style.overflow = 'hidden';
+    box.querySelector('.gal-x').focus();
+  }
+  function close() {
+    box.hidden = true; box.innerHTML = '';                      /* video ikut berhenti */
+    document.documentElement.style.overflow = ''; if (lastFocus) lastFocus.focus();
+  }
+
+  folders.forEach(function (f) { f.addEventListener('click', function (e) { e.preventDefault(); open(f); }); });
+  box.addEventListener('click', function (e) {
+    var z = box.querySelector('.gal-zoom');
+    if (e.target.closest('.gal-zoom')) { z.hidden = true; z.innerHTML = ''; return; }
+    if (e.target.closest('[data-close]')) return close();
+    var im = e.target.closest('.gal-pics img');                  /* klik gambar = tampil besar */
+    if (im) { z.innerHTML = '<img src="' + im.src + '" alt="">'; z.hidden = false; }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || box.hidden) return;
+    var z = box.querySelector('.gal-zoom'); if (z && !z.hidden) { z.hidden = true; z.innerHTML = ''; } else close();
+  });
 })();
 
 /* ===== 1b. Headline bergerak saat di-scroll: hitung progress 0 sampai 1 ===== */
