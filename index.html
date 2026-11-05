@@ -39,8 +39,8 @@
       <a class="logo" href="#top"><img src="images/logo-mrktk.png" alt="mrktk"></a>
       <ul>
         <li><a href="#resume">Resume</a></li>
-        <li><a href="#work">Work</a></li>
         <li><a href="#about">About</a></li>
+        <li><a href="#work">Work</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -119,6 +119,30 @@
   </div>
 </section>
 
+<section class="sec" id="about">
+  <div class="marquee tape" aria-hidden="true" data-text="About"></div>
+  <div class="wrap">
+    <div class="about" style="margin-top:56px">
+      <div>
+        <h2>About</h2>
+        <!-- GANTI: ceritakan dirimu dengan kata-katamu sendiri -->
+        <p>I'm a graphic designer with about two years of experience, working both freelance and full-time.</p>
+        <p>I love turning ideas into clear, memorable visuals, from a single illustration to a full product line.</p>
+      </div>
+      <div>
+        <h2>Skills</h2>
+        <ul class="skills">
+          <li>Digital illustration</li>
+          <li>Clothing design</li>
+          <li>Merchandise</li>
+          <li>Logo digitization</li>
+          <li>Social media design</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="sec work" id="work">
   <!-- Bagian atas: running text melingkar + komputer yang memainkan Flappy Bird (otomatis, berulang) -->
   <div class="work-hero">
@@ -139,11 +163,10 @@
         3. Hapus baris <span class="ph">
         Warna folder: --c1 dan --c2 (gradien), --fg = warna teks
       -->
-      <a class="folder" href="#" data-folder="merch" style="--i:0; --c1:#FF7A18; --c2:#F22DAA; --fg:#0D0D0E; --fg2:#FFFFFF">
+      <a class="folder" href="#" data-showcase="merch" style="--i:0; --c1:#FF7A18; --c2:#F22DAA; --fg:#0D0D0E; --fg2:#FFFFFF">
         <span class="f-tab">Folder 01</span>
         <div class="f-media">
-          <!-- <img src="images/merch.jpg" alt="Merch &amp; Clothing Design"> -->
-          <span class="ph">Taruh gambar Merch &amp; Clothing Design di sini</span>
+          <img src="images/merch/cover.jpg" alt="Merch &amp; Clothing Design: mrktk streetwear tees" style="object-position:50% 38%">
         </div>
         <div class="f-text">
           <h3>Merch &amp; Clothing Design</h3>
@@ -199,30 +222,17 @@
           <span class="f-btn">Open folder &rarr;</span>
         </div>
       </a>
-    </div>
-  </div>
-</section>
-
-<section class="sec" id="about">
-  <div class="marquee tape" aria-hidden="true" data-text="About"></div>
-  <div class="wrap">
-    <div class="about" style="margin-top:56px">
-      <div>
-        <h2>About</h2>
-        <!-- GANTI: ceritakan dirimu dengan kata-katamu sendiri -->
-        <p>I'm a graphic designer with about two years of experience, working both freelance and full-time.</p>
-        <p>I love turning ideas into clear, memorable visuals, from a single illustration to a full product line.</p>
-      </div>
-      <div>
-        <h2>Skills</h2>
-        <ul class="skills">
-          <li>Digital illustration</li>
-          <li>Clothing design</li>
-          <li>Merchandise</li>
-          <li>Logo digitization</li>
-          <li>Social media design</li>
-        </ul>
-      </div>
+      <a class="folder" href="#" data-folder="content" style="--i:5; --c1:#00D4B8; --c2:#2B45FF; --fg:#FFFFFF; --fg2:#0D0D0E; --tabfg:#0D0D0E">
+        <span class="f-tab">Folder 06</span>
+        <div class="f-media">
+          <span class="ph">Taruh gambar Content Video di sini</span>
+        </div>
+        <div class="f-text">
+          <h3>Content Video</h3>
+          <p>Short-form videos, motion pieces, and content experiments, shared on TikTok.</p>
+          <span class="f-btn">Open folder &rarr;</span>
+        </div>
+      </a>
     </div>
   </div>
 </section>
@@ -244,6 +254,32 @@
 <div class="wrap"><footer>© 2026 Mijil Taji</footer></div>
 
 <!-- GSAP (library animasi, gratis) -->
+<!-- ================= SHOWCASE: Merch & Clothing Design (terbuka saat folder 01 diklik) =================
+     GANTI FOTO: timpa file di folder images/merch/ dengan nama yang sama
+       scene.jpg = foto model, shirt-1.png ... shirt-8.png = tiap desain baju (PNG transparan), logo.png = logo
+     GANTI TEKS: ubah isi data-text di bawah ini (teks yang "diketik") -->
+<div class="sc" id="showcase-merch" role="dialog" aria-modal="true" aria-label="mrktk, Clothing Design" hidden>
+  <button class="sc-x" type="button">&larr; Back to work</button>
+  <div class="sc-stage">
+    <img class="sc-scene" src="images/merch/scene.jpg" alt="Two models wearing mrktk oversized tees">
+    <div class="sc-text">
+      <img class="sc-logo" src="images/merch/logo.png" alt="mrktk">
+      <p class="sc-type" data-text="*mrktk* is a personal clothing design project focused on boxy, oversized streetwear tees. The designs draw inspiration from the raw, unpolished look of bootleg graphics, skater style, and streetwear culture more broadly. Through this project, I explore how to turn these references into relaxed graphics and silhouettes that still carry a distinct character and visual identity of their own.">*mrktk* is a personal clothing design project focused on boxy, oversized streetwear tees. The designs draw inspiration from the raw, unpolished look of bootleg graphics, skater style, and streetwear culture more broadly. Through this project, I explore how to turn these references into relaxed graphics and silhouettes that still carry a distinct character and visual identity of their own.</p>
+      <div class="sc-pills"><span>Clothing Design</span><span>Personal Project</span></div>
+    </div>
+    <div class="sc-shirts">
+        <div class="sf" style="--x:58.82%; --y:19.62%; --w:13.13%; --dx:1.1cqw; --dy:1.6cqw; --fd:9.5s; --wd:8s; --dl:-1.3s; --r:9deg"><img src="images/merch/shirt-1.png" alt="mrktk design 1"></div>
+        <div class="sf" style="--x:72.52%; --y:17.12%; --w:12.85%; --dx:-1.0cqw; --dy:2.0cqw; --fd:11s; --wd:10s; --dl:-4.2s; --r:-11deg"><img src="images/merch/shirt-2.png" alt="mrktk design 2"></div>
+        <div class="sf" style="--x:85.44%; --y:19.75%; --w:13.28%; --dx:1.4cqw; --dy:-1.5cqw; --fd:8.5s; --wd:7s; --dl:-2.6s; --r:8deg"><img src="images/merch/shirt-3.png" alt="mrktk design 3"></div>
+        <div class="sf" style="--x:58.89%; --y:42.50%; --w:13.35%; --dx:-1.2cqw; --dy:-1.8cqw; --fd:10.5s; --wd:9s; --dl:-6.0s; --r:-10deg"><img src="images/merch/shirt-4.png" alt="mrktk design 4"></div>
+        <div class="sf" style="--x:72.52%; --y:42.50%; --w:12.85%; --dx:0.9cqw; --dy:2.2cqw; --fd:9s; --wd:8s; --dl:-0.6s; --r:12deg"><img src="images/merch/shirt-5.png" alt="mrktk design 5"></div>
+        <div class="sf" style="--x:85.65%; --y:42.62%; --w:13.13%; --dx:-1.4cqw; --dy:1.4cqw; --fd:12s; --wd:11s; --dl:-7.5s; --r:-8deg"><img src="images/merch/shirt-6.png" alt="mrktk design 6"></div>
+        <div class="sf" style="--x:65.45%; --y:65.25%; --w:13.20%; --dx:1.2cqw; --dy:-2.0cqw; --fd:8s; --wd:7s; --dl:-3.4s; --r:10deg"><img src="images/merch/shirt-7.png" alt="mrktk design 7"></div>
+        <div class="sf" style="--x:78.73%; --y:65.50%; --w:13.49%; --dx:-0.8cqw; --dy:1.8cqw; --fd:10s; --wd:9s; --dl:-5.1s; --r:-12deg"><img src="images/merch/shirt-8.png" alt="mrktk design 8"></div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="js/karya.js"></script>
 <script src="js/script.js"></script>

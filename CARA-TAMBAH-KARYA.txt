@@ -1,9 +1,28 @@
 CARA MENAMBAH KARYA KE WEBSITE (tanpa coding)
 =============================================
 
+FOLDER 01 "Merch & Clothing Design"  ->  punya halaman showcase sendiri
+-----------------------------------------------------------------------
+Semua gambarnya ada di folder  images/merch/  :
+   cover.jpg      = cover di kartu folder
+   scene.jpg      = foto model di halaman showcase (latar sudah bersih tanpa teks)
+   logo.png       = logo "M" di kiri atas
+   shirt-1.png ... shirt-8.png = tiap desain baju (PNG transparan, yang melayang)
+Untuk mengganti: upload file baru dengan NAMA YANG SAMA ke folder itu di GitHub
+(Add file -> Upload files). File lama otomatis tertimpa.
+Tip: kalau punya file desain baju yang lebih tajam (PNG transparan), pakai itu
+supaya hasilnya lebih jelas.
+
+Mengubah teks deskripsi yang "diketik": buka index.html di GitHub (ikon pensil),
+cari tulisan  data-text=  lalu ubah kalimatnya. Ubah juga kalimat yang sama
+persis di dalam tag <p class="sc-type" ...> di sebelahnya.
+
+
+FOLDER 02 - 06 (Social Media, Branding, Poster, Digital Illustration, Content Video)
+-----------------------------------------------------------------------------------
 A. SIAPKAN FILE
    - Gambar: simpan sebagai PNG (atau JPG). Beri nama TANPA spasi, huruf kecil,
-     misalnya: merch-1.png, poster-2.png.
+     misalnya: poster-1.png.
    - Supaya website cepat, kecilkan dulu ukurannya (lebar sekitar 1600 px,
      ukuran file di bawah 1 MB). Bisa pakai squoosh.app (gratis, lewat browser).
 
@@ -16,12 +35,13 @@ B. UPLOAD GAMBAR KE GITHUB
 C. DAFTARKAN DI js/karya.js
    1. Di repository, buka folder  js  lalu klik file  karya.js
    2. Klik ikon pensil (Edit this file)
-   3. Cari folder yang sesuai, misalnya  merch  lalu tulis nama filenya:
+   3. Cari folder yang sesuai, misalnya  poster  lalu tulis nama filenya:
           gambar: [
-            'merch-1.png',
-            'merch-2.png',
+            'poster-1.png',
+            'poster-2.png',
           ],
-      (nama harus sama persis dengan file yang di-upload)
+      (nama harus sama persis dengan file yang di-upload;
+       gambar PALING ATAS otomatis jadi cover folder)
    4. Untuk video TikTok, tempel linknya di bagian  video:
           video: [
             'https://www.tiktok.com/@usernamekamu/video/1234567890123456789',
@@ -29,12 +49,13 @@ C. DAFTARKAN DI js/karya.js
       Cara dapat link: buka videonya di TikTok lewat browser (tiktok.com),
       lalu salin link dari address bar. Pakai link PANJANG yang ada tulisan
       "/video/angka", bukan link pendek (vm.tiktok.com).
+      Video paling cocok ditaruh di folder 06 "Content Video".
    5. GANTI juga baris TIKTOK_AKUN di bagian paling atas dengan link
       profil TikTok-mu.
    6. Klik  Commit changes. Tunggu 1-2 menit, lalu refresh websitemu.
 
 HASILNYA
    - Klik folder di website -> terbuka jendela berisi gambar dan video.
-   - Gambar pertama otomatis jadi sampul folder.
-   - Setiap video punya tombol "Watch on TikTok", dan ada tombol
-     "Follow on TikTok" yang membuka akun TikTok-mu.
+   - Setiap video punya tombol "Watch on TikTok" yang membuka videonya.
+   - Di folder "Content Video" ada juga tombol "Follow on TikTok"
+     yang membuka akun TikTok-mu.

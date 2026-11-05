@@ -160,7 +160,7 @@ document.querySelectorAll('.marquee').forEach(function (el) {
     var c1 = f.style.getPropertyValue('--c1'), c2 = f.style.getPropertyValue('--c2'), fg = f.style.getPropertyValue('--fg');
     var html = '<div class="gal-bg" data-close></div><div class="gal-box"><div class="gal-top" style="background:linear-gradient(135deg,' + c1 + ',' + c2 + ');color:' + fg + '">'
       + '<div><span class="gal-n">' + esc(f.querySelector('.f-tab').textContent) + '</span><h3>' + f.querySelector('h3').innerHTML + '</h3></div>'
-      + '<a class="gal-btn gal-follow" href="' + esc(tt) + '" target="_blank" rel="noopener">Follow on TikTok &nearr;</a>'
+      + (f.dataset.folder === 'content' ? '<a class="gal-btn gal-follow" href="' + esc(tt) + '" target="_blank" rel="noopener">Follow on TikTok &nearr;</a>' : '')
       + '<button class="gal-x" data-close aria-label="Close">&times;</button></div><div class="gal-body">';
     if (pics.length) html += '<div class="gal-pics">' + pics.map(function (p) { return '<img src="' + DIR + esc(p) + '" alt="" loading="lazy">'; }).join('') + '</div>';
     if (vids.length) html += '<h4 class="gal-h">Videos</h4><div class="gal-vids">' + vids.map(videoCard).join('') + '</div>';
@@ -186,6 +186,41 @@ document.querySelectorAll('.marquee').forEach(function (el) {
     if (e.key !== 'Escape' || box.hidden) return;
     var z = box.querySelector('.gal-zoom'); if (z && !z.hidden) { z.hidden = true; z.innerHTML = ''; } else close();
   });
+})();
+
+/* ===== 3b. Halaman showcase untuk folder "Merch & Clothing Design": teks diketik + baju melayang ===== */
+(function () {
+  var sc = document.getElementById('showcase-merch'), trig = document.querySelector('.folder[data-showcase="merch"]');
+  if (!sc || !trig) return;
+  var typ = sc.querySelector('.sc-type'), full = typ.dataset.text || typ.textContent, back = sc.querySelector('.sc-x');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches, timer = 0, lastFocus = null, TYPE_MS = 15;   /* TYPE_MS = kecepatan mengetik (makin kecil makin cepat) */
+  typ.innerHTML = '<span class="ghost"></span><span class="live"></span>';          /* "ghost" menahan tinggi paragraf supaya tidak loncat saat mengetik */
+  var ghost = typ.firstChild, live = typ.lastChild; ghost.textContent = full;
+
+  function typeText() {
+    clearTimeout(timer); sc.classList.remove('typed'); typ.classList.remove('typing'); live.textContent = '';
+    if (reduce) { live.textContent = full; sc.classList.add('typed'); return; }
+    var i = 0; typ.classList.add('typing');
+    timer = setTimeout(function step() {
+      i += 1; live.textContent = full.slice(0, i);
+      if (i < full.length) timer = setTimeout(step, TYPE_MS + (/[.,]/.test(full[i - 1]) ? 140 : 0));
+      else { typ.classList.remove('typing'); sc.classList.add('typed'); }
+    }, 650);
+  }
+  function open(push) {
+    lastFocus = document.activeElement; sc.hidden = false; sc.scrollTop = 0; document.documentElement.style.overflow = 'hidden';
+    typeText(); back.focus({ preventScroll: true });
+    if (push) { try { history.pushState({ sc: 1 }, '', '#merch'); } catch (e) {} }
+  }
+  function close(pop) {
+    clearTimeout(timer); sc.hidden = true; document.documentElement.style.overflow = '';
+    if (lastFocus) lastFocus.focus({ preventScroll: true });
+    if (!pop && location.hash === '#merch') { try { history.back(); } catch (e) {} }
+  }
+  trig.addEventListener('click', function (e) { e.preventDefault(); open(true); });
+  back.addEventListener('click', function () { close(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !sc.hidden) close(false); });
+  window.addEventListener('popstate', function () { if (!sc.hidden && location.hash !== '#merch') close(true); });
 })();
 
 /* ===== 1b. Headline bergerak saat di-scroll: hitung progress 0 sampai 1 ===== */
