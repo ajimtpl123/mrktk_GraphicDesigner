@@ -22,8 +22,8 @@ var KARYA = {
   /* Folder 01: Merch & Clothing Design */
   merch: {
     gambar: [
-      // 'merch-1.png',
-      // 'merch-2.png',
+      // 'Cover Merch.png',
+      // 'clothing design.jpg',
     ],
     video: [
       // 'https://www.tiktok.com/@usernamekamu/video/1234567890123456789',
