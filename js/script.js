@@ -1,7 +1,7 @@
 /* =====================================================================
    script.js  —  GERAKAN & INTERAKSI website
    Isinya: running text, headline yang bergerak saat scroll, posisi "© 2026",
-   dan kursor tangan api. Dipanggil dari index.html di paling bawah:
+   dan kursor panah 3D glossy. Dipanggil dari index.html di paling bawah:
    <script src="js/script.js"></script>
    Script ini mencari elemen di index.html lewat nama class-nya
    (misalnya .marquee, .hero2, .l1), jadi kalau nama class di HTML diubah,
@@ -22,6 +22,113 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   // dua kelompok identik supaya putarannya mulus tanpa putus
   el.innerHTML = '<div class="track"><div class="group">' + group + '</div><div class="group">' + group + '</div></div>';
 });
+
+/* ===== 2. Running text MELENGKUNG: teks berjalan mengikuti garis lengkung (SVG textPath) =====
+   data-curve di index.html memilih bentuk garis. Mau ubah bentuk? Ubah "d" (garis) atau "size" (ukuran huruf),
+   "speed" (kecepatan), dan "dir" (-1 = jalan ke kiri, 1 = ke kanan) di bawah ini. */
+(function () {
+  var NS = 'http://www.w3.org/2000/svg', XL = 'http://www.w3.org/1999/xlink';
+  var CURVES = {
+    arch:  { vb: '0 -30 1440 270', size: 92, speed: 90,  dir: -1, d: 'M -60 200 Q 720 -40 1500 200' },
+    wave:  { vb: '0 -40 1440 260', size: 84, speed: 80,  dir: 1,  d: 'M -60 110 C 200 -30 460 -30 720 100 S 1240 230 1500 90' },
+    swirl: { vb: '0 -90 1200 640', size: 58, speed: 110, dir: 1,  d: 'M -80 440 C 250 540 520 520 760 440 C 1000 360 1160 300 1130 160 C 1100 20 960 -60 840 -40 C 700 -20 620 120 680 250 C 740 380 960 400 1100 380 C 1230 360 1300 330 1360 290' }
+  };
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches, items = [];
+  document.querySelectorAll('.cmq').forEach(function (el, n) {
+    var c = CURVES[el.dataset.curve] || CURVES.arch, id = 'cmqp' + n;
+    var svg = document.createElementNS(NS, 'svg'), path = document.createElementNS(NS, 'path');
+    var text = document.createElementNS(NS, 'text'), tp = document.createElementNS(NS, 'textPath');
+    svg.setAttribute('viewBox', c.vb); path.setAttribute('id', id); path.setAttribute('d', c.d); path.setAttribute('fill', 'none');
+    text.setAttribute('font-size', c.size); tp.setAttribute('href', '#' + id); tp.setAttributeNS(XL, 'xlink:href', '#' + id);
+    text.appendChild(tp); svg.appendChild(path); svg.appendChild(text); el.appendChild(svg);
+    var it = { el: el, tp: tp, c: c, on: true, L: 0, unit: '<tspan>' + el.dataset.text + ' </tspan><tspan class="st">\u2726 </tspan>' };
+    items.push(it);
+    var setup = function () {
+      var m = document.createElementNS(NS, 'text'); m.setAttribute('font-size', c.size); m.innerHTML = it.unit; svg.appendChild(m);
+      it.L = m.getComputedTextLength() || 400; svg.removeChild(m);
+      var reps = Math.ceil(path.getTotalLength() / it.L) + 2, s = '';
+      for (var i = 0; i < reps; i++) s += it.unit;
+      tp.innerHTML = s; tp.setAttribute('startOffset', c.dir < 0 ? 0 : -it.L);
+    };
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(setup); else setup();
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { it.on = e[0].isIntersecting; }).observe(el);
+  });
+  if (!still && items.length) requestAnimationFrame(function tick(t) {
+    items.forEach(function (it) {
+      if (!it.on || !it.L) return;
+      var k = (t / 1000 * it.c.speed) % it.L;
+      it.tp.setAttribute('startOffset', (it.c.dir < 0 ? -k : k - it.L).toFixed(1));
+    });
+    requestAnimationFrame(tick);
+  });
+})();
+
+/* ===== 2b. Angka pengalaman menghitung naik saat terlihat ===== */
+(function () {
+  var els = document.querySelectorAll('.stat b'); if (!els.length || !('IntersectionObserver' in window)) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  els.forEach(function (b) { b.firstChild.textContent = '0'; });
+  var io = new IntersectionObserver(function (en) {
+    en.forEach(function (e) {
+      if (!e.isIntersecting) return; io.unobserve(e.target);
+      var b = e.target, to = +b.dataset.to, t0 = performance.now();
+      requestAnimationFrame(function f(t) {
+        var p = Math.min(1, (t - t0) / 1200);
+        b.firstChild.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(f);
+      });
+    });
+  }, { threshold: .6 });
+  els.forEach(function (b) { io.observe(b); });
+})();
+
+/* ===== 2c. Komputer di section Work: Flappy Bird main sendiri tanpa henti (loop) ===== */
+(function () {
+  var cv = document.getElementById('flappy'); if (!cv) return;
+  var W = 240, H = 180, GY = 156, BX = 62, R = 8, GAP = 70, PW = 30, SP = 62, GR = 900, FL = -255, SPC = 118;
+  cv.width = W; cv.height = H;
+  var x = cv.getContext('2d'), bird, pipes, score, lastC, wing = 0, last = 0, raf = 0;
+  function mk(px) { lastC = Math.max(GAP / 2 + 16, Math.min(GY - GAP / 2 - 16, lastC + Math.random() * 64 - 32)); return { x: px, c: lastC, s: false }; }
+  function reset() { bird = { y: 78, v: 0 }; score = 0; lastC = 80; pipes = []; for (var i = 0; i < 4; i++) pipes.push(mk(170 + i * SPC)); }
+  function step(dt) {
+    var p = null, i;
+    for (i = 0; i < pipes.length; i++) if (pipes[i].x + PW > BX - R - 2) { p = pipes[i]; break; }
+    if (p && bird.y > p.c + 18 && bird.v >= 0) { bird.v = FL; wing = .18; }   /* "pemain" menekan tombol lompat */
+    bird.v += GR * dt; bird.y += bird.v * dt; wing = Math.max(0, wing - dt);
+    var hit = bird.y + R > GY || bird.y - R < 0;
+    pipes.forEach(function (q) {
+      q.x -= SP * dt;
+      if (!q.s && q.x + PW < BX) { q.s = true; score = (score + 1) % 100; }
+      if (BX + R > q.x && BX - R < q.x + PW && (bird.y - R < q.c - GAP / 2 || bird.y + R > q.c + GAP / 2)) hit = true;
+    });
+    if (pipes[0].x + PW < -4) { pipes.shift(); pipes.push(mk(pipes[pipes.length - 1].x + SPC)); }
+    if (hit) reset();                                                          /* kalau menabrak, mulai lagi: loop */
+  }
+  function draw() {
+    var g = x.createLinearGradient(0, 0, 0, GY); g.addColorStop(0, '#14143c'); g.addColorStop(1, '#3b2d8f');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    pipes.forEach(function (q) {
+      var t = q.c - GAP / 2, b = q.c + GAP / 2;
+      x.fillStyle = '#C6FF3D'; x.fillRect(q.x, 0, PW, t); x.fillRect(q.x, b, PW, GY - b);
+      x.fillStyle = 'rgba(0,0,0,.18)'; x.fillRect(q.x + PW - 6, 0, 6, t); x.fillRect(q.x + PW - 6, b, 6, GY - b);
+      x.fillStyle = '#00D4B8'; x.fillRect(q.x - 3, t - 10, PW + 6, 10); x.fillRect(q.x - 3, b, PW + 6, 10);
+    });
+    x.fillStyle = '#FF7A18'; x.fillRect(0, GY, W, H - GY); x.fillStyle = '#FFD60A'; x.fillRect(0, GY, W, 4);
+    x.save(); x.translate(BX, Math.round(bird.y)); x.rotate(Math.max(-.5, Math.min(.9, bird.v / 420)));
+    x.fillStyle = '#FFD60A'; x.beginPath(); x.arc(0, 0, R, 0, 7); x.fill();
+    x.fillStyle = '#FF4D00'; x.fillRect(-6, wing > 0 ? -5 : 0, 8, 5); x.fillRect(R - 2, 0, 7, 4);
+    x.fillStyle = '#fff'; x.beginPath(); x.arc(3, -3, 3, 0, 7); x.fill();
+    x.fillStyle = '#0D0D0E'; x.beginPath(); x.arc(4, -3, 1.5, 0, 7); x.fill();
+    x.restore();
+    x.fillStyle = '#fff'; x.font = 'bold 22px monospace'; x.textAlign = 'center'; x.fillText(score, W / 2, 30);
+  }
+  function frame(t) { var dt = Math.min(.034, (t - last) / 1000 || .016); last = t; step(dt); draw(); raf = requestAnimationFrame(frame); }
+  reset(); draw();
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(function (e) {            /* hanya jalan saat komputernya terlihat di layar */
+    if (e[0].isIntersecting) { last = performance.now(); raf = requestAnimationFrame(frame); } else cancelAnimationFrame(raf);
+  }).observe(cv);
+})();
 
 /* ===== 1b. Headline bergerak saat di-scroll: hitung progress 0 sampai 1 ===== */
 var hero = document.querySelector('.hero2');
@@ -55,7 +162,7 @@ window.addEventListener('resize', alignYear);
 var TEXT_INTRO = true;    /* true = headline muncul dengan efek huruf berputar saat halaman dibuka */
 var IDLE_GLITCH = true;   /* true = sesekali huruf "i" berubah sebentar jadi "!" */
 var WELCOME_FLIP = true;      /* true = huruf pada kata "welcome" terbalik-balik, berulang-ulang */
-var PORTFOLIO_COLOR = true;   /* true = warna biru & pink menjalar pada kata "portfolio", berulang-ulang */
+var PORTFOLIO_COLOR = false;  /* true = warna biru & pink menjalar pada kata "portfolio", berulang-ulang */
 var COLOR_BLUE = '#0436C8';   /* warna yang menjalar dari kiri ke kanan */
 var COLOR_PINK = '#F22DAA';   /* warna yang menjalar dari kanan ke kiri */
 (function () {
@@ -203,192 +310,149 @@ var COLOR_PINK = '#F22DAA';   /* warna yang menjalar dari kanan ke kiri */
   (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(start);
 })();
 
-/* ===== 2. Efek kursor (hanya untuk perangkat dengan mouse) ===== */
+/* ===== 2. Efek kursor (hanya untuk perangkat dengan mouse) =====
+   Kursor panah 3D glossy yang berputar terbalik seperti kata "welcome", dengan debu/asap berwarna di belakangnya. */
 var hasMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 if (hasMouse) {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  /* ===== KURSOR TANGAN API ===== */
-  var HAND_SRC = 'images/hand-fire.webp';  /* gambar kursor tangan api (ada di folder images) */
-  var HAND_W = 28;                                    /* lebar kursor (px). Kursor biasa sekitar 28-32px. Cukup ubah angka ini saja */
-  var HAND_H = Math.round(HAND_W * 1.592);            /* tinggi dihitung otomatis dari lebar */
-  var TIP_X = Math.round(HAND_W * 0.346), TIP_Y = 0;  /* ujung jari telunjuk = titik klik (dihitung otomatis) */
-  var K = HAND_W / 60;                                /* faktor skala untuk gelombang api */
-  function nf(v) { return (v * 60 / HAND_W).toFixed(3); } /* frekuensi gelombang menyesuaikan ukuran kursor */
-  var PAINT_TRAIL = false;        /* true = munculkan juga goresan cat biru di belakang kursor */
+  var ARROW_SIZE = 38;        /* ukuran kursor (px). Cukup ubah angka ini saja */
+  var ARROW_FLIP = true;      /* true = kursor berputar terbalik berulang-ulang, seperti huruf pada kata "welcome" */
+  var SWAY = 0.01;            /* seberapa miring kursor saat digeser */
+  var DUST_AMOUNT = 1;        /* banyaknya debu/asap: 0 = mati, 1 = normal, 2 = lebat */
+  /* warna debu = palet web ini: oranye, pink, biru, ungu, lime, tosca, kuning, merah aksen */
+  var DUST_COLORS = ['255,122,24', '242,45,170', '43,69,255', '177,76,255', '198,255,61', '0,212,184', '255,214,10', '255,82,82'];
+  var TIP = Math.round(ARROW_SIZE * 0.06);   /* ujung panah (kiri atas) = titik klik */
 
-  /* filter SVG yang membuat api bergelombang. Besar gelombangnya (scale) dinaikkan saat kursor bergerak cepat */
-  document.body.insertAdjacentHTML('beforeend',
-    '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="flameWave" x="-25%" y="-25%" width="150%" height="150%">'
-    + '<feTurbulence type="fractalNoise" baseFrequency="' + nf(.02) + ' ' + nf(.05) + '" numOctaves="2" seed="4" result="n">'
-    + '<animate attributeName="baseFrequency" dur="2.4s" values="' + nf(.02) + ' ' + nf(.05) + ';' + nf(.03) + ' ' + nf(.085) + ';' + nf(.02) + ' ' + nf(.05) + '" repeatCount="indefinite"/></feTurbulence>'
-    + '<feDisplacementMap id="flameDisp" in="SourceGraphic" in2="n" scale="' + (4 * K).toFixed(1) + '" xChannelSelector="R" yChannelSelector="G"/></filter></svg>');
-  var dispMap = document.getElementById('flameDisp');
+  /* ----- Bentuk panah: gradien warna aksen, sisi tebal (3D), kilau putih, dan cahaya tepi ungu ----- */
+  var PD = 'M38.0 65.5Q24 28 61.6 41.5L454.4 182.5Q492 196 455.2 211.7L298.9 278.5Q286 284 280.4 296.8L212.0 453.3Q196 490 182.0 452.5L38.0 65.5Z';
+  var ARROW_SVG = '<svg viewBox="0 0 512 512" width="' + ARROW_SIZE + '" height="' + ARROW_SIZE + '" aria-hidden="true"><defs>'
+    + '<linearGradient id="caBase" x1=".05" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#FFC09A"/><stop offset=".4" stop-color="#FF5A4F"/><stop offset="1" stop-color="#F22DAA"/></linearGradient>'
+    + '<linearGradient id="caSide" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C21E4B"/><stop offset="1" stop-color="#5E0E58"/></linearGradient>'
+    + '<linearGradient id="caShine" x1="0" y1="0" x2=".55" y2=".9"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".55" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>'
+    + '<radialGradient id="caRim" cx=".82" cy=".9" r=".55"><stop offset="0" stop-color="#B14CFF" stop-opacity=".85"/><stop offset="1" stop-color="#B14CFF" stop-opacity="0"/></radialGradient>'
+    + '<filter id="caBlur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter>'
+    + '<clipPath id="caClip"><path d="' + PD + '"/></clipPath></defs>'
+    + '<path d="' + PD + '" transform="translate(26 32)" fill="url(#caSide)"/>'      /* sisi tebal: beberapa salinan bergeser = efek 3D */
+    + '<path d="' + PD + '" transform="translate(18 22)" fill="url(#caSide)"/>'
+    + '<path d="' + PD + '" transform="translate(9 11)" fill="url(#caSide)"/>'
+    + '<path d="' + PD + '" fill="url(#caBase)"/>'
+    + '<g clip-path="url(#caClip)">'
+    + '<rect width="512" height="512" fill="url(#caRim)"/>'
+    + '<ellipse cx="190" cy="120" rx="230" ry="62" transform="rotate(24 190 120)" fill="url(#caShine)"/>'      /* kilau besar mengilap */
+    + '<circle cx="82" cy="86" r="26" fill="#fff" opacity=".9" filter="url(#caBlur)"/>'                      /* titik pantulan terang di ujung */
+    + '<path d="' + PD + '" fill="none" stroke="url(#caShine)" stroke-width="14"/>'                           /* garis cahaya di tepi */
+    + '</g></svg>';
 
-  var hand = document.createElement('div'); hand.className = 'hand';
-  var inner = document.createElement('div'); inner.className = 'hand-in';
-  inner.style.cssText = 'width:' + HAND_W + 'px;height:' + HAND_H + 'px;margin:' + (-TIP_Y) + 'px 0 0 ' + (-TIP_X) + 'px;transform-origin:' + TIP_X + 'px ' + TIP_Y + 'px';
-  ['h-top', 'h-fire'].forEach(function (c) {
-    var im = new Image(); im.className = c; im.alt = ''; im.src = HAND_SRC; inner.appendChild(im);
-  });
-  hand.appendChild(inner);
+  var arrow = document.createElement('div'); arrow.className = 'arrow';
+  var sway = document.createElement('div'); sway.className = 'arrow-in';
+  var flip = document.createElement('div'); flip.className = 'arrow-3d';
+  var org = TIP + 'px ' + TIP + 'px';
+  sway.style.cssText = 'width:' + ARROW_SIZE + 'px;height:' + ARROW_SIZE + 'px;margin:' + (-TIP) + 'px 0 0 ' + (-TIP) + 'px;transform-origin:' + org;
+  flip.style.transformOrigin = org; flip.innerHTML = ARROW_SVG;
+  sway.appendChild(flip); arrow.appendChild(sway);
   var ring = document.createElement('div'); ring.className = 'ring'; ring.textContent = 'View';
-  var fireCv = document.createElement('canvas'); fireCv.className = 'fire';
-  var fctx = fireCv.getContext('2d');
-  document.body.append(fireCv, ring, hand);
+  var dustCv = document.createElement('canvas'); dustCv.className = 'dust';
+  var dctx = dustCv.getContext('2d');
+  document.body.append(dustCv, ring, arrow);
   document.documentElement.classList.add('has-cursor');
 
-  /* ----- Api: lidah api panas (putih-kuning di inti, merah di ujung), bunga api, dan cahaya hangat ----- */
-  var FIRE_COLORS = ['255,255,225', '255,235,130', '255,190,60', '255,130,25', '235,70,12', '170,30,10', '90,15,8']; /* dari paling panas ke paling dingin */
-  var sprites = FIRE_COLORS.map(function (c) {
+  /* ----- Putar terbalik seperti "welcome": 0 -> 180 (ditahan sebentar) -> 360, lalu istirahat. Berputar pada sumbu tengah panah, ujungnya tetap di titik klik ----- */
+  var shown = false;
+  async function arrowFlip() {
+    var E = 'cubic-bezier(.65,0,.35,1)', A = 'rotate(44deg) perspective(500px) rotateX(', Z = 'deg) rotate(-44deg)';
+    var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+    while (true) {
+      if (!shown) { await sleep(300); continue; }
+      await flip.animate([
+        { transform: A + '0' + Z, easing: E },
+        { transform: A + '180' + Z, offset: .38, easing: 'linear' },
+        { transform: A + '180' + Z, offset: .62, easing: E },
+        { transform: A + '360' + Z }
+      ], { duration: 1500 }).finished.catch(function () {});
+      await sleep(1400);
+    }
+  }
+  if (ARROW_FLIP && !reduce && flip.animate) arrowFlip();
+
+  /* ----- Debu & asap berwarna: muncul di belakang kursor saat digerakkan ----- */
+  var sprites = DUST_COLORS.map(function (c) {
     var cv = document.createElement('canvas'); cv.width = cv.height = 64;
     var g = cv.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-    gr.addColorStop(0, 'rgba(' + c + ',1)'); gr.addColorStop(.35, 'rgba(' + c + ',.6)'); gr.addColorStop(1, 'rgba(' + c + ',0)');
+    gr.addColorStop(0, 'rgba(' + c + ',1)'); gr.addColorStop(.4, 'rgba(' + c + ',.5)'); gr.addColorStop(1, 'rgba(' + c + ',0)');
     g.fillStyle = gr; g.fillRect(0, 0, 64, 64); return cv;
   });
-  var FIRE_RATE = 140;    /* jumlah lidah api per detik saat kursor diam */
-  var FIRE_SIZE = 1.4;    /* ukuran api: 1 kecil, 2 besar */
-  var FIRE_RISE = 1;      /* tinggi kobaran: 0.6 pendek, 1.6 tinggi */
-  var EMBERS = 0.1;       /* proporsi bunga api (percikan kecil yang terang dan beterbangan) */
-  var GLOW = 0.3;         /* kekuatan cahaya hangat di sekeliling tangan (0 = mati) */
-  var WIND = 0.35;        /* seberapa kuat api tertiup saat kursor digeser (0 = tidak tertiup) */
-  var SWAY = 0.012;       /* seberapa miring tangan saat kursor digeser */
-  var parts = [], acc = 0, ex = 0, ey = 0;   /* ex, ey = pusat api pada tangan */
+  var parts = [], acc = 0, ci = 0;
+  var x = 0, y = 0, rx = 0, ry = 0, lastX = 0, lastY = 0, svx = 0, svy = 0, ang = 0, lastT = performance.now();
 
-  var x = 0, y = 0, rx = 0, ry = 0, shown = false;
-  var lastX = 0, lastY = 0, svx = 0, svy = 0, ang = 0, lastT = performance.now(), lastScale = 4 * K;
-
-  function fitCanvas(c, g) {
+  function fitCanvas() {
     var d = window.devicePixelRatio || 1;
-    c.width = innerWidth * d; c.height = innerHeight * d; g.setTransform(d, 0, 0, d, 0, 0);
+    dustCv.width = innerWidth * d; dustCv.height = innerHeight * d; dctx.setTransform(d, 0, 0, d, 0, 0);
   }
-  fitCanvas(fireCv, fctx);
+  fitCanvas();
+  window.addEventListener('resize', fitCanvas);
 
-  function handPoint(fx, fy) { /* titik pada tangan (pecahan lebar/tinggi), ikut miring mengikuti sudut tangan */
-    var ox = fx * HAND_W - TIP_X, oy = fy * HAND_H - TIP_Y, a = ang * Math.PI / 180;
-    return { x: x + ox * Math.cos(a) - oy * Math.sin(a), y: y + ox * Math.sin(a) + oy * Math.cos(a) };
-  }
-  function spawn() {
-    var e = Math.random() < EMBERS;                                  /* bunga api atau lidah api */
-    var pt = handPoint(.2 + Math.random() * .72, .55 + Math.random() * .4);
+  function spawn(px, py) {
+    var smoke = Math.random() < .68;                    /* asap lembut besar, atau butiran debu kecil */
+    ci = (ci + 1 + Math.floor(Math.random() * 3)) % DUST_COLORS.length;
     parts.push({
-      e: e, x: pt.x, y: pt.y, age: 0, seed: Math.random() * 6.28,
-      life: e ? .9 + Math.random() * .9 : .5 + Math.random() * .5,
-      vx: (Math.random() - .5) * (e ? 70 : 28),
-      vy: -(e ? 70 + Math.random() * 90 : 45 + Math.random() * 65) * FIRE_RISE,
-      size: e ? 1 + Math.random() * 1.3 : (2.4 + Math.random() * 3.8) * FIRE_SIZE
+      s: smoke, c: ci, x: px + (Math.random() - .5) * 8, y: py + (Math.random() - .5) * 8, age: 0, seed: Math.random() * 6.28,
+      life: smoke ? .9 + Math.random() * .9 : .5 + Math.random() * .7,
+      vx: (Math.random() - .5) * 40 - svx * .03, vy: (Math.random() - .5) * 40 - 14 - svy * .03,
+      size: smoke ? 7 + Math.random() * 9 : 1.2 + Math.random() * 1.8
     });
   }
-
-  /* ----- Goresan cat biru (opsional, mati secara bawaan) ----- */
-  var pctx = null, pcv;
-  var COLOR = '#2B45FF', BRUSH_MAX = 14, BRUSH_MIN = 3, SMOOTH = 0.35, SOFT = 3, FADE = 0.035;
-  var sx = 0, sy = 0, px = null, py = null, mx0 = 0, my0 = 0, bw = BRUSH_MAX;
-  if (PAINT_TRAIL) {
-    pcv = document.createElement('canvas'); pcv.className = 'paint'; document.body.append(pcv);
-    pctx = pcv.getContext('2d'); fitCanvas(pcv, pctx);
-  }
-  function paintStep() {
-    if (!shown || reduce) return;
-    if (px === null) { sx = px = mx0 = x; sy = py = my0 = y; return; }
-    sx += (x - sx) * SMOOTH; sy += (y - sy) * SMOOTH;
-    var d = Math.hypot(sx - px, sy - py);
-    if (d < 0.4) return;
-    bw += (Math.max(BRUSH_MIN, BRUSH_MAX - d * 0.5) - bw) * 0.25;
-    var mx = (px + sx) / 2, my = (py + sy) / 2;
-    pctx.strokeStyle = COLOR; pctx.shadowColor = COLOR; pctx.shadowBlur = SOFT;
-    pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.lineWidth = bw;
-    pctx.beginPath(); pctx.moveTo(mx0, my0); pctx.quadraticCurveTo(px, py, mx, my); pctx.stroke();
-    mx0 = mx; my0 = my; px = sx; py = sy;
-  }
-
-  window.addEventListener('resize', function () { fitCanvas(fireCv, fctx); if (pctx) fitCanvas(pcv, pctx); });
 
   window.addEventListener('mousemove', function (e) {
     x = e.clientX; y = e.clientY;
     if (!shown) { lastX = x; lastY = y; rx = x; ry = y; }
     shown = true;
-    hand.style.transform = 'translate(' + x + 'px,' + y + 'px)';
-    hand.classList.add('show'); ring.classList.add('show');
+    arrow.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+    arrow.classList.add('show'); ring.classList.add('show');
   });
   document.addEventListener('mouseleave', function () {
-    hand.classList.remove('show'); ring.classList.remove('show'); px = null; shown = false;
+    arrow.classList.remove('show'); ring.classList.remove('show'); shown = false;
   });
 
   /* ----- Loop animasi: dijalankan setiap frame ----- */
+  var prevX = 0, prevY = 0;
   (function frame(now) {
     var dt = Math.min(.05, Math.max(.001, (now - lastT) / 1000)); lastT = now;
-
-    /* kecepatan kursor (dihaluskan) */
     svx += ((x - lastX) / dt - svx) * .25; svy += ((y - lastY) / dt - svy) * .25;
-    lastX = x; lastY = y;
+    var segX0 = lastX, segY0 = lastY; lastX = x; lastY = y;
     var speed = Math.hypot(svx, svy);
 
     rx += (x - rx) * (reduce ? 1 : 0.18); ry += (y - ry) * (reduce ? 1 : 0.18);
     ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px)';
 
-    fctx.clearRect(0, 0, innerWidth, innerHeight);
-
     if (!reduce) {
-      /* tangan miring melawan arah gerak, api makin bergelombang kalau kursor cepat */
-      ang += (Math.max(-30, Math.min(30, svx * SWAY)) - ang) * .14;
-      var flutter = Math.sin(now / 90) * Math.min(3, speed / 400);
-      inner.style.transform = 'rotate(' + (ang + flutter).toFixed(2) + 'deg)';
-      var sc = (4 + Math.min(speed, 2500) * .005) * K;
-      if (Math.abs(sc - lastScale) > .1) { dispMap.setAttribute('scale', sc.toFixed(2)); lastScale = sc; }
+      ang += (Math.max(-18, Math.min(18, svx * SWAY)) - ang) * .14;       /* panah miring sedikit mengikuti arah gerak */
+      sway.style.transform = 'rotate(' + ang.toFixed(2) + 'deg)';
 
-      var c = handPoint(.55, .78); ex = c.x; ey = c.y;   /* pusat api */
-
-      /* lahirkan lidah api & bunga api baru; jumlahnya berdenyut sedikit supaya nyalanya hidup */
-      if (shown) {
-        acc += (FIRE_RATE + Math.min(speed, 2000) * .1) * (1 + .25 * Math.sin(now / 80) + .15 * Math.sin(now / 37)) * dt;
-        while (acc >= 1 && parts.length < 520) { spawn(); acc -= 1; }
-        acc = Math.min(acc, 4);
+      dctx.clearRect(0, 0, innerWidth, innerHeight);
+      if (shown && DUST_AMOUNT > 0) {
+        acc += Math.min(speed, 2500) * dt * .09 * DUST_AMOUNT;
+        while (acc >= 1 && parts.length < 420) { var t0 = Math.random(); spawn(segX0 + (x - segX0) * t0 + 3, segY0 + (y - segY0) * t0 + 4); acc -= 1; }
+        acc = Math.min(acc, 6);
       }
-
-      fctx.globalCompositeOperation = 'lighter';
-
-      /* cahaya hangat di sekeliling tangan, berkedip */
-      if (shown && GLOW > 0) {
-        var gr = HAND_H * (1.05 + .1 * Math.sin(now / 130) + .06 * Math.sin(now / 53));
-        fctx.globalAlpha = GLOW + .08 * Math.sin(now / 90);
-        fctx.drawImage(sprites[3], ex - gr, ey - HAND_H * .15 - gr, gr * 2, gr * 2);
-      }
-
-      /* gerakkan & gambar partikel */
+      dctx.globalCompositeOperation = 'lighter';
       for (var i = parts.length - 1; i >= 0; i--) {
         var p = parts[i]; p.age += dt;
         if (p.age >= p.life) { parts.splice(i, 1); continue; }
         var t = p.age / p.life;
-        if (p.e) {
-          /* bunga api: beterbangan acak, terbawa angin, berkelip */
-          p.vx += (-svx * WIND * .5 - p.vx) * Math.min(1, dt * 1.5) + Math.sin(now / 90 + p.seed) * 60 * dt;
-          p.vy += (-svy * WIND * .4 - 60 - p.vy) * Math.min(1, dt * 1.2);
-        } else {
-          /* lidah api: menyempit ke atas, bergoyang seperti kobaran, condong ke arah angin */
-          p.vx += (ex - p.x) * 14 * t * dt;
-          p.vx += (-svx * WIND - p.vx) * Math.min(1, dt * 2.5) + Math.sin(now / 110 + p.seed * 3) * 55 * dt;
-          p.vy += (-svy * WIND * .5 - 70 * FIRE_RISE - p.vy) * Math.min(1, dt * 2);
-        }
+        p.vx += Math.sin(now / 260 + p.seed) * 30 * dt; p.vy += (Math.cos(now / 310 + p.seed) * 22 - 10) * dt;   /* melayang berputar-putar pelan */
+        p.vx *= 1 - dt * 1.4; p.vy *= 1 - dt * 1.4;
         p.x += p.vx * dt; p.y += p.vy * dt;
-
-        if (p.e) {
-          var es = p.size * (1 - t * .3);
-          fctx.globalAlpha = (1 - t) * (.65 + .35 * Math.sin(now / 40 + p.seed * 5));
-          fctx.drawImage(sprites[1], p.x - es, p.y - es, es * 2, es * 2);
+        if (p.s) {
+          var s = p.size * (1 + t * 2.4);                                   /* asap makin lebar, makin pudar */
+          dctx.globalAlpha = Math.pow(1 - t, 1.5) * .62;
+          dctx.drawImage(sprites[p.c], p.x - s, p.y - s, s * 2, s * 2);
         } else {
-          var w = p.size * (1 - t * .6) * .85, h = p.size * (1 - t * .5) * (1.3 + .4 * (1 - t));  /* memanjang ke atas seperti lidah api */
-          fctx.globalAlpha = Math.pow(1 - t, 1.2) * .8;
-          fctx.drawImage(sprites[Math.min(sprites.length - 1, Math.floor(t * sprites.length))], p.x - w, p.y - h, w * 2, h * 2);
+          var d = p.size * (1 - t * .4);
+          dctx.globalAlpha = (1 - t) * (.7 + .3 * Math.sin(now / 45 + p.seed * 5));   /* debu berkelip */
+          dctx.drawImage(sprites[p.c], p.x - d * 2, p.y - d * 2, d * 4, d * 4);
         }
       }
-      fctx.globalAlpha = 1; fctx.globalCompositeOperation = 'source-over';
-    }
-
-    if (pctx) {
-      pctx.shadowBlur = 0; pctx.globalCompositeOperation = 'destination-out'; pctx.globalAlpha = FADE;
-      pctx.fillRect(0, 0, innerWidth, innerHeight);
-      pctx.globalCompositeOperation = 'source-over'; pctx.globalAlpha = 1;
-      paintStep();
+      dctx.globalAlpha = 1; dctx.globalCompositeOperation = 'source-over';
     }
     requestAnimationFrame(frame);
   })(performance.now());

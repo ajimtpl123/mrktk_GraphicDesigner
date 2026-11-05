@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- GANTI: judul tab browser -->
 <title>Mijil Taji (AJI) – Graphic Designer</title>
 <meta name="description" content="Portfolio of a graphic designer: clothing, merchandise, and brand design.">
@@ -53,8 +53,7 @@
     -->
     <div class="obj" style="--x:27%; --y:19%; --s:7vw;  --lift:-40"><span class="wob" style="--t:3.8s"><svg class="shp" data-m="spin" viewBox="0 0 100 100"><use href="#s-flower" fill="url(#g1)"/></svg></span></div>
     <div class="obj" style="--x:50%; --y:7%;  --s:6vw;  --lift:-25; margin-left:-.6em"><span class="wob" style="--t:4.6s; --dl:-1s"><svg class="shp" data-m="pulse" viewBox="0 0 100 100" style="filter:url(#noise)"><use href="#s-star" fill="#C6FF3D"/></svg></span></div>
-    <div class="obj" style="--x:78%; --y:13%; --s:7vw;  --lift:-35"><span class="wob" style="--t:3.4s; --dl:-2s"><svg class="shp" data-m="swing" viewBox="0 0 100 100"><use href="#s-wheel" fill="url(#g2)"/></svg></span></div>
-    <div class="obj" style="--x:84%; --y:55%; --s:6vw;  --lift:-45"><span class="wob" style="--t:4.2s; --dl:-3s"><svg class="shp" data-m="pop" viewBox="0 0 100 100" style="filter:url(#noise)"><use href="#s-dots" fill="url(#g4)"/></svg></span></div>
+    <div class="obj" style="--x:78%; --y:87%; --s:7vw;  --lift:-35"><span class="wob" style="--t:3.4s; --dl:-2s"><svg class="shp" data-m="swing" viewBox="0 0 100 100"><use href="#s-wheel" fill="url(#g2)"/></svg></span></div>
 
     <!-- OBJEK di atas sekarang shape SVG. Ganti warna lewat fill="url(#g1..g4)" atau kode warna, gerakan lewat data-m="spin|swing|pulse|pop", noise lewat style="filter:url(#noise)" -->
     <!-- GANTI: kalimat headline, satu baris per .line -->
@@ -72,16 +71,14 @@
 <!-- Teks yang berjalan diambil dari data-text. Ganti isinya kalau mau teks lain. -->
 
 <section class="sec resume" id="resume">
-  <div class="marquee" aria-hidden="true" data-text="Resume"></div>
+  <!-- RUNNING TEXT MELENGKUNG: data-curve = arch | wave | swirl (bentuk garis, diatur di js/script.js bagian 2) -->
+  <div class="cmq" aria-hidden="true" data-text="Resume" data-curve="arch"></div>
   <div class="wrap">
     <div class="bio">
       <figure class="portrait">
         <img src="images/aji.webp" alt="Portrait of Mijil Taji (AJI)">
         <span class="obj" aria-hidden="true" style="--x:80%; --y:-7%; --s:clamp(64px,8vw,112px)"><span class="wob" style="--t:4.4s"><svg class="shp" data-m="spin" viewBox="0 0 100 100"><use href="#s-flower" fill="url(#g1)"/></svg></span></span>
         <span class="obj" aria-hidden="true" style="--x:-9%; --y:84%; --s:clamp(48px,6vw,84px)"><span class="wob" style="--t:3.8s; --dl:-1s"><svg class="shp" data-m="pulse" viewBox="0 0 100 100" style="filter:url(#noise)"><use href="#s-star" fill="#C6FF3D"/></svg></span></span>
-        <span class="stk" style="left:-4%; top:22%; --r:-8deg; background:#FFD60A">Branding</span>
-        <span class="stk" style="right:-5%; top:52%; --r:6deg; background:#F22DAA">Illustration</span>
-        <span class="stk" style="left:8%; bottom:7%; --r:-4deg; background:#ECECE8">Apparel</span>
       </figure>
       <div class="bio-text">
         <p class="hello"><span class="serif">Hello!-</span></p>
@@ -89,6 +86,22 @@
         <p class="lead">Graphic designer with two years of freelance and in-house experience across branding, social media design, digital illustration, and apparel. I create clean, consistent visual systems that hold up across logos, merchandise, and digital content, and my clothing designs draw on street culture references such as skate style and bootleg graphics. I value close collaboration and staying true to a client’s original vision, and I’m open to working with brands that want a distinct identity.</p>
       </div>
     </div>
+
+    <!-- PENGALAMAN: angka menghitung naik saat terlihat. GANTI: angka di data-to dan teks labelnya -->
+    <div class="stats">
+      <p class="stats-t">My experience</p>
+      <div class="stat"><b data-to="2"><span class="n">2</span><i>+</i></b><span>Years of experience<br>freelance &amp; full-time</span></div>
+      <div class="stat"><b data-to="100"><span class="n">100</span><i>+</i></b><span>Projects delivered<br>to clients</span></div>
+      <div class="stat"><b data-to="3"><span class="n">3</span><i>+</i></b><span>Creative skills</span></div>
+    </div>
+
+    <!-- TOOLS: gambar images/tools.png sudah berwarna sama dengan teks "Mijil Taji" -->
+    <div class="tools-wrap">
+      <h2>Tools</h2>
+      <img class="tools-img" src="images/tools.png" alt="Tools I use: Photoshop, Illustrator, Procreate, Alight Motion, CapCut, ChatGPT, Claude, and Gemini.">
+      <p class="tools-note">…Exploration of various tools is still underway….</p>
+    </div>
+    <!-- SEMENTARA DIKOSONGKAN (pendidikan, pengalaman kerja, tools). Untuk menampilkan lagi, hapus tanda komentar ini dan penutupnya di bawah.
     <div class="cv">
       <div class="cv-l">
         <h2>Where I <em>learned?</em></h2>
@@ -102,50 +115,96 @@
         <ul class="jobs"><li><time>2026</time><div><h3><svg class="ast" viewBox="0 0 100 100" aria-hidden="true"><use href="#s-star" fill="currentColor"/></svg>Graphic Designer at PT. Spend Group International</h3><p>Creating design requirements for social media, marketing kits, and UI assets for a live-streaming application</p></div></li><li><time>2025</time><div><h3><svg class="ast" viewBox="0 0 100 100" aria-hidden="true"><use href="#s-star" fill="currentColor"/></svg>Freelance Pattern Designer at SATTKA</h3><p>Making patterns for pashmina products</p></div></li><li><time>2024</time><div><h3><svg class="ast" viewBox="0 0 100 100" aria-hidden="true"><use href="#s-star" fill="currentColor"/></svg>Warehouse Crew at PT. Yomart Rukun Selalu</h3><p>Warehouse Crew, Stock Opname</p></div></li><li><time>2023</time><div><h3><svg class="ast" viewBox="0 0 100 100" aria-hidden="true"><use href="#s-star" fill="currentColor"/></svg>Freelance Graphic Designer at HANSAMU RAMEN</h3><p>Designing ornaments and fixtures for the café</p></div></li></ul>
       </div>
     </div>
+    -->
   </div>
 </section>
 
-<section class="sec" id="work">
-  <div class="marquee" aria-hidden="true" data-text="Work"></div>
+<section class="sec work" id="work">
+  <!-- Bagian atas: running text melingkar + komputer yang memainkan Flappy Bird (otomatis, berulang) -->
+  <div class="work-hero">
+    <div class="cmq fill" aria-hidden="true" data-text="Work" data-curve="swirl"></div>
+    <h2 class="wh-title">Selected<br><span class="serif">work</span><span class="chip">#folders</span></h2>
+    <div class="pc" aria-hidden="true">
+      <div class="pc-body"><div class="pc-screen"><canvas id="flappy"></canvas></div><span class="pc-led"></span></div>
+      <div class="pc-neck"></div><div class="pc-base"></div>
+    </div>
+  </div>
+
   <div class="wrap">
-    <h2>Selected work</h2>
-    <div class="grid">
+    <div class="folders">
       <!--
-        CARA GANTI GAMBAR:
+        CARA GANTI GAMBAR DI TIAP FOLDER:
         1. Taruh gambar di folder "images" (sebelah index.html)
         2. Hapus tanda komentar di baris <img>, samakan nama filenya
         3. Hapus baris <span class="ph">
+        Warna folder: --c1 dan --c2 (gradien), --fg = warna teks
       -->
-      <a class="card wide" href="#">
-        <div class="thumb">
-          <!-- <img src="images/mrktk.jpg" alt="mrktk boxy oversized tees"> -->
-          <span class="ph">Taruh gambar mrktk di sini</span>
+      <a class="folder" href="#" style="--i:0; --c1:#FF7A18; --c2:#F22DAA; --fg:#0D0D0E; --fg2:#FFFFFF">
+        <span class="f-tab">Folder 01</span>
+        <div class="f-media">
+          <!-- <img src="images/merch.jpg" alt="Merch &amp; Clothing Design"> -->
+          <span class="ph">Taruh gambar Merch &amp; Clothing Design di sini</span>
         </div>
-        <h3>mrktk</h3>
-        <p>A clothing brand built around boxy, oversized tees. I designed the graphics and the full collection.</p>
+        <div class="f-text">
+          <h3>Merch &amp; Clothing Design</h3>
+          <p>Streetwear tees, stickers, tote bags, caps, and more, designed as complete collections.</p>
+          <span class="f-btn">Open folder &rarr;</span>
+        </div>
       </a>
-      <a class="card" href="#">
-        <div class="thumb">
-          <!-- <img src="images/merch.jpg" alt="Merchandise set"> -->
-          <span class="ph">Taruh gambar merch di sini</span>
+      <a class="folder" href="#" style="--i:1; --c1:#2B45FF; --c2:#B14CFF; --fg:#FFFFFF; --fg2:#0D0D0E">
+        <span class="f-tab">Folder 02</span>
+        <div class="f-media">
+          <!-- <img src="images/social.jpg" alt="Social Media Design"> -->
+          <span class="ph">Taruh gambar Social Media Design di sini</span>
         </div>
-        <h3>Merch Design</h3>
-        <p>Stickers, tote bag, lanyard, baseball cap, and bucket hat designed as one set.</p>
+        <div class="f-text">
+          <h3>Social Media Design</h3>
+          <p>Feed posts, stories, and content systems that keep a brand looking consistent.</p>
+          <span class="f-btn">Open folder &rarr;</span>
+        </div>
       </a>
-      <a class="card" href="#">
-        <div class="thumb">
-          <!-- <img src="images/variety-coffee.jpg" alt="Variety Coffee logo and social media posts"> -->
-          <span class="ph">Taruh gambar Variety Coffee di sini</span>
+      <a class="folder" href="#" style="--i:2; --c1:#C6FF3D; --c2:#00D4B8; --fg:#0D0D0E; --fg2:#FFFFFF">
+        <span class="f-tab">Folder 03</span>
+        <div class="f-media">
+          <!-- <img src="images/branding.jpg" alt="Branding"> -->
+          <span class="ph">Taruh gambar Branding di sini</span>
         </div>
-        <h3>Variety Coffee</h3>
-        <p>Logo digitization and social media designs for a cafe from Bali.</p>
+        <div class="f-text">
+          <h3>Branding</h3>
+          <p>Logos, logo digitization, and visual identities built to work everywhere.</p>
+          <span class="f-btn">Open folder &rarr;</span>
+        </div>
+      </a>
+      <a class="folder" href="#" style="--i:3; --c1:#FFD60A; --c2:#FF4D00; --fg:#0D0D0E; --fg2:#FFFFFF">
+        <span class="f-tab">Folder 04</span>
+        <div class="f-media">
+          <!-- <img src="images/poster.jpg" alt="Poster"> -->
+          <span class="ph">Taruh gambar Poster di sini</span>
+        </div>
+        <div class="f-text">
+          <h3>Poster</h3>
+          <p>Posters and print pieces with strong type and bold composition.</p>
+          <span class="f-btn">Open folder &rarr;</span>
+        </div>
+      </a>
+      <a class="folder" href="#" style="--i:4; --c1:#F22DAA; --c2:#B14CFF; --fg:#FFFFFF; --fg2:#0D0D0E">
+        <span class="f-tab">Folder 05</span>
+        <div class="f-media">
+          <!-- <img src="images/illustration.jpg" alt="Digital Illustration"> -->
+          <span class="ph">Taruh gambar Digital Illustration di sini</span>
+        </div>
+        <div class="f-text">
+          <h3>Digital Illustration</h3>
+          <p>Original digital illustrations, from characters to editorial pieces.</p>
+          <span class="f-btn">Open folder &rarr;</span>
+        </div>
       </a>
     </div>
   </div>
 </section>
 
 <section class="sec" id="about">
-  <div class="marquee" aria-hidden="true" data-text="About"></div>
+  <div class="marquee tape" aria-hidden="true" data-text="About"></div>
   <div class="wrap">
     <div class="about" style="margin-top:56px">
       <div>
@@ -169,7 +228,7 @@
 </section>
 
 <section class="sec contact" id="contact">
-  <div class="marquee" aria-hidden="true" data-text="Contact"></div>
+  <div class="cmq" aria-hidden="true" data-text="Contact" data-curve="wave"></div>
   <div class="wrap">
     <h2>Let's work together</h2>
     <!-- GANTI: emailmu (2 tempat: href dan teksnya) -->

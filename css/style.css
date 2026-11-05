@@ -112,7 +112,13 @@ h2::after { content: ""; display: block; height: 4px; width: 0; background: var(
 .sec:nth-of-type(even) .track { animation-direction: reverse; } /* section genap berjalan ke arah sebaliknya */
 .group { display: flex; flex-shrink: 0; align-items: center; }
 .group span { font-family: var(--head); font-weight: 800; font-size: clamp(2.4rem, 7vw, 5.2rem); line-height: 1.1; letter-spacing: -0.02em; color: transparent; -webkit-text-stroke: 1.5px var(--ink); transition: color .3s; }
-.group i { width: .35em; height: .35em; border-radius: 50%; background: var(--accent); margin: 0 .7em; flex-shrink: 0; font-size: clamp(2.4rem, 7vw, 5.2rem); }
+/* pemisah antar teks: bintang berkaki 4 yang berputar. 12 pemisah per kelompok, jadi 1 putaran = waktu tempuh 1 jarak antar-bintang (mengikuti kecepatan marquee) */
+.group i { width: .5em; height: .5em; background: var(--accent); margin: 0 .55em; flex-shrink: 0; font-size: clamp(2.4rem, 7vw, 5.2rem);
+           -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0C54 30 70 46 100 50C70 54 54 70 50 100C46 70 30 54 0 50C30 46 46 30 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+           mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0C54 30 70 46 100 50C70 54 54 70 50 100C46 70 30 54 0 50C30 46 46 30 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+           animation: starspin calc(var(--marquee-speed) / 12) linear infinite; }
+.sec:nth-of-type(even) .group i { animation-direction: reverse; } /* arah putar ikut arah jalan teks, seperti roda menggelinding */
+@keyframes starspin { to { rotate: -360deg; } }
 .sec:hover .group span { color: var(--ink); } /* teks terisi saat section di-hover */
 @keyframes run { to { transform: translateX(-50%); } }
 
@@ -139,15 +145,20 @@ h2::after { content: ""; display: block; height: 4px; width: 0; background: var(
 /* ========== RESUME ========== */
 .resume .wrap { max-width: 1280px; }
 .bio { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; align-items: center; padding-top: 72px; }
-.portrait { grid-column: 1 / 6; position: relative; margin: 0 0 14px 14px; }
-.portrait::before { content: ""; position: absolute; inset: 0; border: 2px solid var(--accent); border-radius: 6px; translate: -14px 14px; }
-.portrait img { position: relative; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; display: block; border-radius: 6px; }
+.portrait { grid-column: 1 / 6; position: relative; margin: 0; --fade: linear-gradient(to right, transparent 0, #000 16%, #000 84%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 18%, #000 72%, transparent 100%); }
+/* foto menyatu dengan background: semua tepinya memudar (feather) ke warna latar halaman */
+.portrait img { position: relative; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; display: block; -webkit-mask-image: var(--fade); mask-image: var(--fade); -webkit-mask-composite: source-in; mask-composite: intersect; }
+/* efek kilau: pita cahaya bergerak kiri ke kanan, lalu kanan ke kiri, berulang */
+.portrait::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; mix-blend-mode: screen; background: linear-gradient(105deg, transparent 42%, rgba(255,214,190,.10) 46%, rgba(255,226,206,.34) 50%, rgba(255,214,190,.10) 54%, transparent 58%) 100% 0 / 260% 100% no-repeat; -webkit-mask-image: var(--fade); mask-image: var(--fade); -webkit-mask-composite: source-in; mask-composite: intersect; animation: portraitShine 7s ease-in-out infinite; }
+@keyframes portraitShine { 0%, 8% { background-position: 100% 0; } 46%, 54% { background-position: 0 0; } 92%, 100% { background-position: 100% 0; } }
+@media (prefers-reduced-motion: reduce) { .portrait::after { animation: none; opacity: 0; } }
 .stk { position: absolute; z-index: 3; rotate: var(--r); font-family: var(--head); font-weight: 800; font-size: 1rem; line-height: 1; padding: .55em 1em; border-radius: 999px; color: #0D0D0E; }
 .bio-text { grid-column: 7 / 13; }
 .hello { font-size: 1.1rem; line-height: 1; }
 .hello .serif { font-size: 2.6rem; }
+.resume h2.name::after { display: none; }
 .resume h2.name { width: auto; font-weight: 500; font-size: clamp(2.3rem, 4.8vw, 4.4rem); line-height: .98; letter-spacing: -.04em; margin: 18px 0 32px; text-wrap: balance; }
-.name b { font-weight: 800; color: var(--accent); }
+.name b { font-family: var(--head); font-size: 1em; font-weight: 700; font-style: italic; font-synthesis: style weight; letter-spacing: inherit; line-height: inherit; color: var(--accent); }
 .lead { max-width: 56ch; }
 .cv { display: grid; grid-template-columns: 5fr 7fr; gap: 72px; margin-top: 120px; }
 .resume .cv h2 { font-weight: 500; font-size: clamp(2rem, 3.6vw, 3rem); letter-spacing: -.04em; line-height: 1; margin: 0 0 28px; }
@@ -172,7 +183,7 @@ h2::after { content: ""; display: block; height: 4px; width: 0; background: var(
 @media (max-width: 900px) {
   .bio { grid-template-columns: 1fr; gap: 56px; }
   .portrait, .bio-text { grid-column: 1; }
-  .portrait { margin: 0 14px 14px 14px; max-width: 440px; }
+  .portrait { margin: 0; max-width: 440px; }
   .cv { grid-template-columns: 1fr; gap: 64px; margin-top: 88px; }
 }
 @media (max-width: 480px) { .jobs li { grid-template-columns: 1fr; gap: 8px; } }
@@ -184,30 +195,20 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 
 /* ========== EFEK KURSOR (hanya aktif di laptop/PC) ========== */
 .has-cursor, .has-cursor a { cursor: none; }
-.hand, .ring { position: fixed; left: 0; top: 0; pointer-events: none; opacity: 0; transition: opacity .2s; }
+.arrow, .ring { position: fixed; left: 0; top: 0; pointer-events: none; opacity: 0; transition: opacity .2s; }
 
-/* kursor tangan api: .hand mengikuti mouse, .hand-in berayun seperti tertiup angin */
-.hand { z-index: 1000; }
-.hand-in { position: relative; animation: burn 1.4s ease-in-out infinite; }
-.hand-in img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
-/* gambar dipakai dua kali: bagian atas (jari) tetap diam, bagian bawah (api) digelombangkan oleh filter */
-.h-top  { -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 56%, transparent 64%); mask-image: linear-gradient(to bottom, #000 0, #000 56%, transparent 64%); }
-.h-fire { filter: url(#flameWave); -webkit-mask-image: linear-gradient(to bottom, transparent 44%, #000 60%); mask-image: linear-gradient(to bottom, transparent 44%, #000 60%); }
-/* api berkedip: cahaya di sekitar tangan berdenyut */
-@keyframes burn {
-  0%, 100% { filter: drop-shadow(0 0 3px rgba(255,100,0,.65)) brightness(1); }
-  35%      { filter: drop-shadow(0 0 6px rgba(255,150,10,.95)) brightness(1.1); }
-  65%      { filter: drop-shadow(0 0 4px rgba(255,90,0,.75)) brightness(1.04); }
-}
+/* kursor panah 3D glossy: .arrow mengikuti mouse, .arrow-in miring mengikuti gerakan, .arrow-3d berputar terbalik */
+.arrow { z-index: 1000; }
+.arrow-in { position: relative; }
+.arrow-3d { width: 100%; height: 100%; }
+.arrow svg { display: block; overflow: visible; filter: drop-shadow(0 4px 6px rgba(0,0,0,.5)); }
 .ring { z-index: 999; border-radius: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; border: 1.5px solid transparent;
         display: grid; place-items: center; font-size: .8rem; font-weight: 500; color: transparent;
         transition: opacity .2s, width .25s, height .25s, margin .25s, background .25s, border-color .25s, color .2s; }
 .ring.is-link { width: 72px; height: 72px; margin: -36px 0 0 -36px; background: rgba(255,82,82,.14); border-color: var(--accent); }
 .ring.is-view { width: 92px; height: 92px; margin: -46px 0 0 -46px; background: var(--accent); border-color: var(--accent); color: #0D0D0E; }
 .show { opacity: 1; }
-.fire, .paint { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.fire { z-index: 998; }                   /* percikan api */
-.paint { z-index: 996; opacity: .65; }    /* goresan cat (opsional) */
+.dust { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998; }   /* debu dan asap berwarna */
 
 /* ========== HP / LAYAR KECIL ========== */
 @media (max-width: 720px) {
@@ -219,10 +220,71 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 }
 /* hormati pengguna yang mematikan animasi di perangkatnya */
 @media (prefers-reduced-motion: reduce) {
-  .track { animation: none; }
+  .track, .group i { animation: none; }
   .hero2 { height: auto; }
   .stage { position: relative; height: auto; min-height: 100vh; padding: 120px 0 80px; }
   .wob { animation: none; }
-  .hand-in { animation: none; }
   * { transition: none !important; scroll-behavior: auto !important; }
+}
+
+
+/* ========== RUNNING TEXT MELENGKUNG (Resume, Work, Contact) ========== */
+.cmq { width: 100%; line-height: 0; overflow: hidden; }
+.cmq svg { display: block; width: 100%; height: auto; }
+.cmq text { font-family: var(--head); font-weight: 800; letter-spacing: -.02em; white-space: pre; fill: transparent; stroke: var(--ink); stroke-width: 1.5px; transition: fill .3s; }
+.cmq .st { fill: var(--accent); stroke: none; }
+.sec:hover .cmq text { fill: var(--ink); }
+.cmq.fill { position: absolute; inset: 0; z-index: 1; overflow: visible; pointer-events: none; }
+.cmq.fill svg { overflow: visible; }
+.cmq.fill text, .sec:hover .cmq.fill text { fill: var(--accent); stroke: none; }
+.cmq.fill .st { fill: var(--ink); }
+
+/* About: pita miring berwarna */
+.marquee.tape { border: 0; background: var(--accent); rotate: -2.5deg; margin: 56px -3vw 24px; padding: 2px 0; }
+.tape .group span, .sec:hover .tape .group span { color: #0D0D0E; -webkit-text-stroke: 0; font-size: clamp(1.6rem, 4vw, 3rem); }
+.tape .group i { background: #0D0D0E; font-size: clamp(1.6rem, 4vw, 3rem); }
+
+/* ========== RESUME: pengalaman + tools ========== */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 40px; margin-top: 104px; padding-top: 44px; border-top: 1px solid var(--line); }
+.stats-t { grid-column: 1 / -1; text-align: center; font-family: var(--head); font-weight: 700; font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -0.02em; }
+.stat { text-align: center; }
+.stat b { display: block; font-family: var(--head); font-weight: 800; font-size: clamp(3.4rem, 8.5vw, 7rem); line-height: 1; letter-spacing: -.04em; }
+.stat b i { font-style: normal; color: var(--accent); }
+.stat > span { display: block; margin-top: 12px; color: var(--muted); font-weight: 500; line-height: 1.35; }
+.tools-wrap { margin-top: 104px; text-align: center; }
+.tools-wrap h2 { margin: 0 auto 28px; }
+.tools-wrap h2::after { display: none; }
+.tools-img { display: block; width: min(100%, 360px); height: auto; margin: 0 auto; }
+.tools-note { margin-top: 24px; color: var(--accent); font-family: var(--small-font); font-size: 1rem; }
+
+/* ========== WORK: running text melingkar + komputer + folder ========== */
+.work-hero { position: relative; max-width: 1280px; margin: 0 auto; aspect-ratio: 1200 / 640; }
+.wh-title { position: absolute; left: 24px; top: 24%; z-index: 2; width: auto; margin: 0; font-weight: 800; font-size: clamp(2.6rem, 8vw, 7rem); line-height: .92; letter-spacing: -.045em; }
+.wh-title::after { display: none; }
+.wh-title .serif { color: var(--accent); }
+.chip { display: inline-block; vertical-align: top; margin-left: .5em; padding: .5em .85em; border-radius: 6px; background: #C6FF3D; color: #0D0D0E; rotate: -6deg; font-family: var(--head); font-weight: 800; font-size: clamp(.8rem, 1.7vw, 1.25rem); letter-spacing: 0; line-height: 1; }
+.pc { position: absolute; z-index: 2; left: 60%; top: 18%; width: 27%; rotate: 4deg; filter: drop-shadow(0 18px 28px rgba(0,0,0,.55)); }
+.pc-body { position: relative; background: var(--ink); border-radius: 7% / 8%; padding: 6% 6% 12%; }
+.pc-screen { border: 3px solid #1b1b1d; border-radius: 8px; overflow: hidden; background: #14143c; }
+.pc-screen canvas { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; image-rendering: pixelated; }
+.pc-led { position: absolute; right: 8%; bottom: 4.4%; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+.pc-body::after { content: ""; position: absolute; left: 8%; bottom: 4%; width: 22%; height: 6px; border-radius: 2px; background: repeating-linear-gradient(90deg, #b3b3ae 0 3px, transparent 3px 7px); }
+.pc-neck { width: 26%; height: 14px; margin: 0 auto; background: #c4c4bf; }
+.pc-base { width: 56%; height: 12px; margin: 0 auto; background: var(--ink); border-radius: 8px 8px 4px 4px; }
+
+.folders { padding: 24px 0 120px; }
+.folder { position: sticky; top: calc(72px + var(--i) * 44px); display: grid; grid-template-columns: 5fr 6fr; gap: clamp(20px, 4vw, 56px); align-items: center; min-height: 360px; margin: 0 0 64px; padding: clamp(22px, 4vw, 48px); color: var(--fg); text-decoration: none; background: linear-gradient(135deg, var(--c1), var(--c2)); border-radius: 0 32px 32px 32px; box-shadow: 0 -14px 34px rgba(0,0,0,.35); }
+.f-tab { position: absolute; left: 0; top: -38px; display: flex; align-items: center; height: 40px; min-width: 150px; padding: 0 22px; border-radius: 18px 18px 0 0; background: var(--c1); color: var(--fg); font: 800 .9rem/1 var(--head); letter-spacing: .02em; }
+.f-media { aspect-ratio: 4 / 3; border-radius: 18px; overflow: hidden; display: grid; place-items: center; background: rgba(13,13,14,.2); }
+.f-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.f-media .ph { color: var(--fg); opacity: .75; font-size: .95rem; text-align: center; padding: 16px; }
+.f-text { display: flex; flex-direction: column; align-items: flex-end; gap: 16px; text-align: right; }
+.f-text h3 { font-family: var(--head); font-weight: 800; font-size: clamp(1.9rem, 4.4vw, 3.6rem); line-height: 1; letter-spacing: -.035em; }
+.f-text p { max-width: 34ch; font-weight: 500; opacity: .85; }
+.f-btn { display: inline-block; padding: .65em 1.3em; border-radius: 999px; background: var(--fg); color: var(--fg2); font-family: var(--head); font-weight: 700; font-size: .95rem; transition: translate .25s ease; }
+.folder:hover .f-btn { translate: -6px 0; }
+@media (max-width: 700px) {
+  .stats { grid-template-columns: 1fr; margin-top: 80px; }
+  .folder { position: relative; top: auto; grid-template-columns: 1fr; min-height: 0; margin-bottom: 56px; }
+  .f-text { align-items: flex-start; text-align: left; }
 }
