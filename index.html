@@ -144,13 +144,41 @@
 </section>
 
 <section class="sec work" id="work">
-  <!-- Bagian atas: running text melingkar + komputer yang memainkan Flappy Bird (otomatis, berulang) -->
+  <!-- Bagian atas: running text melingkar + komputer retro yang mengetik "PORTFOLIO" (otomatis, berulang) -->
   <div class="work-hero">
     <div class="cmq fill" aria-hidden="true" data-text="Work" data-curve="swirl"></div>
     <h2 class="wh-title">Selected<br><span class="serif">work</span><span class="chip">#folders</span></h2>
+    <!-- Komputer retro 3D: keyboard P-O-R-T-F-O-L-I-O menekan satu per satu, layar mengetik mengikuti tombol (diatur di js/script.js, bagian 2c) -->
     <div class="pc" aria-hidden="true">
-      <div class="pc-body"><div class="pc-screen"><canvas id="flappy"></canvas></div><span class="pc-led"></span></div>
-      <div class="pc-neck"></div><div class="pc-base"></div>
+      <div class="pc-wrap"><div class="pc-stage"><div class="pc-model" id="pcModel">
+        <i class="pf pf-shadow"></i>
+        <div class="pf pf-lip"><b class="pc-screw" style="left:16px"></b><b class="pc-screw" style="right:16px"></b></div>
+        <div class="pf pf-deck">
+          <i class="pc-comb"></i>
+          <!-- Tombol: data-k = huruf, data-s = tulisan kecil, data-c = warna (b hitam, w putih, r merah) -->
+          <i class="k" data-k="P" data-s="PROJECTS" data-c="b" style="--x:22px;--y:32px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="O" data-s="ABOUT"    data-c="w" style="--x:90px;--y:32px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="R" data-s="RESUME"   data-c="r" style="--x:158px;--y:32px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="T" data-s="TOOLS"    data-c="w" style="--x:226px;--y:32px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="F" data-s="FOLDERS"  data-c="b" style="--x:294px;--y:32px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="O" data-s="OFFERS"   data-c="w" style="--x:8px;--y:86px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="L" data-s="LOGOS"    data-c="r" style="--x:76px;--y:86px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="I" data-s="IDEAS"    data-c="w" style="--x:144px;--y:86px;--w:60px;--h:44px"></i>
+          <i class="k wide" data-k="O" data-s="LET'S TALK ↵" data-c="b" style="--x:212px;--y:86px;--w:128px;--h:44px"></i>
+        </div>
+        <div class="pf pf-mon">
+          <div class="scr"><canvas id="pcScreen" width="516" height="240"></canvas><span class="scr-glass"></span></div>
+          <i class="pc-slot"></i>
+          <i class="pc-btn"></i>
+          <div class="pc-vents"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="pc-knob"><i></i></div>
+        </div>
+        <i class="pf pf-top"></i>
+        <i class="pf pf-sr sd"></i>
+        <i class="pf pf-sr sm"><b class="pc-grill"></b></i>
+        <i class="pf pf-sl sd"></i>
+        <i class="pf pf-sl sm"></i>
+      </div></div></div>
     </div>
   </div>
 

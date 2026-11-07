@@ -279,14 +279,68 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 .wh-title::after { display: none; }
 .wh-title .serif { color: var(--accent); }
 .chip { display: inline-block; vertical-align: top; margin-left: .5em; padding: .5em .85em; border-radius: 6px; background: #C6FF3D; color: #0D0D0E; rotate: -6deg; font-family: var(--head); font-weight: 800; font-size: clamp(.8rem, 1.7vw, 1.25rem); letter-spacing: 0; line-height: 1; }
-.pc { position: absolute; z-index: 2; left: 60%; top: 18%; width: 27%; rotate: 4deg; filter: drop-shadow(0 18px 28px rgba(0,0,0,.55)); }
-.pc-body { position: relative; background: var(--ink); border-radius: 7% / 8%; padding: 6% 6% 12%; }
-.pc-screen { border: 3px solid #1b1b1d; border-radius: 8px; overflow: hidden; background: #14143c; }
-.pc-screen canvas { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; image-rendering: pixelated; }
-.pc-led { position: absolute; right: 8%; bottom: 4.4%; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
-.pc-body::after { content: ""; position: absolute; left: 8%; bottom: 4%; width: 22%; height: 6px; border-radius: 2px; background: repeating-linear-gradient(90deg, #b3b3ae 0 3px, transparent 3px 7px); }
-.pc-neck { width: 26%; height: 14px; margin: 0 auto; background: #c4c4bf; }
-.pc-base { width: 56%; height: 12px; margin: 0 auto; background: var(--ink); border-radius: 8px 8px 4px 4px; }
+/* ===== Komputer retro 3D (kuning) =====
+   Semua bentuknya dirakit dari bidang CSS 3D. Ukuran model dasar 560px lalu otomatis diskalakan mengikuti lebar .pc.
+   Gerak (miring, melayang, tekan tombol, ketik di layar) ada di js/script.js bagian 2c. */
+.pc { position: absolute; z-index: 2; left: 56%; top: 0%; width: 37%; aspect-ratio: 1 / 1; }
+.pc-wrap { position: absolute; left: 50%; top: 50%; width: 560px; height: 560px; margin: -280px 0 0 -280px; transform-origin: 50% 50%; perspective: 1800px; perspective-origin: 50% 34%; }
+/* loop goyang seperti objek lain (rotate + naik-turun) dan efek hover */
+.pc { pointer-events: none; }
+.pc .pf { pointer-events: auto; }
+.pc-wrap { animation: pcwob 4.6s ease-in-out infinite; transition: scale .35s cubic-bezier(.2,.9,.3,1.3), filter .35s ease; }
+.pc:hover .pc-wrap { scale: 1.07; filter: drop-shadow(0 0 26px rgba(255,190,40,.38)); }
+@keyframes pcwob { 0%, 100% { rotate: -3.5deg; translate: 0 0; } 50% { rotate: 3.5deg; translate: 0 -10px; } }
+@media (prefers-reduced-motion: reduce) { .pc-wrap { animation: none; } }
+.pc-stage { position: absolute; left: 280px; top: 474px; width: 0; height: 0; transform-style: preserve-3d; }
+.pc-model { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(-28deg) rotateY(-18deg); will-change: transform; }
+.pf { position: absolute; display: block; backface-visibility: hidden; }
+
+/* badan */
+.pf-lip { left: -190px; top: -23px; width: 380px; height: 46px; transform: translate3d(0, -23px, 150px); background: linear-gradient(180deg, #ecab1d 0, #e19f17 38%, #cb8810 100%); box-shadow: inset 0 1px 0 rgba(255,236,170,.6), inset 0 -3px 4px rgba(90,40,0,.4); }
+.pf-deck { left: -190px; top: -68.26px; width: 380px; height: 136.53px; transform: translate3d(0, -82px, 92px) rotateX(58.17deg); background: linear-gradient(180deg, #f9c43c, #f0b126 55%, #e29f18); box-shadow: inset 0 1.5px 0 rgba(255,244,190,.7), inset 0 0 0 1px rgba(255,225,130,.25), inset 0 -12px 18px -8px rgba(150,75,0,.4); }
+.pf-mon { left: -190px; top: -103.58px; width: 380px; height: 207.15px; transform: translate3d(0, -220px, 16px) rotateX(10.01deg); clip-path: polygon(18px 0, calc(100% - 18px) 0, 100% 100%, 0 100%); background: linear-gradient(180deg, #ffd45a 0, #f8bd2e 7%, #f1b020 55%, #e8a51a 100%); box-shadow: inset 0 2px 0 rgba(255,246,200,.75), inset 0 -16px 22px -10px rgba(150,75,0,.35); }
+.pf-top { left: -172.71px; top: -57.06px; width: 345.41px; height: 114.13px; transform: translate3d(0, -314px, -58.5px) rotateX(98.06deg); background: linear-gradient(180deg, #ffe17f, #fbc94a 60%, #efb12a); box-shadow: inset 0 0 0 1px rgba(255,240,170,.5); }
+.pf-sr::before, .pf-sl::before { content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.pf-sr, .pf-sl { left: -140px; top: -330px; width: 280px; height: 330px; }
+.pf-sr.sd { transform: translate3d(190px, 0, 10px) rotateY(90deg); }
+.pf-sr.sd::before { clip-path: polygon(0px 330px, 0px 284px, 116px 212px, 280px 212px, 280px 330px); background: linear-gradient(90deg, #f3b82f 0, #e6a61c 35%, #cf8e17 100%); }
+.pf-sl.sd { transform: translate3d(-190px, 0, 10px) rotateY(-90deg); }
+.pf-sl.sd::before { clip-path: polygon(280px 330px, 280px 284px, 164px 212px, 0px 212px, 0px 330px); background: linear-gradient(270deg, #e5a51c 0, #d2901a 45%, #b87410 100%); }
+.pf-sr.sm { transform-origin: 140px 212px; transform: translate3d(190px, 0, 10px) rotateZ(-5.04deg) rotateY(90deg); }
+.pf-sr.sm::before { clip-path: polygon(116px 212px, 152px 8px, 265px 24px, 280px 212px); background: linear-gradient(90deg, #f9c23c 0, #ecac20 30%, #d8921a 80%, #c27d12 100%); }
+.pf-sl.sm { transform-origin: 140px 212px; transform: translate3d(-190px, 0, 10px) rotateZ(5.04deg) rotateY(-90deg); }
+.pf-sl.sm::before { clip-path: polygon(164px 212px, 128px 8px, 15px 24px, 0px 212px); background: linear-gradient(270deg, #eaaa1d 0, #d6911a 45%, #bc7712 100%); }
+.pf-shadow { left: -260px; top: -210px; width: 520px; height: 420px; transform: translate3d(0, 1px, 10px) rotateX(90deg); background: radial-gradient(closest-side, rgba(0,0,0,.75), rgba(0,0,0,.35) 55%, transparent); }
+.pc-grill { position: absolute; left: 150px; top: 78px; width: 56px; height: 70px; border-radius: 4px; background: repeating-linear-gradient(45deg, #2e2009 0 2px, #e4a31c 2px 5px); box-shadow: 0 0 0 3px #c98610, inset 0 0 6px rgba(0,0,0,.6); opacity: .92; }
+
+/* layar */
+.scr { position: absolute; left: 24px; top: 20px; width: 270px; height: 132px; padding: 6px; border-radius: 14px; background: #191108; box-shadow: inset 0 0 0 1.5px #d38a1c, inset 0 0 0 4px #281a09, 0 0 0 3px #c98610, 0 0 0 4px rgba(255,235,160,.45), 0 3px 4px 3px rgba(110,55,0,.45); }
+.scr canvas { position: absolute; left: 6px; top: 6px; width: 258px; height: 120px; border-radius: 9px; image-rendering: pixelated; box-shadow: inset 0 0 12px #000; }
+.scr-glass { position: absolute; left: 6px; top: 6px; width: 258px; height: 120px; border-radius: 9px; pointer-events: none; background: linear-gradient(118deg, rgba(255,255,255,.13) 0, rgba(255,255,255,.03) 34%, transparent 36%), repeating-linear-gradient(0deg, rgba(0,0,0,.22) 0 1px, transparent 1px 3px); box-shadow: inset 0 0 16px rgba(0,0,0,.7); }
+.pc-slot { position: absolute; left: 32px; top: 168px; width: 262px; height: 16px; border-radius: 8px; background: linear-gradient(180deg, #fbfbf9 0, #d4d5d4 28%, #8c8d90 62%, #ecece9 100%); box-shadow: 0 0 0 3px #2a1c08, 0 0 0 4px rgba(255,230,150,.35), 0 3px 3px 3px rgba(110,55,0,.4); }
+.pc-slot::after { content: ""; position: absolute; left: 44%; top: 4px; width: 18px; height: 8px; border-radius: 4px; background: #1c150a; box-shadow: inset 0 1px 2px #000; }
+.pc-btn { position: absolute; left: 324px; top: 22px; width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle at 38% 30%, #fff 0 30%, #ebe8df 58%, #b4aea1 100%); box-shadow: 0 0 0 3px #b9780f, 0 0 0 5px #ffe28c, 0 4px 6px 3px rgba(90,40,0,.45); }
+.pc-vents { position: absolute; left: 314px; top: 64px; width: 48px; }
+.pc-vents i { display: block; height: 7px; margin-bottom: 4px; border-radius: 4px; background: linear-gradient(180deg, #ffd964, #eaa31b); box-shadow: 0 2px 2px rgba(120,60,0,.6), inset 0 1px 0 rgba(255,255,255,.55); }
+.pc-knob { position: absolute; left: 311px; top: 144px; width: 56px; height: 56px; border-radius: 9px; background: #17120a; box-shadow: inset 0 0 0 2px #2d2415, 0 0 0 2px rgba(255,220,120,.3), 0 3px 4px 2px rgba(90,40,0,.4); }
+.pc-knob i { position: absolute; left: 11px; top: 11px; width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 36% 28%, #fff 0 10%, #d3d6da 26%, #7a7e85 60%, #2c2f34 100%); box-shadow: 0 0 0 2px #0d0a05, 0 0 0 4px #4a4538, 0 4px 5px rgba(0,0,0,.7); }
+.pc-comb { position: absolute; left: 232px; top: 8px; width: 120px; height: 20px; border-radius: 3px; background: #1d1507; box-shadow: inset 0 1px 3px #000, 0 0 0 1px rgba(255,230,150,.35); }
+.pc-comb::after { content: ""; position: absolute; left: 4px; right: 4px; top: 3px; bottom: 2px; background: repeating-linear-gradient(90deg, #eceef0 0 1.5px, #757980 1.5px 3px, transparent 3px 5px); }
+.pc-screw { position: absolute; top: 10px; width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #c5c8cc 42%, #6c7076); box-shadow: 0 1px 2px rgba(0,0,0,.55), 0 0 0 1px rgba(90,50,0,.4); }
+.pc-screw::after { content: ""; position: absolute; left: 2px; right: 2px; top: 6px; height: 2px; background: #4b4f55; transform: rotate(35deg); }
+
+/* tombol keyboard: satu bidang datar per tombol; tebal samping digambar dengan box-shadow bertumpuk.
+   (Sengaja tidak pakai bidang 3D per sisi karena bisa berkedip di sebagian browser/GPU) */
+.k { position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); display: block; cursor: default; --kt: linear-gradient(160deg, #fffdf7, #dcd8cd); --ks1: #b9b4a6; --ks2: #8f897a; --kc: #181716; }
+.k[data-c="b"] { --kt: linear-gradient(160deg, #3d3b38, #171615); --ks1: #151413; --ks2: #070707; --kc: #f6c844; }
+.k[data-c="r"] { --kt: linear-gradient(160deg, #f4745a, #c93b23); --ks1: #a92a16; --ks2: #6d1609; --kc: #fff3e2; }
+.k b { position: absolute; display: block; }
+.k .kt { left: 0; top: 0; width: calc(var(--w) - 6px); height: calc(var(--h) - 9px); border-radius: 11px; background: var(--kt);
+  box-shadow: inset 0 1.5px 0 rgba(255,255,255,.6), inset 0 -4px 6px rgba(0,0,0,.22), inset 0 0 0 1px rgba(0,0,0,.2), 0.42px 0.95px 0 var(--ks1),0.84px 1.9px 0 var(--ks1),1.26px 2.85px 0 var(--ks1),1.68px 3.8px 0 var(--ks1),2.1px 4.75px 0 var(--ks1),2.52px 5.7px 0 var(--ks1),2.94px 6.65px 0 var(--ks2),3.36px 7.6px 0 var(--ks2),3.78px 8.55px 0 var(--ks2),4.2px 9.5px 0 var(--ks2), 5px 12px 5px 1px rgba(40,18,0,.55); }
+.k u { position: absolute; left: 7px; top: 2px; text-decoration: none; font: 800 21px/1 var(--head); color: var(--kc); }
+.k em { position: absolute; left: 7px; bottom: 3px; font: 500 5px/1 var(--small-font); font-style: normal; letter-spacing: .08em; color: var(--kc); opacity: .55; white-space: nowrap; }
+.k.wide u { left: 12px; top: 8px; }
+.k.wide em { left: auto; right: 9px; bottom: 6px; font-size: 6px; opacity: .9; }
 
 .folders { padding: 24px 0 120px; }
 .folder { position: sticky; top: calc(72px + var(--i) * 44px); display: grid; grid-template-columns: 5fr 6fr; gap: clamp(20px, 4vw, 56px); align-items: center; min-height: 360px; margin: 0 0 64px; padding: clamp(22px, 4vw, 48px); color: var(--fg); text-decoration: none; background: linear-gradient(135deg, var(--c1), var(--c2)); border-radius: 0 32px 32px 32px; box-shadow: 0 -14px 34px rgba(0,0,0,.35); }
@@ -504,13 +558,41 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 </section>
 
 <section class="sec work" id="work">
-  <!-- Bagian atas: running text melingkar + komputer yang memainkan Flappy Bird (otomatis, berulang) -->
+  <!-- Bagian atas: running text melingkar + komputer retro yang mengetik "PORTFOLIO" (otomatis, berulang) -->
   <div class="work-hero">
     <div class="cmq fill" aria-hidden="true" data-text="Work" data-curve="swirl"></div>
     <h2 class="wh-title">Selected<br><span class="serif">work</span><span class="chip">#folders</span></h2>
+    <!-- Komputer retro 3D: keyboard P-O-R-T-F-O-L-I-O menekan satu per satu, layar mengetik mengikuti tombol (diatur di js/script.js, bagian 2c) -->
     <div class="pc" aria-hidden="true">
-      <div class="pc-body"><div class="pc-screen"><canvas id="flappy"></canvas></div><span class="pc-led"></span></div>
-      <div class="pc-neck"></div><div class="pc-base"></div>
+      <div class="pc-wrap"><div class="pc-stage"><div class="pc-model" id="pcModel">
+        <i class="pf pf-shadow"></i>
+        <div class="pf pf-lip"><b class="pc-screw" style="left:16px"></b><b class="pc-screw" style="right:16px"></b></div>
+        <div class="pf pf-deck">
+          <i class="pc-comb"></i>
+          <!-- Tombol: data-k = huruf, data-s = tulisan kecil, data-c = warna (b hitam, w putih, r merah) -->
+          <i class="k" data-k="P" data-s="PROJECTS" data-c="b" style="--x:22px;--y:32px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="O" data-s="ABOUT"    data-c="w" style="--x:90px;--y:32px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="R" data-s="RESUME"   data-c="r" style="--x:158px;--y:32px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="T" data-s="TOOLS"    data-c="w" style="--x:226px;--y:32px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="F" data-s="FOLDERS"  data-c="b" style="--x:294px;--y:32px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="O" data-s="OFFERS"   data-c="w" style="--x:8px;--y:86px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="L" data-s="LOGOS"    data-c="r" style="--x:76px;--y:86px;--w:60px;--h:44px"></i>
+          <i class="k" data-k="I" data-s="IDEAS"    data-c="w" style="--x:144px;--y:86px;--w:60px;--h:44px"></i>
+          <i class="k wide" data-k="O" data-s="LET'S TALK ↵" data-c="b" style="--x:212px;--y:86px;--w:128px;--h:44px"></i>
+        </div>
+        <div class="pf pf-mon">
+          <div class="scr"><canvas id="pcScreen" width="516" height="240"></canvas><span class="scr-glass"></span></div>
+          <i class="pc-slot"></i>
+          <i class="pc-btn"></i>
+          <div class="pc-vents"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="pc-knob"><i></i></div>
+        </div>
+        <i class="pf pf-top"></i>
+        <i class="pf pf-sr sd"></i>
+        <i class="pf pf-sr sm"><b class="pc-grill"></b></i>
+        <i class="pf pf-sl sd"></i>
+        <i class="pf pf-sl sm"></i>
+      </div></div></div>
     </div>
   </div>
 
@@ -797,52 +879,200 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   els.forEach(function (b) { io.observe(b); });
 })();
 
-/* ===== 2c. Komputer di section Work: Flappy Bird main sendiri tanpa henti (loop) ===== */
+/* ===== 2c. Komputer retro di section Work =====
+   - keyboard P-O-R-T-F-O-L-I-O menekan tombol satu per satu, layar ikut mengetik hurufnya
+   - lalu kalimat kecil diketik sambil tombol-tombol lain ikut ditekan, layar dihapus, dan diulang terus
+   - komputer miring/melayang pelan (ikut gerakan kursor), hanya jalan saat terlihat di layar */
 (function () {
-  var cv = document.getElementById('flappy'); if (!cv) return;
-  var W = 240, H = 180, GY = 156, BX = 62, R = 8, GAP = 70, PW = 30, SP = 62, GR = 900, FL = -255, SPC = 118;
-  cv.width = W; cv.height = H;
-  var x = cv.getContext('2d'), bird, pipes, score, lastC, wing = 0, last = 0, raf = 0;
-  function mk(px) { lastC = Math.max(GAP / 2 + 16, Math.min(GY - GAP / 2 - 16, lastC + Math.random() * 64 - 32)); return { x: px, c: lastC, s: false }; }
-  function reset() { bird = { y: 78, v: 0 }; score = 0; lastC = 80; pipes = []; for (var i = 0; i < 4; i++) pipes.push(mk(170 + i * SPC)); }
-  function step(dt) {
-    var p = null, i;
-    for (i = 0; i < pipes.length; i++) if (pipes[i].x + PW > BX - R - 2) { p = pipes[i]; break; }
-    if (p && bird.y > p.c + 18 && bird.v >= 0) { bird.v = FL; wing = .18; }   /* "pemain" menekan tombol lompat */
-    bird.v += GR * dt; bird.y += bird.v * dt; wing = Math.max(0, wing - dt);
-    var hit = bird.y + R > GY || bird.y - R < 0;
-    pipes.forEach(function (q) {
-      q.x -= SP * dt;
-      if (!q.s && q.x + PW < BX) { q.s = true; score = (score + 1) % 100; }
-      if (BX + R > q.x && BX - R < q.x + PW && (bird.y - R < q.c - GAP / 2 || bird.y + R > q.c + GAP / 2)) hit = true;
-    });
-    if (pipes[0].x + PW < -4) { pipes.shift(); pipes.push(mk(pipes[pipes.length - 1].x + SPC)); }
-    if (hit) reset();                                                          /* kalau menabrak, mulai lagi: loop */
+  var pc = document.querySelector('.pc'), cv = document.getElementById('pcScreen'), model = document.getElementById('pcModel');
+  if (!pc || !cv || !model) return;
+  var wrap = pc.querySelector('.pc-wrap');
+
+  /* >>> TEKS DI LAYAR: boleh diubah <<< */
+  var HEAD_L = 'AJI / PORTFOLIO.EXE', HEAD_R = 'HELLO';
+  var WORD = 'PORTFOLIO';                       /* huruf ke-1 = tombol ke-1, dst. (P-O-R-T-F-O-L-I-O) */
+  var LINE2 = 'creative graphic designer.';     /* baris kecil di bawahnya */
+  var BASE_YAW = -18, BASE_PIT = -28;           /* sudut pandang dasar komputer (derajat) */
+
+  /* ---------- font pixel 5x7 (digambar sendiri, tidak butuh file font) ---------- */
+  var RAW = {
+    ' ': '...../...../...../...../...../...../.....',
+    'A': '.###./#...#/#...#/#####/#...#/#...#/#...#',
+    'B': '####./#...#/#...#/####./#...#/#...#/####.',
+    'C': '.###./#...#/#..../#..../#..../#...#/.###.',
+    'D': '####./#...#/#...#/#...#/#...#/#...#/####.',
+    'E': '#####/#..../#..../####./#..../#..../#####',
+    'F': '#####/#..../#..../####./#..../#..../#....',
+    'G': '.###./#...#/#..../#.###/#...#/#...#/.####',
+    'H': '#...#/#...#/#...#/#####/#...#/#...#/#...#',
+    'I': '.###./..#../..#../..#../..#../..#../.###.',
+    'J': '..###/...#./...#./...#./...#./#..#./.##..',
+    'K': '#...#/#..#./#.#../##.../#.#../#..#./#...#',
+    'L': '#..../#..../#..../#..../#..../#..../#####',
+    'M': '#...#/##.##/#.#.#/#.#.#/#...#/#...#/#...#',
+    'N': '#...#/##..#/#.#.#/#..##/#...#/#...#/#...#',
+    'O': '.###./#...#/#...#/#...#/#...#/#...#/.###.',
+    'P': '####./#...#/#...#/####./#..../#..../#....',
+    'Q': '.###./#...#/#...#/#...#/#.#.#/#..#./.##.#',
+    'R': '####./#...#/#...#/####./#.#../#..#./#...#',
+    'S': '.####/#..../#..../.###./....#/....#/####.',
+    'T': '#####/..#../..#../..#../..#../..#../..#..',
+    'U': '#...#/#...#/#...#/#...#/#...#/#...#/.###.',
+    'V': '#...#/#...#/#...#/#...#/#...#/.#.#./..#..',
+    'W': '#...#/#...#/#...#/#.#.#/#.#.#/##.##/#...#',
+    'X': '#...#/#...#/.#.#./..#../.#.#./#...#/#...#',
+    'Y': '#...#/#...#/.#.#./..#../..#../..#../..#..',
+    'Z': '#####/....#/...#./..#../.#.../#..../#####',
+    'a': '...../...../.###./....#/.####/#...#/.####',
+    'b': '#..../#..../####./#...#/#...#/#...#/####.',
+    'c': '...../...../.###./#..../#..../#...#/.###.',
+    'd': '....#/....#/.####/#...#/#...#/#...#/.####',
+    'e': '...../...../.###./#...#/#####/#..../.###.',
+    'f': '..##./.#..#/.#.../###../.#.../.#.../.#...',
+    'g': '...../...../.####/#...#/#...#/#...#/.####/....#/.###.',
+    'h': '#..../#..../#.##./##..#/#...#/#...#/#...#',
+    'i': '..#../...../.##../..#../..#../..#../.###.',
+    'j': '...#./...../..##./...#./...#./...#./...#./#..#./.##..',
+    'k': '#..../#..../#..#./#.#../##.../#.#../#..#.',
+    'l': '.##../..#../..#../..#../..#../..#../.###.',
+    'm': '...../...../##.#./#.#.#/#.#.#/#.#.#/#.#.#',
+    'n': '...../...../#.##./##..#/#...#/#...#/#...#',
+    'o': '...../...../.###./#...#/#...#/#...#/.###.',
+    'p': '...../...../####./#...#/#...#/#...#/####./#..../#....',
+    'q': '...../...../.####/#...#/#...#/#...#/.####/....#/....#',
+    'r': '...../...../#.##./##..#/#..../#..../#....',
+    's': '...../...../.####/#..../.###./....#/####.',
+    't': '.#.../.#.../###../.#.../.#.../.#..#/..##.',
+    'u': '...../...../#...#/#...#/#...#/#..##/.##.#',
+    'v': '...../...../#...#/#...#/#...#/.#.#./..#..',
+    'w': '...../...../#...#/#...#/#.#.#/#.#.#/.#.#.',
+    'x': '...../...../#...#/.#.#./..#../.#.#./#...#',
+    'y': '...../...../#...#/#...#/#...#/.####/....#/#...#/.###.',
+    'z': '...../...../#####/...#./..#../.#.../#####',
+    '0': '.###./#...#/#..##/#.#.#/##..#/#...#/.###.',
+    '1': '..#../.##../..#../..#../..#../..#../.###.',
+    '2': '.###./#...#/....#/...#./..#../.#.../#####',
+    '3': '.###./#...#/....#/..##./....#/#...#/.###.',
+    '4': '...#./..##./.#.#./#..#./#####/...#./...#.',
+    '5': '#####/#..../####./....#/....#/#...#/.###.',
+    '6': '..##./.#.../#..../####./#...#/#...#/.###.',
+    '7': '#####/....#/...#./..#../.#.../.#.../.#...',
+    '8': '.###./#...#/#...#/.###./#...#/#...#/.###.',
+    '9': '.###./#...#/#...#/.####/....#/...#./.##..',
+    '.': '...../...../...../...../...../.##../.##..',
+    ',': '...../...../...../...../.##../..#../.#...',
+    "'": '.##../..#../.#.../...../...../...../.....',
+    '/': '....#/....#/...#./..#../.#.../#..../#....',
+    '-': '...../...../...../#####/...../...../.....',
+    ':': '...../.##../.##../...../.##../.##../.....',
+    '!': '..#../..#../..#../..#../..#../...../..#..',
+    '?': '.###./#...#/....#/...#./..#../...../..#..',
+    '&': '.##../#..#./#.#../.#.../#.#.#/#..#./.##.#',
+    '>': '#..../.#.../..#../...#./..#../.#.../#....',
+    '_': '...../...../...../...../...../...../#####'
+  };
+  var G = {}; Object.keys(RAW).forEach(function (k) { G[k] = RAW[k].split('/'); });
+  var x = cv.getContext('2d'), CW = cv.width, CH = cv.height;
+  function txt(s, px, py, u, col, glow) {
+    x.fillStyle = col; x.shadowColor = col; x.shadowBlur = glow || 0;
+    for (var i = 0; i < s.length; i++) {
+      var g = G[s.charAt(i)] || G[' '];
+      for (var r = 0; r < g.length; r++) for (var c = 0; c < 5; c++) if (g[r].charAt(c) === '#') x.fillRect(px + c * u, py + r * u, u, u);
+      px += 6 * u;
+    }
   }
+  var n1 = 0, n2 = 0, flick = 0, cur = true, lastKey = '';
   function draw() {
-    var g = x.createLinearGradient(0, 0, 0, GY); g.addColorStop(0, '#14143c'); g.addColorStop(1, '#3b2d8f');
-    x.fillStyle = g; x.fillRect(0, 0, W, H);
-    pipes.forEach(function (q) {
-      var t = q.c - GAP / 2, b = q.c + GAP / 2;
-      x.fillStyle = '#C6FF3D'; x.fillRect(q.x, 0, PW, t); x.fillRect(q.x, b, PW, GY - b);
-      x.fillStyle = 'rgba(0,0,0,.18)'; x.fillRect(q.x + PW - 6, 0, 6, t); x.fillRect(q.x + PW - 6, b, 6, GY - b);
-      x.fillStyle = '#00D4B8'; x.fillRect(q.x - 3, t - 10, PW + 6, 10); x.fillRect(q.x - 3, b, PW + 6, 10);
-    });
-    x.fillStyle = '#FF7A18'; x.fillRect(0, GY, W, H - GY); x.fillStyle = '#FFD60A'; x.fillRect(0, GY, W, 4);
-    x.save(); x.translate(BX, Math.round(bird.y)); x.rotate(Math.max(-.5, Math.min(.9, bird.v / 420)));
-    x.fillStyle = '#FFD60A'; x.beginPath(); x.arc(0, 0, R, 0, 7); x.fill();
-    x.fillStyle = '#FF4D00'; x.fillRect(-6, wing > 0 ? -5 : 0, 8, 5); x.fillRect(R - 2, 0, 7, 4);
-    x.fillStyle = '#fff'; x.beginPath(); x.arc(3, -3, 3, 0, 7); x.fill();
-    x.fillStyle = '#0D0D0E'; x.beginPath(); x.arc(4, -3, 1.5, 0, 7); x.fill();
-    x.restore();
-    x.fillStyle = '#fff'; x.font = 'bold 22px monospace'; x.textAlign = 'center'; x.fillText(score, W / 2, 30);
+    x.shadowBlur = 0; x.globalAlpha = 1;
+    var bg = x.createRadialGradient(CW * .42, CH * .38, 8, CW * .5, CH * .5, CW * .72); bg.addColorStop(0, '#1c1509'); bg.addColorStop(1, '#070503');
+    x.fillStyle = bg; x.fillRect(0, 0, CW, CH);
+    x.globalAlpha = flick > 0 ? .35 + Math.random() * .5 : 1;
+    txt(HEAD_L, 24, 16, 2, '#b88c30', 0);
+    txt(HEAD_R, CW - 24 - (HEAD_R.length * 12 - 2), 16, 2, '#b88c30', 0);
+    txt('>', 24, 75, 4, '#d9aa3a', 4);
+    txt(WORD.slice(0, n1), 68, 68, 6, '#f9dc80', 9);
+    if (cur) { x.shadowColor = '#f9dc80'; x.shadowBlur = 9; x.fillStyle = '#f9dc80'; x.fillRect(68 + n1 * 36, 66, 30, 46); }
+    txt(LINE2.slice(0, n2), 24, 140, 3, '#ebcb68', 5);
+    x.globalAlpha = 1; x.shadowBlur = 0;
   }
-  function frame(t) { var dt = Math.min(.034, (t - last) / 1000 || .016); last = t; step(dt); draw(); raf = requestAnimationFrame(frame); }
-  reset(); draw();
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
-  new IntersectionObserver(function (e) {            /* hanya jalan saat komputernya terlihat di layar */
-    if (e[0].isIntersecting) { last = performance.now(); raf = requestAnimationFrame(frame); } else cancelAnimationFrame(raf);
-  }).observe(cv);
+
+  /* ---------- tombol keyboard ---------- */
+  var keys = [].slice.call(pc.querySelectorAll('.k'));
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]; }); }
+  keys.forEach(function (k) {
+    k.innerHTML = '<b class="kt"><u>' + esc(k.getAttribute('data-k')) + '</u><em>' + esc(k.getAttribute('data-s') || '') + '</em></b>';
+    k._u = 0; k._m = false;
+  });
+  /* Tombol keyboard dibuat diam (tidak ada efek ditekan). Kalau nanti mau menyalakan efek tekan lagi,
+     ganti press() di bawah dengan versi yang menambah class "dn" pada tombol. */
+  var kick = 0;
+  function sync() {}
+  function press() {}
+
+  /* ---------- naskah gerak: tiap huruf = tombol yang sesuai, huruf muncul tepat saat tombol mendarat ---------- */
+  var ev = [], total = 0, clock = 0, ei = 0, lastTyped = -9999, LAND = 55, oCount = 0;
+  function keyFor(ch) {                          /* huruf apa pun dipetakan ke tombol yang tetap sama */
+    var u = ch.toUpperCase(), idx = [], i;
+    for (i = 0; i < WORD.length; i++) if (WORD.charAt(i) === u) idx.push(i);
+    if (idx.length) return idx[(oCount++) % idx.length];
+    if (ch === ' ') return keys.length - 1;      /* spasi = tombol lebar */
+    return u.charCodeAt(0) % keys.length;
+  }
+  (function () {
+    var t = 900, i, k;
+    for (i = 0; i < WORD.length; i++) {
+      ev.push({ t: t, a: 5, k: i, h: 150 }); ev.push({ t: t + LAND, a: 1 });
+      t += 230 + (i % 3) * 40;
+    }
+    t += 650;
+    for (i = 0; i < LINE2.length; i++) {
+      k = keyFor(LINE2.charAt(i));
+      ev.push({ t: t, a: 5, k: k, h: 105 }); ev.push({ t: t + LAND, a: 2 });
+      t += 125 + ((i * 7) % 4) * 14;
+    }
+    t += 3300; ev.push({ t: t, a: 3 }); t += 750; total = t;
+    ev.sort(function (p, q) { return p.t - q.t; });
+  })();
+  function apply(e, now) {
+    if (e.a === 5) press(e.k, e.h, now);
+    else if (e.a === 1) { n1++; lastTyped = clock; }
+    else if (e.a === 2) { n2++; lastTyped = clock; }
+    else { n1 = 0; n2 = 0; flick = 170; }
+  }
+
+  /* ---------- gerak kamera: melayang, miring pelan, ikut kursor ---------- */
+  var tgx = 0, tgy = 0, ox = 0, oy = 0, enterT = 0, hv = 0, hvT = 0;
+  pc.addEventListener('pointerenter', function () { hvT = 1; }); pc.addEventListener('pointerleave', function () { hvT = 0; });
+  if (window.matchMedia('(pointer: fine)').matches) window.addEventListener('pointermove', function (e) { tgx = (e.clientX / innerWidth - .5) * 2; tgy = (e.clientY / innerHeight - .5) * 2; }, { passive: true });
+  function cam(ts, still) {
+    var e = Math.min(1, (ts - enterT) / 1500), ee = 1 - Math.pow(1 - e, 3);
+    ox += (tgx - ox) * .06; oy += (tgy - oy) * .06; hv += (hvT - hv) * .08;
+    var yaw = BASE_YAW + ox * (7 + hv * 6) + (1 - ee) * -13, pit = BASE_PIT - oy * 4 - hv * 3, ty = (1 - ee) * 26;
+    if (!still) { yaw += Math.sin(ts / 1900) * 3.2 + Math.sin(ts / 4300) * 2; pit += Math.sin(ts / 2600 + 1) * 1.2; ty += Math.sin(ts / 1400) * 2.5 + kick * 1.6; }
+    kick *= .85;
+    model.style.transform = 'translate3d(0,' + ty.toFixed(2) + 'px,0) rotateX(' + pit.toFixed(2) + 'deg) rotateY(' + yaw.toFixed(2) + 'deg)';
+  }
+  function fit() { wrap.style.transform = 'scale(' + (pc.clientWidth / 560 * .88).toFixed(4) + ')'; }
+  fit(); window.addEventListener('resize', fit); if ('ResizeObserver' in window) new ResizeObserver(fit).observe(pc);
+
+  /* ---------- putaran utama ---------- */
+  var last = 0, raf = 0;
+  function frame(ts) {
+    var dt = Math.min(50, ts - last || 16); last = ts; clock += dt; flick = Math.max(0, flick - dt);
+    while (ei < ev.length && ev[ei].t <= clock) apply(ev[ei++], ts);
+    if (clock >= total) { clock = 0; ei = 0; n1 = 0; n2 = 0; }
+    keys.forEach(function (k) { sync(k, ts); });
+    cur = (clock - lastTyped < 450) || ((clock / 520 | 0) % 2 === 0);
+    var sig = n1 + '|' + n2 + '|' + cur + '|' + (flick > 0 ? Math.random() : 0);
+    if (sig !== lastKey) { lastKey = sig; draw(); }
+    cam(ts, false); raf = requestAnimationFrame(frame);
+  }
+  n1 = 0; n2 = 0; draw(); cam(0, true);
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) { n1 = WORD.length; n2 = LINE2.length; cur = false; draw(); return; }
+  new IntersectionObserver(function (en) {      /* hanya jalan saat komputernya terlihat di layar */
+    if (en[0].isIntersecting) { enterT = performance.now(); last = enterT; raf = requestAnimationFrame(frame); }
+    else { cancelAnimationFrame(raf); keys.forEach(function (k) { k._u = 0; sync(k, 0); }); }
+  }, { threshold: .15 }).observe(pc);
 })();
 
 /* ===== 3. Galeri karya: klik folder -> jendela berisi gambar + video TikTok =====

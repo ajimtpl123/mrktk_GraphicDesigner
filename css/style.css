@@ -263,14 +263,68 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 .wh-title::after { display: none; }
 .wh-title .serif { color: var(--accent); }
 .chip { display: inline-block; vertical-align: top; margin-left: .5em; padding: .5em .85em; border-radius: 6px; background: #C6FF3D; color: #0D0D0E; rotate: -6deg; font-family: var(--head); font-weight: 800; font-size: clamp(.8rem, 1.7vw, 1.25rem); letter-spacing: 0; line-height: 1; }
-.pc { position: absolute; z-index: 2; left: 60%; top: 18%; width: 27%; rotate: 4deg; filter: drop-shadow(0 18px 28px rgba(0,0,0,.55)); }
-.pc-body { position: relative; background: var(--ink); border-radius: 7% / 8%; padding: 6% 6% 12%; }
-.pc-screen { border: 3px solid #1b1b1d; border-radius: 8px; overflow: hidden; background: #14143c; }
-.pc-screen canvas { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; image-rendering: pixelated; }
-.pc-led { position: absolute; right: 8%; bottom: 4.4%; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
-.pc-body::after { content: ""; position: absolute; left: 8%; bottom: 4%; width: 22%; height: 6px; border-radius: 2px; background: repeating-linear-gradient(90deg, #b3b3ae 0 3px, transparent 3px 7px); }
-.pc-neck { width: 26%; height: 14px; margin: 0 auto; background: #c4c4bf; }
-.pc-base { width: 56%; height: 12px; margin: 0 auto; background: var(--ink); border-radius: 8px 8px 4px 4px; }
+/* ===== Komputer retro 3D (kuning) =====
+   Semua bentuknya dirakit dari bidang CSS 3D. Ukuran model dasar 560px lalu otomatis diskalakan mengikuti lebar .pc.
+   Gerak (miring, melayang, tekan tombol, ketik di layar) ada di js/script.js bagian 2c. */
+.pc { position: absolute; z-index: 2; left: 56%; top: 0%; width: 37%; aspect-ratio: 1 / 1; }
+.pc-wrap { position: absolute; left: 50%; top: 50%; width: 560px; height: 560px; margin: -280px 0 0 -280px; transform-origin: 50% 50%; perspective: 1800px; perspective-origin: 50% 34%; }
+/* loop goyang seperti objek lain (rotate + naik-turun) dan efek hover */
+.pc { pointer-events: none; }
+.pc .pf { pointer-events: auto; }
+.pc-wrap { animation: pcwob 4.6s ease-in-out infinite; transition: scale .35s cubic-bezier(.2,.9,.3,1.3), filter .35s ease; }
+.pc:hover .pc-wrap { scale: 1.07; filter: drop-shadow(0 0 26px rgba(255,190,40,.38)); }
+@keyframes pcwob { 0%, 100% { rotate: -3.5deg; translate: 0 0; } 50% { rotate: 3.5deg; translate: 0 -10px; } }
+@media (prefers-reduced-motion: reduce) { .pc-wrap { animation: none; } }
+.pc-stage { position: absolute; left: 280px; top: 474px; width: 0; height: 0; transform-style: preserve-3d; }
+.pc-model { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(-28deg) rotateY(-18deg); will-change: transform; }
+.pf { position: absolute; display: block; backface-visibility: hidden; }
+
+/* badan */
+.pf-lip { left: -190px; top: -23px; width: 380px; height: 46px; transform: translate3d(0, -23px, 150px); background: linear-gradient(180deg, #ecab1d 0, #e19f17 38%, #cb8810 100%); box-shadow: inset 0 1px 0 rgba(255,236,170,.6), inset 0 -3px 4px rgba(90,40,0,.4); }
+.pf-deck { left: -190px; top: -68.26px; width: 380px; height: 136.53px; transform: translate3d(0, -82px, 92px) rotateX(58.17deg); background: linear-gradient(180deg, #f9c43c, #f0b126 55%, #e29f18); box-shadow: inset 0 1.5px 0 rgba(255,244,190,.7), inset 0 0 0 1px rgba(255,225,130,.25), inset 0 -12px 18px -8px rgba(150,75,0,.4); }
+.pf-mon { left: -190px; top: -103.58px; width: 380px; height: 207.15px; transform: translate3d(0, -220px, 16px) rotateX(10.01deg); clip-path: polygon(18px 0, calc(100% - 18px) 0, 100% 100%, 0 100%); background: linear-gradient(180deg, #ffd45a 0, #f8bd2e 7%, #f1b020 55%, #e8a51a 100%); box-shadow: inset 0 2px 0 rgba(255,246,200,.75), inset 0 -16px 22px -10px rgba(150,75,0,.35); }
+.pf-top { left: -172.71px; top: -57.06px; width: 345.41px; height: 114.13px; transform: translate3d(0, -314px, -58.5px) rotateX(98.06deg); background: linear-gradient(180deg, #ffe17f, #fbc94a 60%, #efb12a); box-shadow: inset 0 0 0 1px rgba(255,240,170,.5); }
+.pf-sr::before, .pf-sl::before { content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.pf-sr, .pf-sl { left: -140px; top: -330px; width: 280px; height: 330px; }
+.pf-sr.sd { transform: translate3d(190px, 0, 10px) rotateY(90deg); }
+.pf-sr.sd::before { clip-path: polygon(0px 330px, 0px 284px, 116px 212px, 280px 212px, 280px 330px); background: linear-gradient(90deg, #f3b82f 0, #e6a61c 35%, #cf8e17 100%); }
+.pf-sl.sd { transform: translate3d(-190px, 0, 10px) rotateY(-90deg); }
+.pf-sl.sd::before { clip-path: polygon(280px 330px, 280px 284px, 164px 212px, 0px 212px, 0px 330px); background: linear-gradient(270deg, #e5a51c 0, #d2901a 45%, #b87410 100%); }
+.pf-sr.sm { transform-origin: 140px 212px; transform: translate3d(190px, 0, 10px) rotateZ(-5.04deg) rotateY(90deg); }
+.pf-sr.sm::before { clip-path: polygon(116px 212px, 152px 8px, 265px 24px, 280px 212px); background: linear-gradient(90deg, #f9c23c 0, #ecac20 30%, #d8921a 80%, #c27d12 100%); }
+.pf-sl.sm { transform-origin: 140px 212px; transform: translate3d(-190px, 0, 10px) rotateZ(5.04deg) rotateY(-90deg); }
+.pf-sl.sm::before { clip-path: polygon(164px 212px, 128px 8px, 15px 24px, 0px 212px); background: linear-gradient(270deg, #eaaa1d 0, #d6911a 45%, #bc7712 100%); }
+.pf-shadow { left: -260px; top: -210px; width: 520px; height: 420px; transform: translate3d(0, 1px, 10px) rotateX(90deg); background: radial-gradient(closest-side, rgba(0,0,0,.75), rgba(0,0,0,.35) 55%, transparent); }
+.pc-grill { position: absolute; left: 150px; top: 78px; width: 56px; height: 70px; border-radius: 4px; background: repeating-linear-gradient(45deg, #2e2009 0 2px, #e4a31c 2px 5px); box-shadow: 0 0 0 3px #c98610, inset 0 0 6px rgba(0,0,0,.6); opacity: .92; }
+
+/* layar */
+.scr { position: absolute; left: 24px; top: 20px; width: 270px; height: 132px; padding: 6px; border-radius: 14px; background: #191108; box-shadow: inset 0 0 0 1.5px #d38a1c, inset 0 0 0 4px #281a09, 0 0 0 3px #c98610, 0 0 0 4px rgba(255,235,160,.45), 0 3px 4px 3px rgba(110,55,0,.45); }
+.scr canvas { position: absolute; left: 6px; top: 6px; width: 258px; height: 120px; border-radius: 9px; image-rendering: pixelated; box-shadow: inset 0 0 12px #000; }
+.scr-glass { position: absolute; left: 6px; top: 6px; width: 258px; height: 120px; border-radius: 9px; pointer-events: none; background: linear-gradient(118deg, rgba(255,255,255,.13) 0, rgba(255,255,255,.03) 34%, transparent 36%), repeating-linear-gradient(0deg, rgba(0,0,0,.22) 0 1px, transparent 1px 3px); box-shadow: inset 0 0 16px rgba(0,0,0,.7); }
+.pc-slot { position: absolute; left: 32px; top: 168px; width: 262px; height: 16px; border-radius: 8px; background: linear-gradient(180deg, #fbfbf9 0, #d4d5d4 28%, #8c8d90 62%, #ecece9 100%); box-shadow: 0 0 0 3px #2a1c08, 0 0 0 4px rgba(255,230,150,.35), 0 3px 3px 3px rgba(110,55,0,.4); }
+.pc-slot::after { content: ""; position: absolute; left: 44%; top: 4px; width: 18px; height: 8px; border-radius: 4px; background: #1c150a; box-shadow: inset 0 1px 2px #000; }
+.pc-btn { position: absolute; left: 324px; top: 22px; width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle at 38% 30%, #fff 0 30%, #ebe8df 58%, #b4aea1 100%); box-shadow: 0 0 0 3px #b9780f, 0 0 0 5px #ffe28c, 0 4px 6px 3px rgba(90,40,0,.45); }
+.pc-vents { position: absolute; left: 314px; top: 64px; width: 48px; }
+.pc-vents i { display: block; height: 7px; margin-bottom: 4px; border-radius: 4px; background: linear-gradient(180deg, #ffd964, #eaa31b); box-shadow: 0 2px 2px rgba(120,60,0,.6), inset 0 1px 0 rgba(255,255,255,.55); }
+.pc-knob { position: absolute; left: 311px; top: 144px; width: 56px; height: 56px; border-radius: 9px; background: #17120a; box-shadow: inset 0 0 0 2px #2d2415, 0 0 0 2px rgba(255,220,120,.3), 0 3px 4px 2px rgba(90,40,0,.4); }
+.pc-knob i { position: absolute; left: 11px; top: 11px; width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 36% 28%, #fff 0 10%, #d3d6da 26%, #7a7e85 60%, #2c2f34 100%); box-shadow: 0 0 0 2px #0d0a05, 0 0 0 4px #4a4538, 0 4px 5px rgba(0,0,0,.7); }
+.pc-comb { position: absolute; left: 232px; top: 8px; width: 120px; height: 20px; border-radius: 3px; background: #1d1507; box-shadow: inset 0 1px 3px #000, 0 0 0 1px rgba(255,230,150,.35); }
+.pc-comb::after { content: ""; position: absolute; left: 4px; right: 4px; top: 3px; bottom: 2px; background: repeating-linear-gradient(90deg, #eceef0 0 1.5px, #757980 1.5px 3px, transparent 3px 5px); }
+.pc-screw { position: absolute; top: 10px; width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #c5c8cc 42%, #6c7076); box-shadow: 0 1px 2px rgba(0,0,0,.55), 0 0 0 1px rgba(90,50,0,.4); }
+.pc-screw::after { content: ""; position: absolute; left: 2px; right: 2px; top: 6px; height: 2px; background: #4b4f55; transform: rotate(35deg); }
+
+/* tombol keyboard: satu bidang datar per tombol; tebal samping digambar dengan box-shadow bertumpuk.
+   (Sengaja tidak pakai bidang 3D per sisi karena bisa berkedip di sebagian browser/GPU) */
+.k { position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); display: block; cursor: default; --kt: linear-gradient(160deg, #fffdf7, #dcd8cd); --ks1: #b9b4a6; --ks2: #8f897a; --kc: #181716; }
+.k[data-c="b"] { --kt: linear-gradient(160deg, #3d3b38, #171615); --ks1: #151413; --ks2: #070707; --kc: #f6c844; }
+.k[data-c="r"] { --kt: linear-gradient(160deg, #f4745a, #c93b23); --ks1: #a92a16; --ks2: #6d1609; --kc: #fff3e2; }
+.k b { position: absolute; display: block; }
+.k .kt { left: 0; top: 0; width: calc(var(--w) - 6px); height: calc(var(--h) - 9px); border-radius: 11px; background: var(--kt);
+  box-shadow: inset 0 1.5px 0 rgba(255,255,255,.6), inset 0 -4px 6px rgba(0,0,0,.22), inset 0 0 0 1px rgba(0,0,0,.2), 0.42px 0.95px 0 var(--ks1),0.84px 1.9px 0 var(--ks1),1.26px 2.85px 0 var(--ks1),1.68px 3.8px 0 var(--ks1),2.1px 4.75px 0 var(--ks1),2.52px 5.7px 0 var(--ks1),2.94px 6.65px 0 var(--ks2),3.36px 7.6px 0 var(--ks2),3.78px 8.55px 0 var(--ks2),4.2px 9.5px 0 var(--ks2), 5px 12px 5px 1px rgba(40,18,0,.55); }
+.k u { position: absolute; left: 7px; top: 2px; text-decoration: none; font: 800 21px/1 var(--head); color: var(--kc); }
+.k em { position: absolute; left: 7px; bottom: 3px; font: 500 5px/1 var(--small-font); font-style: normal; letter-spacing: .08em; color: var(--kc); opacity: .55; white-space: nowrap; }
+.k.wide u { left: 12px; top: 8px; }
+.k.wide em { left: auto; right: 9px; bottom: 6px; font-size: 6px; opacity: .9; }
 
 .folders { padding: 24px 0 120px; }
 .folder { position: sticky; top: calc(72px + var(--i) * 44px); display: grid; grid-template-columns: 5fr 6fr; gap: clamp(20px, 4vw, 56px); align-items: center; min-height: 360px; margin: 0 0 64px; padding: clamp(22px, 4vw, 48px); color: var(--fg); text-decoration: none; background: linear-gradient(135deg, var(--c1), var(--c2)); border-radius: 0 32px 32px 32px; box-shadow: 0 -14px 34px rgba(0,0,0,.35); }

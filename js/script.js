@@ -82,52 +82,200 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   els.forEach(function (b) { io.observe(b); });
 })();
 
-/* ===== 2c. Komputer di section Work: Flappy Bird main sendiri tanpa henti (loop) ===== */
+/* ===== 2c. Komputer retro di section Work =====
+   - keyboard P-O-R-T-F-O-L-I-O menekan tombol satu per satu, layar ikut mengetik hurufnya
+   - lalu kalimat kecil diketik sambil tombol-tombol lain ikut ditekan, layar dihapus, dan diulang terus
+   - komputer miring/melayang pelan (ikut gerakan kursor), hanya jalan saat terlihat di layar */
 (function () {
-  var cv = document.getElementById('flappy'); if (!cv) return;
-  var W = 240, H = 180, GY = 156, BX = 62, R = 8, GAP = 70, PW = 30, SP = 62, GR = 900, FL = -255, SPC = 118;
-  cv.width = W; cv.height = H;
-  var x = cv.getContext('2d'), bird, pipes, score, lastC, wing = 0, last = 0, raf = 0;
-  function mk(px) { lastC = Math.max(GAP / 2 + 16, Math.min(GY - GAP / 2 - 16, lastC + Math.random() * 64 - 32)); return { x: px, c: lastC, s: false }; }
-  function reset() { bird = { y: 78, v: 0 }; score = 0; lastC = 80; pipes = []; for (var i = 0; i < 4; i++) pipes.push(mk(170 + i * SPC)); }
-  function step(dt) {
-    var p = null, i;
-    for (i = 0; i < pipes.length; i++) if (pipes[i].x + PW > BX - R - 2) { p = pipes[i]; break; }
-    if (p && bird.y > p.c + 18 && bird.v >= 0) { bird.v = FL; wing = .18; }   /* "pemain" menekan tombol lompat */
-    bird.v += GR * dt; bird.y += bird.v * dt; wing = Math.max(0, wing - dt);
-    var hit = bird.y + R > GY || bird.y - R < 0;
-    pipes.forEach(function (q) {
-      q.x -= SP * dt;
-      if (!q.s && q.x + PW < BX) { q.s = true; score = (score + 1) % 100; }
-      if (BX + R > q.x && BX - R < q.x + PW && (bird.y - R < q.c - GAP / 2 || bird.y + R > q.c + GAP / 2)) hit = true;
-    });
-    if (pipes[0].x + PW < -4) { pipes.shift(); pipes.push(mk(pipes[pipes.length - 1].x + SPC)); }
-    if (hit) reset();                                                          /* kalau menabrak, mulai lagi: loop */
+  var pc = document.querySelector('.pc'), cv = document.getElementById('pcScreen'), model = document.getElementById('pcModel');
+  if (!pc || !cv || !model) return;
+  var wrap = pc.querySelector('.pc-wrap');
+
+  /* >>> TEKS DI LAYAR: boleh diubah <<< */
+  var HEAD_L = 'AJI / PORTFOLIO.EXE', HEAD_R = 'HELLO';
+  var WORD = 'PORTFOLIO';                       /* huruf ke-1 = tombol ke-1, dst. (P-O-R-T-F-O-L-I-O) */
+  var LINE2 = 'creative graphic designer.';     /* baris kecil di bawahnya */
+  var BASE_YAW = -18, BASE_PIT = -28;           /* sudut pandang dasar komputer (derajat) */
+
+  /* ---------- font pixel 5x7 (digambar sendiri, tidak butuh file font) ---------- */
+  var RAW = {
+    ' ': '...../...../...../...../...../...../.....',
+    'A': '.###./#...#/#...#/#####/#...#/#...#/#...#',
+    'B': '####./#...#/#...#/####./#...#/#...#/####.',
+    'C': '.###./#...#/#..../#..../#..../#...#/.###.',
+    'D': '####./#...#/#...#/#...#/#...#/#...#/####.',
+    'E': '#####/#..../#..../####./#..../#..../#####',
+    'F': '#####/#..../#..../####./#..../#..../#....',
+    'G': '.###./#...#/#..../#.###/#...#/#...#/.####',
+    'H': '#...#/#...#/#...#/#####/#...#/#...#/#...#',
+    'I': '.###./..#../..#../..#../..#../..#../.###.',
+    'J': '..###/...#./...#./...#./...#./#..#./.##..',
+    'K': '#...#/#..#./#.#../##.../#.#../#..#./#...#',
+    'L': '#..../#..../#..../#..../#..../#..../#####',
+    'M': '#...#/##.##/#.#.#/#.#.#/#...#/#...#/#...#',
+    'N': '#...#/##..#/#.#.#/#..##/#...#/#...#/#...#',
+    'O': '.###./#...#/#...#/#...#/#...#/#...#/.###.',
+    'P': '####./#...#/#...#/####./#..../#..../#....',
+    'Q': '.###./#...#/#...#/#...#/#.#.#/#..#./.##.#',
+    'R': '####./#...#/#...#/####./#.#../#..#./#...#',
+    'S': '.####/#..../#..../.###./....#/....#/####.',
+    'T': '#####/..#../..#../..#../..#../..#../..#..',
+    'U': '#...#/#...#/#...#/#...#/#...#/#...#/.###.',
+    'V': '#...#/#...#/#...#/#...#/#...#/.#.#./..#..',
+    'W': '#...#/#...#/#...#/#.#.#/#.#.#/##.##/#...#',
+    'X': '#...#/#...#/.#.#./..#../.#.#./#...#/#...#',
+    'Y': '#...#/#...#/.#.#./..#../..#../..#../..#..',
+    'Z': '#####/....#/...#./..#../.#.../#..../#####',
+    'a': '...../...../.###./....#/.####/#...#/.####',
+    'b': '#..../#..../####./#...#/#...#/#...#/####.',
+    'c': '...../...../.###./#..../#..../#...#/.###.',
+    'd': '....#/....#/.####/#...#/#...#/#...#/.####',
+    'e': '...../...../.###./#...#/#####/#..../.###.',
+    'f': '..##./.#..#/.#.../###../.#.../.#.../.#...',
+    'g': '...../...../.####/#...#/#...#/#...#/.####/....#/.###.',
+    'h': '#..../#..../#.##./##..#/#...#/#...#/#...#',
+    'i': '..#../...../.##../..#../..#../..#../.###.',
+    'j': '...#./...../..##./...#./...#./...#./...#./#..#./.##..',
+    'k': '#..../#..../#..#./#.#../##.../#.#../#..#.',
+    'l': '.##../..#../..#../..#../..#../..#../.###.',
+    'm': '...../...../##.#./#.#.#/#.#.#/#.#.#/#.#.#',
+    'n': '...../...../#.##./##..#/#...#/#...#/#...#',
+    'o': '...../...../.###./#...#/#...#/#...#/.###.',
+    'p': '...../...../####./#...#/#...#/#...#/####./#..../#....',
+    'q': '...../...../.####/#...#/#...#/#...#/.####/....#/....#',
+    'r': '...../...../#.##./##..#/#..../#..../#....',
+    's': '...../...../.####/#..../.###./....#/####.',
+    't': '.#.../.#.../###../.#.../.#.../.#..#/..##.',
+    'u': '...../...../#...#/#...#/#...#/#..##/.##.#',
+    'v': '...../...../#...#/#...#/#...#/.#.#./..#..',
+    'w': '...../...../#...#/#...#/#.#.#/#.#.#/.#.#.',
+    'x': '...../...../#...#/.#.#./..#../.#.#./#...#',
+    'y': '...../...../#...#/#...#/#...#/.####/....#/#...#/.###.',
+    'z': '...../...../#####/...#./..#../.#.../#####',
+    '0': '.###./#...#/#..##/#.#.#/##..#/#...#/.###.',
+    '1': '..#../.##../..#../..#../..#../..#../.###.',
+    '2': '.###./#...#/....#/...#./..#../.#.../#####',
+    '3': '.###./#...#/....#/..##./....#/#...#/.###.',
+    '4': '...#./..##./.#.#./#..#./#####/...#./...#.',
+    '5': '#####/#..../####./....#/....#/#...#/.###.',
+    '6': '..##./.#.../#..../####./#...#/#...#/.###.',
+    '7': '#####/....#/...#./..#../.#.../.#.../.#...',
+    '8': '.###./#...#/#...#/.###./#...#/#...#/.###.',
+    '9': '.###./#...#/#...#/.####/....#/...#./.##..',
+    '.': '...../...../...../...../...../.##../.##..',
+    ',': '...../...../...../...../.##../..#../.#...',
+    "'": '.##../..#../.#.../...../...../...../.....',
+    '/': '....#/....#/...#./..#../.#.../#..../#....',
+    '-': '...../...../...../#####/...../...../.....',
+    ':': '...../.##../.##../...../.##../.##../.....',
+    '!': '..#../..#../..#../..#../..#../...../..#..',
+    '?': '.###./#...#/....#/...#./..#../...../..#..',
+    '&': '.##../#..#./#.#../.#.../#.#.#/#..#./.##.#',
+    '>': '#..../.#.../..#../...#./..#../.#.../#....',
+    '_': '...../...../...../...../...../...../#####'
+  };
+  var G = {}; Object.keys(RAW).forEach(function (k) { G[k] = RAW[k].split('/'); });
+  var x = cv.getContext('2d'), CW = cv.width, CH = cv.height;
+  function txt(s, px, py, u, col, glow) {
+    x.fillStyle = col; x.shadowColor = col; x.shadowBlur = glow || 0;
+    for (var i = 0; i < s.length; i++) {
+      var g = G[s.charAt(i)] || G[' '];
+      for (var r = 0; r < g.length; r++) for (var c = 0; c < 5; c++) if (g[r].charAt(c) === '#') x.fillRect(px + c * u, py + r * u, u, u);
+      px += 6 * u;
+    }
   }
+  var n1 = 0, n2 = 0, flick = 0, cur = true, lastKey = '';
   function draw() {
-    var g = x.createLinearGradient(0, 0, 0, GY); g.addColorStop(0, '#14143c'); g.addColorStop(1, '#3b2d8f');
-    x.fillStyle = g; x.fillRect(0, 0, W, H);
-    pipes.forEach(function (q) {
-      var t = q.c - GAP / 2, b = q.c + GAP / 2;
-      x.fillStyle = '#C6FF3D'; x.fillRect(q.x, 0, PW, t); x.fillRect(q.x, b, PW, GY - b);
-      x.fillStyle = 'rgba(0,0,0,.18)'; x.fillRect(q.x + PW - 6, 0, 6, t); x.fillRect(q.x + PW - 6, b, 6, GY - b);
-      x.fillStyle = '#00D4B8'; x.fillRect(q.x - 3, t - 10, PW + 6, 10); x.fillRect(q.x - 3, b, PW + 6, 10);
-    });
-    x.fillStyle = '#FF7A18'; x.fillRect(0, GY, W, H - GY); x.fillStyle = '#FFD60A'; x.fillRect(0, GY, W, 4);
-    x.save(); x.translate(BX, Math.round(bird.y)); x.rotate(Math.max(-.5, Math.min(.9, bird.v / 420)));
-    x.fillStyle = '#FFD60A'; x.beginPath(); x.arc(0, 0, R, 0, 7); x.fill();
-    x.fillStyle = '#FF4D00'; x.fillRect(-6, wing > 0 ? -5 : 0, 8, 5); x.fillRect(R - 2, 0, 7, 4);
-    x.fillStyle = '#fff'; x.beginPath(); x.arc(3, -3, 3, 0, 7); x.fill();
-    x.fillStyle = '#0D0D0E'; x.beginPath(); x.arc(4, -3, 1.5, 0, 7); x.fill();
-    x.restore();
-    x.fillStyle = '#fff'; x.font = 'bold 22px monospace'; x.textAlign = 'center'; x.fillText(score, W / 2, 30);
+    x.shadowBlur = 0; x.globalAlpha = 1;
+    var bg = x.createRadialGradient(CW * .42, CH * .38, 8, CW * .5, CH * .5, CW * .72); bg.addColorStop(0, '#1c1509'); bg.addColorStop(1, '#070503');
+    x.fillStyle = bg; x.fillRect(0, 0, CW, CH);
+    x.globalAlpha = flick > 0 ? .35 + Math.random() * .5 : 1;
+    txt(HEAD_L, 24, 16, 2, '#b88c30', 0);
+    txt(HEAD_R, CW - 24 - (HEAD_R.length * 12 - 2), 16, 2, '#b88c30', 0);
+    txt('>', 24, 75, 4, '#d9aa3a', 4);
+    txt(WORD.slice(0, n1), 68, 68, 6, '#f9dc80', 9);
+    if (cur) { x.shadowColor = '#f9dc80'; x.shadowBlur = 9; x.fillStyle = '#f9dc80'; x.fillRect(68 + n1 * 36, 66, 30, 46); }
+    txt(LINE2.slice(0, n2), 24, 140, 3, '#ebcb68', 5);
+    x.globalAlpha = 1; x.shadowBlur = 0;
   }
-  function frame(t) { var dt = Math.min(.034, (t - last) / 1000 || .016); last = t; step(dt); draw(); raf = requestAnimationFrame(frame); }
-  reset(); draw();
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
-  new IntersectionObserver(function (e) {            /* hanya jalan saat komputernya terlihat di layar */
-    if (e[0].isIntersecting) { last = performance.now(); raf = requestAnimationFrame(frame); } else cancelAnimationFrame(raf);
-  }).observe(cv);
+
+  /* ---------- tombol keyboard ---------- */
+  var keys = [].slice.call(pc.querySelectorAll('.k'));
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]; }); }
+  keys.forEach(function (k) {
+    k.innerHTML = '<b class="kt"><u>' + esc(k.getAttribute('data-k')) + '</u><em>' + esc(k.getAttribute('data-s') || '') + '</em></b>';
+    k._u = 0; k._m = false;
+  });
+  /* Tombol keyboard dibuat diam (tidak ada efek ditekan). Kalau nanti mau menyalakan efek tekan lagi,
+     ganti press() di bawah dengan versi yang menambah class "dn" pada tombol. */
+  var kick = 0;
+  function sync() {}
+  function press() {}
+
+  /* ---------- naskah gerak: tiap huruf = tombol yang sesuai, huruf muncul tepat saat tombol mendarat ---------- */
+  var ev = [], total = 0, clock = 0, ei = 0, lastTyped = -9999, LAND = 55, oCount = 0;
+  function keyFor(ch) {                          /* huruf apa pun dipetakan ke tombol yang tetap sama */
+    var u = ch.toUpperCase(), idx = [], i;
+    for (i = 0; i < WORD.length; i++) if (WORD.charAt(i) === u) idx.push(i);
+    if (idx.length) return idx[(oCount++) % idx.length];
+    if (ch === ' ') return keys.length - 1;      /* spasi = tombol lebar */
+    return u.charCodeAt(0) % keys.length;
+  }
+  (function () {
+    var t = 900, i, k;
+    for (i = 0; i < WORD.length; i++) {
+      ev.push({ t: t, a: 5, k: i, h: 150 }); ev.push({ t: t + LAND, a: 1 });
+      t += 230 + (i % 3) * 40;
+    }
+    t += 650;
+    for (i = 0; i < LINE2.length; i++) {
+      k = keyFor(LINE2.charAt(i));
+      ev.push({ t: t, a: 5, k: k, h: 105 }); ev.push({ t: t + LAND, a: 2 });
+      t += 125 + ((i * 7) % 4) * 14;
+    }
+    t += 3300; ev.push({ t: t, a: 3 }); t += 750; total = t;
+    ev.sort(function (p, q) { return p.t - q.t; });
+  })();
+  function apply(e, now) {
+    if (e.a === 5) press(e.k, e.h, now);
+    else if (e.a === 1) { n1++; lastTyped = clock; }
+    else if (e.a === 2) { n2++; lastTyped = clock; }
+    else { n1 = 0; n2 = 0; flick = 170; }
+  }
+
+  /* ---------- gerak kamera: melayang, miring pelan, ikut kursor ---------- */
+  var tgx = 0, tgy = 0, ox = 0, oy = 0, enterT = 0, hv = 0, hvT = 0;
+  pc.addEventListener('pointerenter', function () { hvT = 1; }); pc.addEventListener('pointerleave', function () { hvT = 0; });
+  if (window.matchMedia('(pointer: fine)').matches) window.addEventListener('pointermove', function (e) { tgx = (e.clientX / innerWidth - .5) * 2; tgy = (e.clientY / innerHeight - .5) * 2; }, { passive: true });
+  function cam(ts, still) {
+    var e = Math.min(1, (ts - enterT) / 1500), ee = 1 - Math.pow(1 - e, 3);
+    ox += (tgx - ox) * .06; oy += (tgy - oy) * .06; hv += (hvT - hv) * .08;
+    var yaw = BASE_YAW + ox * (7 + hv * 6) + (1 - ee) * -13, pit = BASE_PIT - oy * 4 - hv * 3, ty = (1 - ee) * 26;
+    if (!still) { yaw += Math.sin(ts / 1900) * 3.2 + Math.sin(ts / 4300) * 2; pit += Math.sin(ts / 2600 + 1) * 1.2; ty += Math.sin(ts / 1400) * 2.5 + kick * 1.6; }
+    kick *= .85;
+    model.style.transform = 'translate3d(0,' + ty.toFixed(2) + 'px,0) rotateX(' + pit.toFixed(2) + 'deg) rotateY(' + yaw.toFixed(2) + 'deg)';
+  }
+  function fit() { wrap.style.transform = 'scale(' + (pc.clientWidth / 560 * .88).toFixed(4) + ')'; }
+  fit(); window.addEventListener('resize', fit); if ('ResizeObserver' in window) new ResizeObserver(fit).observe(pc);
+
+  /* ---------- putaran utama ---------- */
+  var last = 0, raf = 0;
+  function frame(ts) {
+    var dt = Math.min(50, ts - last || 16); last = ts; clock += dt; flick = Math.max(0, flick - dt);
+    while (ei < ev.length && ev[ei].t <= clock) apply(ev[ei++], ts);
+    if (clock >= total) { clock = 0; ei = 0; n1 = 0; n2 = 0; }
+    keys.forEach(function (k) { sync(k, ts); });
+    cur = (clock - lastTyped < 450) || ((clock / 520 | 0) % 2 === 0);
+    var sig = n1 + '|' + n2 + '|' + cur + '|' + (flick > 0 ? Math.random() : 0);
+    if (sig !== lastKey) { lastKey = sig; draw(); }
+    cam(ts, false); raf = requestAnimationFrame(frame);
+  }
+  n1 = 0; n2 = 0; draw(); cam(0, true);
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) { n1 = WORD.length; n2 = LINE2.length; cur = false; draw(); return; }
+  new IntersectionObserver(function (en) {      /* hanya jalan saat komputernya terlihat di layar */
+    if (en[0].isIntersecting) { enterT = performance.now(); last = enterT; raf = requestAnimationFrame(frame); }
+    else { cancelAnimationFrame(raf); keys.forEach(function (k) { k._u = 0; sync(k, 0); }); }
+  }, { threshold: .15 }).observe(pc);
 })();
 
 /* ===== 3. Galeri karya: klik folder -> jendela berisi gambar + video TikTok =====
