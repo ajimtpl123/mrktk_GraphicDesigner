@@ -82,6 +82,34 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   els.forEach(function (b) { io.observe(b); });
 })();
 
+/* ===== 2b-2. Pop up dari kotak "My experience" =====
+   Tombol dengan data-pop="skills" membuka #pop-skills, data-pop="exp" membuka #pop-exp (isinya ada di index.html).
+   Ditutup lewat tombol ×, klik area gelap, atau tombol Esc. */
+(function () {
+  var opener = null, current = null;
+  function open(pop, from) {
+    opener = from; current = pop; pop.hidden = false; document.documentElement.style.overflow = 'hidden';
+    pop.querySelector('.pop-x').focus();
+  }
+  function close() {
+    if (!current) return;
+    current.hidden = true; current = null; document.documentElement.style.overflow = '';
+    if (opener) opener.focus();
+  }
+  document.querySelectorAll('[data-pop]').forEach(function (btn) {
+    var pop = document.getElementById('pop-' + btn.dataset.pop); if (!pop) return;
+    btn.addEventListener('click', function () { open(pop, btn); });
+  });
+  document.querySelectorAll('.pop').forEach(function (pop) {
+    pop.addEventListener('click', function (e) { if (e.target.closest('[data-close]')) close(); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!current) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'Tab') { e.preventDefault(); current.querySelector('.pop-x').focus(); }   /* fokus tetap di dalam pop up */
+  });
+})();
+
 /* ===== 2c. Komputer retro di section Work =====
    - keyboard P-O-R-T-F-O-L-I-O menekan tombol satu per satu, layar ikut mengetik hurufnya
    - lalu kalimat kecil diketik sambil tombol-tombol lain ikut ditekan, layar dihapus, dan diulang terus

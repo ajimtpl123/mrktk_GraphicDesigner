@@ -39,7 +39,6 @@
       <a class="logo" href="#top"><img src="images/logo-mrktk.png" alt="mrktk"></a>
       <ul>
         <li><a href="#resume">Resume</a></li>
-        <li><a href="#about">About</a></li>
         <li><a href="#work">Work</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
@@ -87,12 +86,14 @@
       </div>
     </div>
 
-    <!-- PENGALAMAN: angka menghitung naik saat terlihat. GANTI: angka di data-to dan teks labelnya -->
+    <!-- PENGALAMAN: angka menghitung naik saat terlihat. GANTI: angka di data-to dan teks labelnya.
+         Ketiga kotak bisa diklik: 1 = buka pop up Experience, 2 = lompat ke section Selected Work, 3 = buka pop up Skills.
+         Isi pop up ada di bagian paling bawah file ini (id="pop-exp" dan id="pop-skills"). -->
     <div class="stats">
       <p class="stats-t">My experience</p>
-      <div class="stat"><b data-to="2"><span class="n">2</span><i>+</i></b><span>Years of experience<br>freelance &amp; full-time</span></div>
-      <div class="stat"><b data-to="100"><span class="n">100</span><i>+</i></b><span>Projects delivered<br>to clients</span></div>
-      <div class="stat"><b data-to="3"><span class="n">3</span><i>+</i></b><span>Creative skills</span></div>
+      <button class="stat" type="button" data-pop="exp" aria-haspopup="dialog"><b data-to="2"><span class="n">2</span><i>+</i></b><span>Years of experience<br>freelance &amp; full-time</span><em class="go" aria-hidden="true">+</em></button>
+      <a class="stat" href="#work"><b data-to="100"><span class="n">100</span><i>+</i></b><span>Projects delivered<br>to clients</span><em class="go" aria-hidden="true">&darr;</em></a>
+      <button class="stat" type="button" data-pop="skills" aria-haspopup="dialog"><b data-to="3"><span class="n">3</span><i>+</i></b><span>Creative skills</span><em class="go" aria-hidden="true">+</em></button>
     </div>
 
     <!-- TOOLS: gambar images/tools.png sudah berwarna sama dengan teks "Mijil Taji" -->
@@ -116,30 +117,6 @@
       </div>
     </div>
     -->
-  </div>
-</section>
-
-<section class="sec" id="about">
-  <div class="marquee tape" aria-hidden="true" data-text="About"></div>
-  <div class="wrap">
-    <div class="about" style="margin-top:56px">
-      <div>
-        <h2>About</h2>
-        <!-- GANTI: ceritakan dirimu dengan kata-katamu sendiri -->
-        <p>I'm a graphic designer with about two years of experience, working both freelance and full-time.</p>
-        <p>I love turning ideas into clear, memorable visuals, from a single illustration to a full product line.</p>
-      </div>
-      <div>
-        <h2>Skills</h2>
-        <ul class="skills">
-          <li>Digital illustration</li>
-          <li>Clothing design</li>
-          <li>Merchandise</li>
-          <li>Logo digitization</li>
-          <li>Social media design</li>
-        </ul>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -304,6 +281,43 @@
         <div class="sf" style="--x:85.65%; --y:42.62%; --w:13.13%; --dx:-1.4cqw; --dy:1.4cqw; --fd:12s; --wd:11s; --dl:-7.5s; --r:-8deg"><img src="images/merch/shirt-6.png" alt="mrktk design 6"></div>
         <div class="sf" style="--x:65.45%; --y:65.25%; --w:13.20%; --dx:1.2cqw; --dy:-2.0cqw; --fd:8s; --wd:7s; --dl:-3.4s; --r:10deg"><img src="images/merch/shirt-7.png" alt="mrktk design 7"></div>
         <div class="sf" style="--x:78.73%; --y:65.50%; --w:13.49%; --dx:-0.8cqw; --dy:1.8cqw; --fd:10s; --wd:9s; --dl:-5.1s; --r:-12deg"><img src="images/merch/shirt-8.png" alt="mrktk design 8"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= POP UP (terbuka saat kotak di "My experience" diklik) =================
+     Pop up SKILLS: tambah/hapus skill dengan menambah/menghapus baris <li> di bawah.
+     Pop up EXPERIENCE: sementara masih kosong. Isi daftar pengalaman kerjamu di <ul class="pop-jobs"> (contoh format ada di komentar). -->
+<div class="pop" id="pop-skills" role="dialog" aria-modal="true" aria-labelledby="pop-skills-t" hidden>
+  <div class="pop-bg" data-close></div>
+  <div class="pop-box" style="--c1:#FF7A18; --c2:#F22DAA; --fg:#0D0D0E">
+    <div class="pop-top"><h3 id="pop-skills-t">Skills</h3><button class="pop-x" type="button" data-close aria-label="Close">&times;</button></div>
+    <div class="pop-body">
+      <ul class="skills">
+        <li>Digital illustration</li>
+        <li>Clothing design</li>
+        <li>Merchandise</li>
+        <li>Social Media Design</li>
+        <li>Creative Thinking</li>
+        <li>Branding</li>
+        <li>Team Work</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="pop" id="pop-exp" role="dialog" aria-modal="true" aria-labelledby="pop-exp-t" hidden>
+  <div class="pop-bg" data-close></div>
+  <div class="pop-box" style="--c1:#2B45FF; --c2:#B14CFF; --fg:#FFFFFF">
+    <div class="pop-top"><h3 id="pop-exp-t">Experience</h3><button class="pop-x" type="button" data-close aria-label="Close">&times;</button></div>
+    <div class="pop-body">
+      <!-- GANTI: hapus baris <p class="pop-empty"> di bawah, lalu aktifkan daftar ini (hapus tanda komentarnya) dan isi dengan pengalamanmu.
+      <ul class="pop-jobs">
+        <li><time>2026</time><div><h4>Nama posisi, nama perusahaan</h4><p>Deskripsi singkat pekerjaanmu.</p></div></li>
+        <li><time>2025</time><div><h4>Nama posisi, nama perusahaan</h4><p>Deskripsi singkat pekerjaanmu.</p></div></li>
+      </ul>
+      -->
+      <p class="pop-empty">My work history is coming soon.</p>
     </div>
   </div>
 </div>

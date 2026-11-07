@@ -134,10 +134,7 @@ h2::after { content: ""; display: block; height: 4px; width: 0; background: var(
 .card h3 { font-family: var(--head); font-weight: 700; font-size: 1.4rem; margin-top: 16px; }
 .card p { color: var(--muted); max-width: 52ch; }
 
-/* ========== ABOUT ========== */
-.about { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
-.about h2 { margin-top: 0; }
-.about p + p { margin-top: 16px; }
+/* ========== SKILLS (pill di dalam pop up Skills) ========== */
 .skills { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
 .skills li { border: 1px solid var(--ink); border-radius: 999px; padding: 6px 16px; font-size: .95rem; transition: background .2s, color .2s; }
 .skills li:hover { background: var(--ink); color: var(--bg); }
@@ -194,7 +191,7 @@ h2::after { content: ""; display: block; height: 4px; width: 0; background: var(
 footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 
 /* ========== EFEK KURSOR (hanya aktif di laptop/PC) ========== */
-.has-cursor, .has-cursor a { cursor: none; }
+.has-cursor, .has-cursor a, .has-cursor button { cursor: none; }
 .arrow, .ring { position: fixed; left: 0; top: 0; pointer-events: none; opacity: 0; transition: opacity .2s; }
 
 /* kursor panah 3D glossy: .arrow mengikuti mouse, .arrow-in miring mengikuti gerakan, .arrow-3d berputar terbalik */
@@ -210,11 +207,30 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 .show { opacity: 1; }
 .dust { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998; }   /* debu dan asap berwarna */
 
+/* ========== POP UP (Skills & Experience) ========== */
+.pop { position: fixed; inset: 0; z-index: 900; display: grid; place-items: center; padding: clamp(10px, 3vw, 40px); }
+.pop[hidden] { display: none; }
+.pop-bg { position: absolute; inset: 0; background: rgba(5,5,6,.82); backdrop-filter: blur(6px); }
+.pop-box { position: relative; width: min(560px, 100%); max-height: 100%; display: flex; flex-direction: column; overflow: hidden; background: #131315; border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 30px 80px rgba(0,0,0,.6); animation: pop-in .28s cubic-bezier(.2,.9,.3,1.2); }
+.pop-top { display: flex; align-items: center; gap: 16px; padding: 22px clamp(18px, 3vw, 32px); background: linear-gradient(135deg, var(--c1), var(--c2)); color: var(--fg); }
+.pop-top h3 { flex: 1; font-family: var(--head); font-weight: 800; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.05; letter-spacing: -.03em; }
+.pop-x { width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(13,13,14,.88); color: #fff; font-size: 1.7rem; line-height: 1; flex-shrink: 0; cursor: pointer; }
+.pop-body { padding: clamp(20px, 3vw, 32px); overflow-y: auto; overscroll-behavior: contain; }
+.pop .skills { gap: 12px; }
+.pop .skills li { padding: 9px 20px; font-size: 1.05rem; }
+.pop-empty { color: var(--muted); text-align: center; padding: 24px 0; }
+.pop-jobs { list-style: none; padding: 0; display: grid; gap: 22px; }
+.pop-jobs li { display: grid; grid-template-columns: 64px 1fr; gap: 16px; }
+.pop-jobs time { color: var(--muted); font-weight: 500; }
+.pop-jobs h4 { font-family: var(--head); font-weight: 700; font-size: 1.15rem; line-height: 1.25; }
+.pop-jobs p { margin-top: 4px; color: var(--muted); }
+@keyframes pop-in { from { opacity: 0; scale: .94; translate: 0 14px; } }
+@media (prefers-reduced-motion: reduce) { .pop-box { animation: none; } }
+
 /* ========== HP / LAYAR KECIL ========== */
 @media (max-width: 720px) {
   .card, .card.wide { grid-column: span 12; }
   .card.wide .thumb { aspect-ratio: 4 / 3; }
-  .about { grid-template-columns: 1fr; gap: 32px; }
   .job { grid-template-columns: 1fr; gap: 4px; }
   nav ul { gap: 16px; }
 }
@@ -247,10 +263,28 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 /* ========== RESUME: pengalaman + tools ========== */
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 40px; margin-top: 104px; padding-top: 44px; border-top: 1px solid var(--line); }
 .stats-t { grid-column: 1 / -1; text-align: center; font-family: var(--head); font-weight: 700; font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -0.02em; }
-.stat { text-align: center; }
+/* tiap angka = kotak yang bisa diklik (tombol atau link). Efek: border menyala + kilau saat hover/fokus, lencana + / ↓ di pojok */
+.stat { position: relative; overflow: hidden; isolation: isolate; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; width: 100%; padding: clamp(28px, 4vw, 44px) 20px clamp(24px, 3vw, 36px); border: 1px solid var(--line); border-radius: 28px; background: rgba(236,236,232,.02); color: inherit; font: inherit; text-align: center; text-decoration: none; cursor: pointer; transition: border-color .25s, background .25s, translate .25s; }
 .stat b { display: block; font-family: var(--head); font-weight: 800; font-size: clamp(3.4rem, 8.5vw, 7rem); line-height: 1; letter-spacing: -.04em; }
 .stat b i { font-style: normal; color: var(--accent); }
 .stat > span { display: block; margin-top: 12px; color: var(--muted); font-weight: 500; line-height: 1.35; }
+.stat .go { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; font: 700 1.15rem/1 var(--head); font-style: normal; color: var(--muted); transition: background .25s, color .25s, border-color .25s, rotate .35s; }
+/* kilau: garis cahaya miring menyapu kotak */
+.stat::before { content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; left: 0; width: 45%; background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,.16) 50%, transparent 100%); translate: -140% 0; pointer-events: none; }
+.stat:hover, .stat:focus-visible { border-color: var(--accent); background: rgba(255,82,82,.07); translate: 0 -4px; }
+.stat:hover::before, .stat:focus-visible::before { animation: stat-shine .9s ease; }
+.stat:hover .go, .stat:focus-visible .go { background: var(--accent); border-color: var(--accent); color: #0D0D0E; }
+.stat:hover .go { rotate: 90deg; }
+.stat:active { translate: 0 -1px; }
+@keyframes stat-shine { to { translate: 340% 0; } }
+/* kilau pelan tiap beberapa detik supaya di HP (tanpa hover) tetap kelihatan bisa diklik */
+@media (prefers-reduced-motion: no-preference) {
+  .stat::before { animation: stat-idle 7s ease infinite; }
+  .stats > :nth-child(3)::before { animation-delay: 2.3s; }   /* kotak ke-2 dan ke-3 berkilau bergantian */
+  .stats > :nth-child(4)::before { animation-delay: 4.6s; }
+  .stat:hover::before, .stat:focus-visible::before { animation: stat-shine .9s ease; }
+}
+@keyframes stat-idle { 0%, 82% { translate: -140% 0; } 100% { translate: 340% 0; } }
 .tools-wrap { margin-top: 104px; text-align: center; }
 .tools-wrap h2 { margin: 0 auto 28px; }
 .tools-wrap h2::after { display: none; }
