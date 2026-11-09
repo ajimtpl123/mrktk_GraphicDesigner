@@ -415,7 +415,13 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 @keyframes scIn { from { opacity: 0; translate: 0 28px; } }
 .sc-x { position: fixed; top: 18px; right: 22px; z-index: 5; padding: .65em 1.3em; border: 0; border-radius: 999px; background: #0D0D0E; color: #fff; font-family: var(--head); font-weight: 700; font-size: .95rem; }
 .sc-stage { container-type: inline-size; position: relative; width: min(100%, 1600px); margin: 0 auto auto; aspect-ratio: 1401 / 800; }
+.sc-view { position: absolute; inset: 0; }
 .sc-scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent 100%); mask-image: linear-gradient(to bottom, #000 86%, transparent 100%); }
+/* model: foto 2 orang (PNG transparan) berdiri di atas karpet. Posisi & ukuran dalam % dari panggung supaya ikut skala layar */
+.sc-model { position: absolute; left: 22.6%; top: 9.7%; width: 37.3%; z-index: 1; pointer-events: none; }
+.sc-model img { display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; will-change: transform; }
+.sc-model img:not([src]) { visibility: hidden; }
+.sc-shadow { position: absolute; left: 24.6%; top: 90.5%; width: 34%; height: 4.6%; border-radius: 50%; background: radial-gradient(closest-side, rgba(45,25,20,.32), rgba(45,25,20,0)); mix-blend-mode: multiply; pointer-events: none; }
 .sc-text { position: absolute; left: 3.57%; top: 5%; width: 22%; z-index: 3; font-size: max(11.5px, 1cqw); line-height: 1.55; }
 .sc-logo { display: block; width: 6.6cqw; min-width: 64px; height: auto; margin-bottom: 1.7cqw; }
 .sc-type { position: relative; font-weight: 500; letter-spacing: -.005em; }
@@ -427,10 +433,28 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 .typed .sc-pills { opacity: 1; translate: 0 0; }
 .sc-pills span { padding: .32em .9em; border: 1px solid #0D0D0E; border-radius: 999px; font-weight: 500; font-size: .82em; white-space: nowrap; }
 .sc-shirts { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+/* petunjuk: catatan tulisan tangan (font serif italic seperti "hi!" di home) + panah kecil yang menunjuk ke baju */
+.sc-hint { position: absolute; left: 60%; top: 6%; z-index: 3; display: flex; align-items: flex-end; gap: .35em; max-width: max(18cqw, 160px); font-family: var(--serif); font-style: italic; font-size: max(14px, 1.5cqw); line-height: 1.12; color: #0D0D0E; pointer-events: none; transition: opacity .45s ease, translate .45s ease; }
+.sc-hint b { font-weight: inherit; }
+.sc-hint > span { text-wrap: balance; }
+.sc-hint .h-tap { display: none; }
+@media (hover: none) { .sc-hint .h-click { display: none; } .sc-hint .h-tap { display: inline; } }
+.sc-hint svg { flex: none; width: 1.7em; height: auto; margin-bottom: -.5em; animation: hintBob 1.9s ease-in-out infinite; }
+.sc:not([hidden]) .sc-hint { animation: hintIn .7s cubic-bezier(.2,.7,.2,1) 1.3s backwards; }
+.sc.used .sc-hint { opacity: 0; translate: 0 -6px; }
+@keyframes hintIn { from { opacity: 0; translate: 0 10px; } }
+@keyframes hintBob { 50% { translate: 0 .28em; } }
+@media (prefers-reduced-motion: reduce) { .sc-hint svg, .sc:not([hidden]) .sc-hint { animation: none; } }
 /* baju mengambang tanpa gravitasi: .sf melayang pelan ke segala arah, gambar di dalamnya bergoyang berputar (loop) seperti shape di home */
 .sf { position: absolute; left: var(--x); top: var(--y); width: var(--w); pointer-events: auto; animation: sfDrift var(--fd) ease-in-out var(--dl) infinite; }
 .sf img { display: block; width: 100%; height: auto; filter: drop-shadow(0 1.4cqw 1.2cqw rgba(40,20,40,.22)); animation: sfWob var(--wd) ease-in-out var(--dl) infinite alternate; transition: scale .35s ease; }
-.sf:hover img { scale: 1.08; }
+/* baju yang terhubung dengan foto model (punya data-model): bisa diklik, baju yang sedang dipakai model diberi label "On model" */
+.sf[data-model] { cursor: pointer; }
+.has-cursor .sf[data-model] { cursor: none; }
+.sf[data-model]:hover img, .sf.on img { scale: 1.08; }
+.sf[data-model]:focus-visible { outline: 2px solid #0D0D0E; outline-offset: .8cqw; border-radius: 1cqw; }
+.sf::after { content: "On model"; position: absolute; left: 50%; top: -1.1cqw; translate: -50% 4px; padding: .3em .85em; border-radius: 999px; background: #0D0D0E; color: #fff; font: 600 max(10px, .72cqw)/1.2 var(--body); letter-spacing: .01em; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .3s ease, translate .3s ease; }
+.sf.on::after { opacity: 1; translate: -50% 0; }
 @keyframes sfDrift { 0%, 100% { translate: 0 0; } 25% { translate: var(--dx) calc(var(--dy) * -1); } 50% { translate: calc(var(--dx) * -.7) var(--dy); } 75% { translate: calc(var(--dx) * .6) calc(var(--dy) * .4); } }
 @keyframes sfWob { from { rotate: calc(var(--r) * -1); translate: 0 .6cqw; } to { rotate: var(--r); translate: 0 -.8cqw; } }
 @media (prefers-reduced-motion: reduce) { .sf, .sf img { animation: none; } }
@@ -439,8 +463,14 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
   .sc-text { position: static; width: auto; order: 1; font-size: 15px; }
   .sc-logo { width: 72px; margin-bottom: 20px; }
   .sc-pills { margin-top: 18px; }
-  .sc-scene { position: static; order: 2; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 36% 50%; border-radius: 18px; -webkit-mask-image: none; mask-image: none; }
-  .sc-shirts { position: static; order: 3; display: grid; grid-template-columns: 1fr 1fr; gap: 18px 12px; padding-bottom: 12px; }
+  .sc-view { position: relative; inset: auto; order: 2; aspect-ratio: 4 / 5; border-radius: 18px; overflow: hidden; }
+  .sc-scene { object-fit: cover; object-position: 36% 50%; -webkit-mask-image: none; mask-image: none; }
+  .sc-model { left: 50%; top: auto; bottom: 2%; width: 84%; translate: -50% 0; }
+  .sc-shadow { left: 15%; top: auto; bottom: 1%; width: 70%; height: 5%; }
+  .sc-hint { position: static; order: 3; max-width: none; justify-content: center; align-items: center; gap: .5em; font-size: 19px; margin: -6px 0 -10px; }
+  .sc-hint > span { text-align: right; max-width: 15em; }
+  .sc-hint svg { margin-bottom: 0; }
+  .sc-shirts { position: static; order: 4; display: grid; grid-template-columns: 1fr 1fr; gap: 18px 12px; padding-bottom: 12px; }
   .sf { position: relative; left: auto; top: auto; width: 100%; --dx: 6px; --dy: 8px; }
   .sf img { filter: drop-shadow(0 10px 10px rgba(40,20,40,.22)); }
 }

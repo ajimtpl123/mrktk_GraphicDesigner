@@ -8,6 +8,8 @@ Semua gambarnya ada di folder  images/merch/  :
    scene.jpg      = foto model di halaman showcase (latar sudah bersih tanpa teks)
    logo.png       = logo "M" di kiri atas
    shirt-1.png ... shirt-8.png = tiap desain baju (PNG transparan, yang melayang)
+   model-1.webp ... model-8.webp = foto 2 model yang memakai baju nomor yang sama
+      (klik baju melayang -> model berganti ke model-N.webp)
 Untuk mengganti: upload file baru dengan NAMA YANG SAMA ke folder itu di GitHub
 (Add file -> Upload files). File lama otomatis tertimpa.
 Tip: kalau punya file desain baju yang lebih tajam (PNG transparan), pakai itu

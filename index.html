@@ -261,26 +261,36 @@
 <!-- GSAP (library animasi, gratis) -->
 <!-- ================= SHOWCASE: Merch & Clothing Design (terbuka saat folder 01 diklik) =================
      GANTI FOTO: timpa file di folder images/merch/ dengan nama yang sama
-       scene.jpg = foto model, shirt-1.png ... shirt-8.png = tiap desain baju (PNG transparan), logo.png = logo
+       scene.jpg = foto latar (ruangan, TANPA model), shirt-1.png ... shirt-8.png = tiap desain baju (PNG transparan), logo.png = logo
+       model-1.webp ... model-8.webp = foto model yang memakai desain baju nomor 1 sampai 8 (PNG/WebP transparan, ukuran & pose sama)
+     MENGHUBUNGKAN BAJU DENGAN MODEL: di baris <div class="sf" ...> baju yang bersangkutan, tambahkan 4 atribut ini:
+       data-model="images/merch/model-5.webp" data-alt="deskripsi foto" role="button" tabindex="0" aria-pressed="false"
+       Baju yang punya data-model otomatis bisa diklik. Model awal = baju yang punya atribut data-start (kalau tidak ada, baju pertama yang punya data-model).
      GANTI TEKS: ubah isi data-text di bawah ini (teks yang "diketik") -->
 <div class="sc" id="showcase-merch" role="dialog" aria-modal="true" aria-label="mrktk, Clothing Design" hidden>
   <button class="sc-x" type="button">&larr; Back to work</button>
   <div class="sc-stage">
-    <img class="sc-scene" src="images/merch/scene.jpg" alt="Two models wearing mrktk oversized tees">
+    <div class="sc-view">
+      <img class="sc-scene" src="images/merch/scene.jpg" alt="">
+      <div class="sc-shadow"></div>
+      <div class="sc-model"><img alt="Two models wearing a mrktk oversized tee" draggable="false"></div>
+    </div>
     <div class="sc-text">
       <img class="sc-logo" src="images/merch/logo.png" alt="mrktk">
       <p class="sc-type" data-text="*mrktk* is a personal clothing design project focused on boxy, oversized streetwear tees. The designs draw inspiration from the raw, unpolished look of bootleg graphics, skater style, and streetwear culture more broadly. Through this project, I explore how to turn these references into relaxed graphics and silhouettes that still carry a distinct character and visual identity of their own.">*mrktk* is a personal clothing design project focused on boxy, oversized streetwear tees. The designs draw inspiration from the raw, unpolished look of bootleg graphics, skater style, and streetwear culture more broadly. Through this project, I explore how to turn these references into relaxed graphics and silhouettes that still carry a distinct character and visual identity of their own.</p>
       <div class="sc-pills"><span>Clothing Design</span><span>Personal Project</span></div>
     </div>
+    <!-- PETUNJUK kecil di atas baju. GANTI teksnya di sini. Hilang otomatis setelah pengunjung mengklik salah satu baju. "Click" tampil di komputer, "Tap" di layar sentuh. -->
+    <p class="sc-hint"><span><b class="h-click">Click</b><b class="h-tap">Tap</b> a shirt to see the design on the model</span><svg viewBox="0 0 40 46" width="40" height="46" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3C22 5 31 15 25 38"/><path d="M17 30l8 9 7-10"/></svg></p>
     <div class="sc-shirts">
-        <div class="sf" style="--x:58.82%; --y:19.62%; --w:13.13%; --dx:1.1cqw; --dy:1.6cqw; --fd:9.5s; --wd:8s; --dl:-1.3s; --r:9deg"><img src="images/merch/shirt-1.png" alt="mrktk design 1"></div>
-        <div class="sf" style="--x:72.52%; --y:17.12%; --w:12.85%; --dx:-1.0cqw; --dy:2.0cqw; --fd:11s; --wd:10s; --dl:-4.2s; --r:-11deg"><img src="images/merch/shirt-2.png" alt="mrktk design 2"></div>
-        <div class="sf" style="--x:85.44%; --y:19.75%; --w:13.28%; --dx:1.4cqw; --dy:-1.5cqw; --fd:8.5s; --wd:7s; --dl:-2.6s; --r:8deg"><img src="images/merch/shirt-3.png" alt="mrktk design 3"></div>
-        <div class="sf" style="--x:58.89%; --y:42.50%; --w:13.35%; --dx:-1.2cqw; --dy:-1.8cqw; --fd:10.5s; --wd:9s; --dl:-6.0s; --r:-10deg"><img src="images/merch/shirt-4.png" alt="mrktk design 4"></div>
-        <div class="sf" style="--x:72.52%; --y:42.50%; --w:12.85%; --dx:0.9cqw; --dy:2.2cqw; --fd:9s; --wd:8s; --dl:-0.6s; --r:12deg"><img src="images/merch/shirt-5.png" alt="mrktk design 5"></div>
-        <div class="sf" style="--x:85.65%; --y:42.62%; --w:13.13%; --dx:-1.4cqw; --dy:1.4cqw; --fd:12s; --wd:11s; --dl:-7.5s; --r:-8deg"><img src="images/merch/shirt-6.png" alt="mrktk design 6"></div>
-        <div class="sf" style="--x:65.45%; --y:65.25%; --w:13.20%; --dx:1.2cqw; --dy:-2.0cqw; --fd:8s; --wd:7s; --dl:-3.4s; --r:10deg"><img src="images/merch/shirt-7.png" alt="mrktk design 7"></div>
-        <div class="sf" style="--x:78.73%; --y:65.50%; --w:13.49%; --dx:-0.8cqw; --dy:1.8cqw; --fd:10s; --wd:9s; --dl:-5.1s; --r:-12deg"><img src="images/merch/shirt-8.png" alt="mrktk design 8"></div>
+        <div class="sf" data-model="images/merch/model-1.webp" data-alt="Two models wearing the Life Crisis tee" role="button" tabindex="0" aria-pressed="false" aria-label="Life Crisis: show on model" style="--x:58.82%; --y:19.62%; --w:13.13%; --dx:1.1cqw; --dy:1.6cqw; --fd:9.5s; --wd:8s; --dl:-1.3s; --r:9deg"><img src="images/merch/shirt-1.png" alt=""></div>
+        <div class="sf" data-model="images/merch/model-2.webp" data-alt="Two models wearing The Protector hoodie" role="button" tabindex="0" aria-pressed="false" aria-label="The Protector: show on model" style="--x:72.52%; --y:17.12%; --w:12.85%; --dx:-1.0cqw; --dy:2.0cqw; --fd:11s; --wd:10s; --dl:-4.2s; --r:-11deg"><img src="images/merch/shirt-2.png" alt=""></div>
+        <div class="sf" data-start data-model="images/merch/model-3.webp" data-alt="Two models wearing the Boring Life tee" role="button" tabindex="0" aria-pressed="false" aria-label="Boring Life: show on model" style="--x:85.44%; --y:19.75%; --w:13.28%; --dx:1.4cqw; --dy:-1.5cqw; --fd:8.5s; --wd:7s; --dl:-2.6s; --r:8deg"><img src="images/merch/shirt-3.png" alt="" ></div>
+        <div class="sf" data-model="images/merch/model-4.webp" data-alt="Two models wearing the Graceful Butterfly tee, seen from the back" role="button" tabindex="0" aria-pressed="false" aria-label="Graceful Butterfly: show on model" style="--x:58.89%; --y:42.50%; --w:13.35%; --dx:-1.2cqw; --dy:-1.8cqw; --fd:10.5s; --wd:9s; --dl:-6.0s; --r:-10deg"><img src="images/merch/shirt-4.png" alt="" ></div>
+        <div class="sf" data-model="images/merch/model-5.webp" data-alt="Two models wearing the Hysteria tee" role="button" tabindex="0" aria-pressed="false" aria-label="Hysteria: show on model" style="--x:72.52%; --y:42.50%; --w:12.85%; --dx:0.9cqw; --dy:2.2cqw; --fd:9s; --wd:8s; --dl:-0.6s; --r:12deg"><img src="images/merch/shirt-5.png" alt=""></div>
+        <div class="sf" data-model="images/merch/model-6.webp" data-alt="Two models wearing the Dancing Dead tee" role="button" tabindex="0" aria-pressed="false" aria-label="Dancing Dead: show on model" style="--x:85.65%; --y:42.62%; --w:13.13%; --dx:-1.4cqw; --dy:1.4cqw; --fd:12s; --wd:11s; --dl:-7.5s; --r:-8deg"><img src="images/merch/shirt-6.png" alt=""></div>
+        <div class="sf" data-model="images/merch/model-7.webp" data-alt="Two models wearing the Feel Free tee, seen from the back" role="button" tabindex="0" aria-pressed="false" aria-label="Feel Free: show on model" style="--x:65.45%; --y:65.25%; --w:13.20%; --dx:1.2cqw; --dy:-2.0cqw; --fd:8s; --wd:7s; --dl:-3.4s; --r:10deg"><img src="images/merch/shirt-7.png" alt=""></div>
+        <div class="sf" data-model="images/merch/model-8.webp" data-alt="Two models wearing the Floral tee" role="button" tabindex="0" aria-pressed="false" aria-label="Floral: show on model" style="--x:78.73%; --y:65.50%; --w:13.49%; --dx:-0.8cqw; --dy:1.8cqw; --fd:10s; --wd:9s; --dl:-5.1s; --r:-12deg"><img src="images/merch/shirt-8.png" alt=""></div>
     </div>
   </div>
 </div>

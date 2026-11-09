@@ -399,6 +399,51 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   window.addEventListener('popstate', function () { if (!sc.hidden && location.hash !== '#merch') close(true); });
 })();
 
+/* ===== 3c. Showcase Merch: klik baju melayang = model berputar & berganti baju =====
+   Baju yang punya atribut data-model (lihat index.html) bisa diklik. Foto model lama berputar sampai menyamping,
+   fotonya diganti, lalu foto baru berputar masuk. Kalau pengguna memilih "reduce motion", diganti efek memudar. */
+(function () {
+  var sc = document.getElementById('showcase-merch'); if (!sc) return;
+  var shirts = [].slice.call(sc.querySelectorAll('.sf[data-model]')), mimg = sc.querySelector('.sc-model img');
+  if (!shirts.length || !mimg) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var OUT_MS = 340, IN_MS = 520, P = 'perspective(1400px) ';                 /* OUT_MS / IN_MS = lama putaran keluar / masuk (milidetik) */
+  var cache = {}, busy = false, want = null, target = null;
+
+  function preload(src) { if (!cache[src]) { var i = new Image(); i.src = src; cache[src] = i; } return cache[src]; }
+  function ready(src) { var i = preload(src); return (i.decode ? i.decode() : Promise.resolve()).catch(function () {}); }
+  function setActive(el) { shirts.forEach(function (s) { var on = s === el; s.classList.toggle('on', on); s.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
+  function swap(el) { mimg.src = el.dataset.model; mimg.alt = el.dataset.alt || ''; }
+
+  function run() {
+    var el = want; want = null; busy = true;
+    var out = mimg.animate(reduce ? [{ opacity: 1 }, { opacity: 0 }] : [{ transform: P + 'rotateY(0deg)' }, { transform: P + 'rotateY(90deg) scale(.97)' }],
+                           { duration: reduce ? 160 : OUT_MS, easing: 'cubic-bezier(.5,0,.9,.55)', fill: 'forwards' });
+    Promise.all([out.finished, ready(el.dataset.model)]).then(function () {
+      swap(el);
+      var inn = mimg.animate(reduce ? [{ opacity: 0 }, { opacity: 1 }] : [{ transform: P + 'rotateY(-90deg) scale(.97)' }, { transform: P + 'rotateY(0deg)' }],
+                             { duration: reduce ? 160 : IN_MS, easing: 'cubic-bezier(.15,.8,.3,1)' });
+      out.cancel();
+      return inn.finished;
+    }).catch(function () {}).then(function () { busy = false; if (want) run(); });
+  }
+  function show(el) {
+    if (busy && el === target) return;                                         /* klik baju yang sama saat sedang berputar: abaikan */
+    setActive(el); target = el; want = el; if (!busy) run();
+    sc.classList.add('used');                                                  /* petunjuk "Click a shirt..." sudah tidak perlu lagi */
+    var view = sc.querySelector('.sc-view'), r = view.getBoundingClientRect();    /* di HP model ada di atas grid baju: geser layar supaya putarannya terlihat */
+    if (getComputedStyle(view).position === 'relative' && (r.top < 0 || r.bottom > window.innerHeight)) view.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+  }
+
+  shirts.forEach(function (s) {
+    s.addEventListener('click', function () { show(s); });
+    s.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(s); } });
+  });
+  var start = sc.querySelector('.sf[data-start]') || shirts[0];
+  swap(start); setActive(start); target = start;                    /* model awal = baju pertama yang terhubung */
+  window.addEventListener('load', function () { shirts.forEach(function (s) { preload(s.dataset.model); }); });
+})();
+
 /* ===== 1b. Headline bergerak saat di-scroll: hitung progress 0 sampai 1 ===== */
 var hero = document.querySelector('.hero2');
 if (hero && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -729,7 +774,7 @@ if (hasMouse) {
   // lingkaran berubah bentuk saat di atas link atau kartu project
   document.addEventListener('mouseover', function (e) {
     var onCard = e.target.closest('.card');
-    var onLink = e.target.closest('a, button');
+    var onLink = e.target.closest('a, button, [data-model]');
     ring.classList.toggle('is-view', !!onCard);
     ring.classList.toggle('is-link', !!onLink && !onCard);
   });
