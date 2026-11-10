@@ -364,39 +364,61 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   });
 })();
 
-/* ===== 3b. Halaman showcase untuk folder "Merch & Clothing Design": teks diketik + baju melayang ===== */
+/* ===== 3b. Halaman showcase untuk folder "Merch & Clothing Design": teks diketik + pindah antar project =====
+   Folder 01 punya 2 halaman (semua .sc yang punya data-hash): 01 Clothing (#showcase-merch) dan 02 Merch (#showcase-goods).
+   Tombol kecil di kanan atas (data-sc-go) dipakai untuk pindah antar halaman. */
 (function () {
-  var sc = document.getElementById('showcase-merch'), trig = document.querySelector('.folder[data-showcase="merch"]');
-  if (!sc || !trig) return;
-  var typ = sc.querySelector('.sc-type'), full = typ.dataset.text || typ.textContent, back = sc.querySelector('.sc-x');
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches, timer = 0, lastFocus = null, TYPE_MS = 15;   /* TYPE_MS = kecepatan mengetik (makin kecil makin cepat) */
-  typ.innerHTML = '<span class="ghost"></span><span class="live"></span>';          /* "ghost" menahan tinggi paragraf supaya tidak loncat saat mengetik */
-  var ghost = typ.firstChild, live = typ.lastChild; ghost.textContent = full;
+  var trig = document.querySelector('.folder[data-showcase="merch"]'), panes = [].slice.call(document.querySelectorAll('.sc[data-hash]'));
+  if (!trig || !panes.length) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches, TYPE_MS = 15;   /* TYPE_MS = kecepatan mengetik (makin kecil makin cepat) */
+  var cur = null, lastFocus = null, byId = {};
 
-  function typeText() {
-    clearTimeout(timer); sc.classList.remove('typed'); typ.classList.remove('typing'); live.textContent = '';
-    if (reduce) { live.textContent = full; sc.classList.add('typed'); return; }
-    var i = 0; typ.classList.add('typing');
-    timer = setTimeout(function step() {
-      i += 1; live.textContent = full.slice(0, i);
-      if (i < full.length) timer = setTimeout(step, TYPE_MS + (/[.,]/.test(full[i - 1]) ? 140 : 0));
-      else { typ.classList.remove('typing'); sc.classList.add('typed'); }
-    }, 650);
-  }
-  function open(push) {
-    lastFocus = document.activeElement; sc.hidden = false; sc.scrollTop = 0; document.documentElement.style.overflow = 'hidden';
-    typeText(); back.focus({ preventScroll: true });
-    if (push) { try { history.pushState({ sc: 1 }, '', '#merch'); } catch (e) {} }
+  panes.forEach(function (sc) {
+    var typ = sc.querySelector('.sc-type'), full = typ.dataset.text || typ.textContent, st = { sc: sc, timer: 0 };
+    typ.innerHTML = '<span class="ghost"></span><span class="live"></span>';          /* "ghost" menahan tinggi paragraf supaya tidak loncat saat mengetik */
+    var ghost = typ.firstChild, live = typ.lastChild; ghost.textContent = full;
+    st.type = function () {
+      clearTimeout(st.timer); sc.classList.remove('typed'); typ.classList.remove('typing'); live.textContent = '';
+      if (reduce) { live.textContent = full; sc.classList.add('typed'); return; }
+      var i = 0; typ.classList.add('typing');
+      st.timer = setTimeout(function step() {
+        i += 1; live.textContent = full.slice(0, i);
+        if (i < full.length) st.timer = setTimeout(step, TYPE_MS + (/[.,]/.test(full[i - 1]) ? 140 : 0));
+        else { typ.classList.remove('typing'); sc.classList.add('typed'); }
+      }, 650);
+    };
+    st.stop = function () { clearTimeout(st.timer); };
+    byId[sc.id] = st;
+  });
+
+  function open(sc, how) {                                    /* how: 'push' (buka dari folder) | 'replace' (pindah halaman) */
+    var st = byId[sc.id], old = cur;
+    if (!old) { lastFocus = document.activeElement; document.documentElement.style.overflow = 'hidden'; }
+    cur = sc; sc.hidden = false; sc.scrollTop = 0; st.type();
+    if (old && old !== sc) { byId[old.id].stop(); setTimeout(function () { if (cur !== old) old.hidden = true; }, reduce ? 0 : 560); }   /* halaman lama menunggu sampai yang baru selesai muncul */
+    sc.querySelector('.sc-x').focus({ preventScroll: true });
+    try { if (how === 'push') history.pushState({ sc: 1 }, '', sc.dataset.hash); else if (how === 'replace') history.replaceState({ sc: 1 }, '', sc.dataset.hash); } catch (e) {}
   }
   function close(pop) {
-    clearTimeout(timer); sc.hidden = true; document.documentElement.style.overflow = '';
+    if (!cur) return;
+    var sc = cur, hash = sc.dataset.hash; cur = null;
+    byId[sc.id].stop(); panes.forEach(function (p) { p.hidden = true; }); document.documentElement.style.overflow = '';
     if (lastFocus) lastFocus.focus({ preventScroll: true });
-    if (!pop && location.hash === '#merch') { try { history.back(); } catch (e) {} }
+    if (!pop && location.hash === hash) { try { history.back(); } catch (e) {} }
   }
-  trig.addEventListener('click', function (e) { e.preventDefault(); open(true); });
-  back.addEventListener('click', function () { close(false); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !sc.hidden) close(false); });
-  window.addEventListener('popstate', function () { if (!sc.hidden && location.hash !== '#merch') close(true); });
+  trig.addEventListener('click', function (e) { e.preventDefault(); open(byId['showcase-merch'].sc, 'push'); });
+  panes.forEach(function (sc) {
+    sc.querySelector('.sc-x').addEventListener('click', function () { close(false); });
+    [].forEach.call(sc.querySelectorAll('[data-sc-go]'), function (b) {
+      b.addEventListener('click', function () { var to = byId[b.dataset.scGo]; if (to && to.sc !== cur) open(to.sc, 'replace'); });
+    });
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && cur && !cur.classList.contains('gp-open')) close(false); });
+  window.addEventListener('popstate', function () {
+    if (!cur) return;
+    var to = panes.filter(function (p) { return p.dataset.hash === location.hash; })[0];
+    if (!to) close(true); else if (to !== cur) open(to, 'none');
+  });
 })();
 
 /* ===== 3c. Showcase Merch: klik baju melayang = model berputar & berganti baju =====
@@ -442,6 +464,56 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   var start = sc.querySelector('.sf[data-start]') || shirts[0];
   swap(start); setActive(start); target = start;                    /* model awal = baju pertama yang terhubung */
   window.addEventListener('load', function () { shirts.forEach(function (s) { preload(s.dataset.model); }); });
+})();
+
+/* ===== 3d. Showcase 02 (Merch): klik item = pop up preview yang melayang =====
+   Tiap tombol .gd-hot (atau item di daftar HP) punya data-gp-img (gambar preview), data-gp-group (kategori), data-gp-title (nama).
+   Pop up muncul "melompat" dari posisi item yang diklik, lalu gambarnya melayang pelan seperti baju di halaman Clothing. */
+(function () {
+  var sc = document.getElementById('showcase-goods'); if (!sc) return;
+  var pop = sc.querySelector('.gp'), box = pop.querySelector('.gp-box'), art = pop.querySelector('.gp-art'),
+      gEl = pop.querySelector('.gp-g'), tEl = pop.querySelector('.gp-t'), xBtn = pop.querySelector('.gp-x');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches, lastBtn = null, anim = null, tOut = 0;
+  var btns = [].slice.call(sc.querySelectorAll('[data-gp-img]'));
+
+  function preloadAll() { btns.forEach(function (b) { b.dataset.gpImg.split('|').forEach(function (u) { var i = new Image(); i.src = u; }); }); }
+  new MutationObserver(function () { if (!sc.hidden) { preloadAll(); } }).observe(sc, { attributes: true, attributeFilter: ['hidden'] });
+
+  function openPop(btn) {
+    clearTimeout(tOut); pop.classList.remove('out');
+    var imgs = btn.dataset.gpImg.split('|'), r = btn.getBoundingClientRect();
+    lastBtn = btn; art.innerHTML = ''; art.dataset.n = imgs.length;
+    imgs.forEach(function (src, i) {
+      var f = document.createElement('div'), im = new Image();
+      f.className = 'gp-fl'; f.style.cssText = '--fd:' + (9 + i * 1.8) + 's; --wd:' + (7 + i * 1.3) + 's; --dl:' + (-i * 2.6) + 's; --r:' + (i ? -5 : 5) + 'deg';
+      im.alt = i ? '' : (btn.dataset.gpTitle || ''); im.draggable = false;
+      im.onload = im.onerror = function () { im.classList.add('ok'); };
+      im.src = src; f.appendChild(im); art.appendChild(f);
+      if (im.complete) im.classList.add('ok');
+    });
+    gEl.textContent = btn.dataset.gpGroup || ''; tEl.textContent = btn.dataset.gpTitle || '';
+    pop.hidden = false; sc.classList.add('gp-open', 'used');
+    [].forEach.call(sc.querySelectorAll('.gd-hot.on'), function (b) { b.classList.remove('on'); }); btn.classList.add('on');
+    if (anim) anim.cancel();
+    if (box.animate) {
+      var dx = r.left + r.width / 2 - innerWidth / 2, dy = r.top + r.height / 2 - innerHeight / 2;
+      anim = box.animate(reduce ? [{ opacity: 0 }, { opacity: 1 }] : [
+        { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.16) rotate(-14deg)', opacity: 0 },
+        { transform: 'translate(0,0) scale(1) rotate(0deg)', opacity: 1 }
+      ], { duration: reduce ? 200 : 640, easing: 'cubic-bezier(.2,1.3,.4,1)' });
+    }
+    xBtn.focus({ preventScroll: true });
+  }
+  function closePop() {
+    if (pop.hidden) return;
+    pop.classList.add('out'); sc.classList.remove('gp-open');
+    if (anim) anim.cancel();
+    anim = box.animate ? box.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(.86) translateY(14px)', opacity: 0 }], { duration: reduce ? 120 : 240, easing: 'ease-in', fill: 'forwards' }) : null;
+    tOut = setTimeout(function () { pop.hidden = true; pop.classList.remove('out'); if (anim) anim.cancel(); art.innerHTML = ''; if (lastBtn) lastBtn.focus({ preventScroll: true }); }, reduce ? 120 : 250);
+  }
+  btns.forEach(function (b) { b.addEventListener('click', function () { openPop(b); }); });
+  pop.addEventListener('click', function (e) { if (e.target.closest('[data-gp-close]')) closePop(); });
+  sc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) { e.stopPropagation(); closePop(); } });
 })();
 
 /* ===== 1b. Headline bergerak saat di-scroll: hitung progress 0 sampai 1 ===== */

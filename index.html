@@ -267,8 +267,9 @@
        data-model="images/merch/model-5.webp" data-alt="deskripsi foto" role="button" tabindex="0" aria-pressed="false"
        Baju yang punya data-model otomatis bisa diklik. Model awal = baju yang punya atribut data-start (kalau tidak ada, baju pertama yang punya data-model).
      GANTI TEKS: ubah isi data-text di bawah ini (teks yang "diketik") -->
-<div class="sc" id="showcase-merch" role="dialog" aria-modal="true" aria-label="mrktk, Clothing Design" hidden>
+<div class="sc" id="showcase-merch" data-hash="#merch" role="dialog" aria-modal="true" aria-label="mrktk, Clothing Design" hidden>
   <button class="sc-x" type="button">&larr; Back to work</button>
+  <nav class="sc-nav" aria-label="Projects in this folder"><button type="button" class="on" data-sc-go="showcase-merch" aria-current="true">01 Clothing</button><button type="button" data-sc-go="showcase-goods">02 Merch</button></nav>
   <div class="sc-stage">
     <div class="sc-view">
       <img class="sc-scene" src="images/merch/scene.jpg" alt="">
@@ -291,6 +292,68 @@
         <div class="sf" data-model="images/merch/model-6.webp" data-alt="Two models wearing the Dancing Dead tee" role="button" tabindex="0" aria-pressed="false" aria-label="Dancing Dead: show on model" style="--x:85.65%; --y:42.62%; --w:13.13%; --dx:-1.4cqw; --dy:1.4cqw; --fd:12s; --wd:11s; --dl:-7.5s; --r:-8deg"><img src="images/merch/shirt-6.png" alt=""></div>
         <div class="sf" data-model="images/merch/model-7.webp" data-alt="Two models wearing the Feel Free tee, seen from the back" role="button" tabindex="0" aria-pressed="false" aria-label="Feel Free: show on model" style="--x:65.45%; --y:65.25%; --w:13.20%; --dx:1.2cqw; --dy:-2.0cqw; --fd:8s; --wd:7s; --dl:-3.4s; --r:10deg"><img src="images/merch/shirt-7.png" alt=""></div>
         <div class="sf" data-model="images/merch/model-8.webp" data-alt="Two models wearing the Floral tee" role="button" tabindex="0" aria-pressed="false" aria-label="Floral: show on model" style="--x:78.73%; --y:65.50%; --w:13.49%; --dx:-0.8cqw; --dy:1.8cqw; --fd:10s; --wd:9s; --dl:-5.1s; --r:-12deg"><img src="images/merch/shirt-8.png" alt=""></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SHOWCASE 02: Merch Collection (stiker, tote bag, topi, bucket hat) =================
+     GANTI GAMBAR: semua file ada di images/merch/goods/ (timpa dengan nama file yang SAMA)
+       scene.jpg = foto latar tanpa teks, basket.webp = keranjang + stiker (layer yang bergerak),
+       sticker-*.webp, tote-*.webp, cap.webp, bucket-hat-*.webp = gambar preview yang muncul saat item diklik
+     GANTI TEKS: ubah isi data-text (teks yang "diketik") DAN kalimat yang sama persis di dalam tag <p class="sc-type">
+     TAMBAH ITEM: salin satu baris <button class="gd-hot" ...>, ubah data-gp-img (gambar preview; pisahkan dengan | kalau lebih dari satu),
+       data-gp-group (kategori), data-gp-title (nama), lalu atur posisinya lewat --x --y (titik tengah) dan --w --h (ukuran) dalam persen. -->
+<div class="sc" id="showcase-goods" data-hash="#merch-collection" role="dialog" aria-modal="true" aria-label="Merch collection" hidden>
+  <button class="sc-x" type="button">&larr; Back to work</button>
+  <nav class="sc-nav" aria-label="Projects in this folder"><button type="button" data-sc-go="showcase-merch">01 Clothing</button><button type="button" class="on" data-sc-go="showcase-goods" aria-current="true">02 Merch</button></nav>
+  <div class="sc-stage">
+    <div class="sc-view gd-view">
+      <div class="gd-art">
+        <img class="sc-scene" src="images/merch/goods/scene.jpg" alt="Top view of a merch collection: a red basket of stickers, two tote bags, a cap, a bucket hat, and a lanyard on a rug">
+        <!-- layer keranjang: bergerak seperti sedang digoyang; stiker ikut bergerak -->
+        <div class="gd-basket" style="left:21.699%; top:34.875%; width:41.899%; height:65.125%">
+          <img src="images/merch/goods/basket.webp" alt="" draggable="false">
+          <button class="gd-hot" type="button" data-gp-img="images/merch/goods/sticker-coconut.webp" data-gp-group="Sticker" data-gp-title="Coconut Skull" data-label="Sticker · Coconut Skull" aria-label="Sticker: Coconut Skull. Open preview" style="--x:57.75%; --y:37.04%; --w:20.10%; --h:22.65%; --rd:50%; --dl:-0.00s"><i class="gd-dot" aria-hidden="true"></i></button>
+          <button class="gd-hot" type="button" data-gp-img="images/merch/goods/sticker-ikari.webp" data-gp-group="Sticker" data-gp-title="Ikari" data-label="Sticker · Ikari" aria-label="Sticker: Ikari. Open preview" style="--x:47.53%; --y:50.10%; --w:20.10%; --h:22.65%; --rd:50%; --dl:-0.45s"><i class="gd-dot" aria-hidden="true"></i></button>
+          <button class="gd-hot" type="button" data-gp-img="images/merch/goods/sticker-beach.webp" data-gp-group="Sticker" data-gp-title="Skeleton Beach" data-label="Sticker · Skeleton Beach" aria-label="Sticker: Skeleton Beach. Open preview" style="--x:72.57%; --y:52.02%; --w:19.08%; --h:21.50%; --rd:50%; --dl:-0.90s"><i class="gd-dot" aria-hidden="true"></i></button>
+          <button class="gd-hot" type="button" data-gp-img="images/merch/goods/sticker-skull.webp" data-gp-group="Sticker" data-gp-title="Skull" data-label="Sticker · Skull" aria-label="Sticker: Skull. Open preview" style="--x:40.20%; --y:61.61%; --w:19.08%; --h:21.50%; --rd:50%; --dl:-1.35s"><i class="gd-dot" aria-hidden="true"></i></button>
+          <button class="gd-hot" type="button" data-gp-img="images/merch/goods/sticker-round.webp" data-gp-group="Sticker" data-gp-title="Round Beach" data-label="Sticker · Round Beach" aria-label="Sticker: Round Beach. Open preview" style="--x:35.09%; --y:74.09%; --w:19.08%; --h:21.50%; --rd:50%; --dl:-1.80s"><i class="gd-dot" aria-hidden="true"></i></button>
+          <button class="gd-hot" type="button" data-gp-img="images/merch/goods/sticker-koi.webp" data-gp-group="Sticker" data-gp-title="Koi" data-label="Sticker · Koi" aria-label="Sticker: Koi. Open preview" style="--x:58.94%; --y:72.17%; --w:20.78%; --h:23.42%; --rd:50%; --dl:-2.25s"><i class="gd-dot" aria-hidden="true"></i></button>
+        </div>
+      </div>
+      <button class="gd-hot" type="button" data-gp-img="images/merch/goods/tote-white.webp" data-gp-group="Tote Bag" data-gp-title="It’s Okay to Not Be Okay" data-label="Tote Bag · It’s Okay to Not Be Okay" aria-label="Tote Bag: It’s Okay to Not Be Okay. Open preview" style="--x:60.67%; --y:21.88%; --w:20.34%; --h:45.00%; --rd:7%; --bx:16%; --by:20%; --dl:-2.70s"><i class="gd-dot" aria-hidden="true"></i></button>
+      <button class="gd-hot" type="button" data-gp-img="images/merch/goods/cap.webp" data-gp-group="Baseball Cap" data-gp-title="OFFGRID STD." data-label="Baseball Cap · OFFGRID STD." aria-label="Baseball Cap: OFFGRID STD.. Open preview" style="--x:91.01%; --y:23.12%; --w:19.27%; --h:40.00%; --rd:42%; --dl:-3.15s"><i class="gd-dot" aria-hidden="true"></i></button>
+      <button class="gd-hot" type="button" data-gp-img="images/merch/goods/bucket-hat-beige.webp|images/merch/goods/bucket-hat-green.webp" data-gp-group="Bucket Hat" data-gp-title="OFFGRID STD." data-label="Bucket Hat · OFFGRID STD." aria-label="Bucket Hat: OFFGRID STD.. Open preview" style="--x:68.88%; --y:80.00%; --w:17.84%; --h:31.25%; --rd:50%; --dl:-3.60s"><i class="gd-dot" aria-hidden="true"></i></button>
+      <button class="gd-hot" type="button" data-gp-img="images/merch/goods/tote-black.webp" data-gp-group="Tote Bag" data-gp-title="Take It Easy" data-label="Tote Bag · Take It Easy" aria-label="Tote Bag: Take It Easy. Open preview" style="--x:88.51%; --y:76.88%; --w:23.55%; --h:48.75%; --rd:7%; --bx:16%; --by:20%; --dl:-4.05s"><i class="gd-dot" aria-hidden="true"></i></button>
+    </div>
+    <div class="sc-text">
+      <img class="sc-logo" src="images/merch/logo.png" alt="mrktk">
+      <p class="sc-type" data-text="In another personal project, I designed a merchandise collection that includes stickers, a tote bag, a lanyard, a baseball cap, and a bucket hat. The goal was to create a cohesive set of pieces that work together as one visual identity while suiting the different formats and surfaces of each item. This project let me explore how a single design language can be adapted across both small accessories and wearable pieces, balancing playful graphics with practical, everyday use.">In another personal project, I designed a merchandise collection that includes stickers, a tote bag, a lanyard, a baseball cap, and a bucket hat. The goal was to create a cohesive set of pieces that work together as one visual identity while suiting the different formats and surfaces of each item. This project let me explore how a single design language can be adapted across both small accessories and wearable pieces, balancing playful graphics with practical, everyday use.</p>
+      <div class="sc-pills"><span>Merch Design</span><span>Personal Project</span></div>
+    </div>
+    <!-- PETUNJUK: hilang otomatis setelah pengunjung mengklik salah satu item. "Click" tampil di komputer, "Tap" di layar sentuh. -->
+    <p class="sc-hint"><span>To see the project details, <b class="h-click">click</b><b class="h-tap">tap</b> any item</span><svg viewBox="0 0 40 46" width="40" height="46" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3C22 5 31 15 25 38"/><path d="M17 30l8 9 7-10"/></svg></p>
+    <!-- daftar item (hanya tampil di HP, supaya mudah disentuh) -->
+    <div class="gd-list">
+      <button type="button" class="gd-li" data-gp-img="images/merch/goods/sticker-coconut.webp" data-gp-group="Sticker" data-gp-title="Coconut Skull"><img src="images/merch/goods/sticker-coconut.webp" alt="" loading="lazy"><span><em>Sticker</em>Coconut Skull</span></button>
+      <button type="button" class="gd-li" data-gp-img="images/merch/goods/sticker-ikari.webp" data-gp-group="Sticker" data-gp-title="Ikari"><img src="images/merch/goods/sticker-ikari.webp" alt="" loading="lazy"><span><em>Sticker</em>Ikari</span></button>
+      <button type="button" class="gd-li" data-gp-img="images/merch/goods/sticker-beach.webp" data-gp-group="Sticker" data-gp-title="Skeleton Beach"><img src="images/merch/goods/sticker-beach.webp" alt="" loading="lazy"><span><em>Sticker</em>Skeleton Beach</span></button>
+      <button type="button" class="gd-li" data-gp-img="images/merch/goods/sticker-skull.webp" data-gp-group="Sticker" data-gp-title="Skull"><img src="images/merch/goods/sticker-skull.webp" alt="" loading="lazy"><span><em>Sticker</em>Skull</span></button>
+      <button type="button" class="gd-li" data-gp-img="images/merch/goods/sticker-round.webp" data-gp-group="Sticker" data-gp-title="Round Beach"><img src="images/merch/goods/sticker-round.webp" alt="" loading="lazy"><span><em>Sticker</em>Round Beach</span></button>
+      <button type="button" class="gd-li" data-gp-img="images/merch/goods/sticker-koi.webp" data-gp-group="Sticker" data-gp-title="Koi"><img src="images/merch/goods/sticker-koi.webp" alt="" loading="lazy"><span><em>Sticker</em>Koi</span></button>
+      <button type="button" class="gd-li" data-gp-img="images/merch/goods/tote-white.webp" data-gp-group="Tote Bag" data-gp-title="It’s Okay to Not Be Okay"><img src="images/merch/goods/tote-white.webp" alt="" loading="lazy"><span><em>Tote Bag</em>It’s Okay to Not Be Okay</span></button>
+      <button type="button" class="gd-li" data-gp-img="images/merch/goods/cap.webp" data-gp-group="Baseball Cap" data-gp-title="OFFGRID STD."><img src="images/merch/goods/cap.webp" alt="" loading="lazy"><span><em>Baseball Cap</em>OFFGRID STD.</span></button>
+      <button type="button" class="gd-li" data-gp-img="images/merch/goods/bucket-hat-beige.webp|images/merch/goods/bucket-hat-green.webp" data-gp-group="Bucket Hat" data-gp-title="OFFGRID STD."><img src="images/merch/goods/bucket-hat-beige.webp" alt="" loading="lazy"><span><em>Bucket Hat</em>OFFGRID STD.</span></button>
+      <button type="button" class="gd-li" data-gp-img="images/merch/goods/tote-black.webp" data-gp-group="Tote Bag" data-gp-title="Take It Easy"><img src="images/merch/goods/tote-black.webp" alt="" loading="lazy"><span><em>Tote Bag</em>Take It Easy</span></button>
+    </div>
+  </div>
+  <!-- POP UP PREVIEW: isinya diisi otomatis dari data-gp-* di tombol yang diklik -->
+  <div class="gp" role="dialog" aria-modal="true" aria-label="Item preview" hidden>
+    <div class="gp-bg" data-gp-close></div>
+    <button class="gp-x" type="button" data-gp-close aria-label="Close preview">&times;</button>
+    <div class="gp-box">
+      <div class="gp-art"></div>
+      <p class="gp-cap"><span class="gp-g"></span><b class="gp-t"></b></p>
     </div>
   </div>
 </div>

@@ -474,3 +474,86 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
   .sf { position: relative; left: auto; top: auto; width: 100%; --dx: 6px; --dy: 8px; }
   .sf img { filter: drop-shadow(0 10px 10px rgba(40,20,40,.22)); }
 }
+
+
+/* ========== SHOWCASE 02: MERCH COLLECTION (stiker, tote bag, topi, bucket hat) ========== */
+/* tombol pindah antar project di dalam folder 01 */
+.sc-nav { position: fixed; top: 18px; right: 196px; z-index: 5; display: flex; gap: 4px; padding: 4px; border: 1px solid rgba(13,13,14,.14); border-radius: 999px; background: rgba(255,255,255,.72); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.sc-nav button { padding: .5em 1.05em; border: 0; border-radius: 999px; background: transparent; color: #0D0D0E; font-family: var(--head); font-weight: 700; font-size: .85rem; white-space: nowrap; transition: background .25s ease, color .25s ease; }
+.sc-nav button:hover { background: rgba(13,13,14,.08); }
+.sc-nav button.on { background: #0D0D0E; color: #fff; }
+
+/* foto latar + keranjang berada dalam satu pembungkus supaya memudar di bawah bersama-sama */
+.gd-art { position: absolute; inset: 0; -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent 100%); mask-image: linear-gradient(to bottom, #000 86%, transparent 100%); }
+.gd-art .sc-scene { -webkit-mask-image: none; mask-image: none; }
+/* keranjang bergerak seperti sedang digoyang: goyangan cepat sebentar, lalu bergoyang pelan, berulang */
+.gd-basket { position: absolute; transform-origin: 50% 64%; animation: gdShake 6s ease-in-out infinite; will-change: translate, rotate; }
+.gd-basket > img { display: block; width: 100%; height: 100%; pointer-events: none; user-select: none; -webkit-user-drag: none; }
+.gd-basket:hover { animation-play-state: paused; }          /* berhenti saat disentuh supaya stiker mudah diklik */
+@keyframes gdShake {
+  0%, 100% { rotate: 0deg; translate: 0 0; }
+  4%  { rotate: -1deg;  translate: -.24cqw .12cqw; }
+  9%  { rotate: .9deg;  translate: .28cqw -.1cqw; }
+  14% { rotate: -.7deg; translate: -.18cqw .1cqw; }
+  19% { rotate: .5deg;  translate: .12cqw -.06cqw; }
+  25% { rotate: -.2deg; translate: -.05cqw 0; }
+  32% { rotate: 0deg;   translate: 0 0; }
+  60% { rotate: .18deg; translate: .06cqw -.04cqw; }
+}
+
+/* titik klik: tiap item punya lingkaran/kotak transparan + tanda "+" yang berdenyut */
+.gd-hot { position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); translate: -50% -50%; z-index: 2; padding: 0; border: 0; border-radius: var(--rd, 50%); background: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.gd-hot::before { content: ""; position: absolute; inset: -3%; border: 2px solid #0D0D0E; border-radius: inherit; opacity: 0; scale: .9; transition: opacity .25s ease, scale .4s cubic-bezier(.3,1.6,.5,1); pointer-events: none; }
+.gd-hot:hover::before, .gd-hot:focus-visible::before, .gd-hot.on::before { opacity: 1; scale: 1; }
+.gd-hot:focus-visible { outline: none; }
+.gd-hot::after { content: attr(data-label); position: absolute; left: 50%; top: -1.4cqw; translate: -50% 5px; padding: .3em .85em; border-radius: 999px; background: #0D0D0E; color: #fff; font: 600 max(10px, .78cqw)/1.2 var(--body); white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .25s ease, translate .25s ease; }
+.gd-hot:hover::after, .gd-hot:focus-visible::after { opacity: 1; translate: -50% 0; }
+.gd-dot { position: absolute; right: var(--bx, 12%); top: var(--by, 12%); width: max(20px, 1.7cqw); height: max(20px, 1.7cqw); border-radius: 50%; background: #0D0D0E; box-shadow: 0 0 0 0 rgba(13,13,14,.45); animation: gdPulse 2.2s ease-out var(--dl, 0s) infinite; pointer-events: none; transition: scale .3s ease; }
+.gd-dot::before, .gd-dot::after { content: ""; position: absolute; left: 50%; top: 50%; width: 46%; height: 2px; translate: -50% -50%; background: #fff; border-radius: 2px; }
+.gd-dot::after { rotate: 90deg; }
+.gd-hot:hover .gd-dot { scale: 1.2; }
+.sc.used .gd-dot { animation: none; }                         /* setelah ada yang diklik, tanda berhenti berdenyut */
+@keyframes gdPulse { 0% { box-shadow: 0 0 0 0 rgba(13,13,14,.45); } 70%, 100% { box-shadow: 0 0 0 .9cqw rgba(13,13,14,0); } }
+
+/* petunjuk: ditaruh di area putih sebelah teks */
+#showcase-goods .sc-hint { left: 29%; top: 10%; max-width: max(19cqw, 170px); }
+
+/* daftar item untuk HP */
+.gd-list { display: none; }
+
+/* ----- POP UP PREVIEW ----- */
+.gp { position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 56px 20px 28px; }
+.gp[hidden] { display: none; }
+.gp-bg { position: absolute; inset: 0; background: rgba(255,246,245,.8); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); animation: gpFade .35s ease; }
+.gp.out .gp-bg { opacity: 0; transition: opacity .25s ease; }
+@keyframes gpFade { from { opacity: 0; } }
+.gp-box { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2.2vmin; max-width: 100%; will-change: transform; }
+.gp-x { position: fixed; top: 18px; right: 22px; z-index: 2; width: 44px; height: 44px; border: 0; border-radius: 50%; background: #0D0D0E; color: #fff; font-size: 26px; line-height: 1; display: grid; place-items: center; }
+.gp-art { display: flex; align-items: center; justify-content: center; gap: 2vmin; width: min(86vw, 880px); height: min(66vh, 640px); }
+.gp-fl { flex: 0 1 auto; height: 100%; max-width: 100%; display: flex; animation: gpDrift var(--fd, 9s) ease-in-out var(--dl, 0s) infinite; }
+.gp-art[data-n="2"] .gp-fl { height: 70%; max-width: 50%; }
+.gp-fl img { display: block; height: 100%; width: auto; max-width: 100%; object-fit: contain; filter: drop-shadow(0 2.2vmin 2vmin rgba(40,20,40,.24)); animation: gpWob var(--wd, 7s) ease-in-out var(--dl, 0s) infinite alternate; opacity: 0; transition: opacity .3s ease; user-select: none; -webkit-user-drag: none; }
+.gp-fl img.ok { opacity: 1; }
+@keyframes gpDrift { 0%, 100% { translate: 0 0; } 25% { translate: 1.2vmin -1.6vmin; } 50% { translate: -.9vmin 1.4vmin; } 75% { translate: .7vmin .5vmin; } }
+@keyframes gpWob { from { rotate: calc(var(--r, 4deg) * -1); translate: 0 .8vmin; } to { rotate: var(--r, 4deg); translate: 0 -1vmin; } }
+.gp-cap { display: flex; flex-direction: column; align-items: center; gap: .5em; text-align: center; }
+.gp-g { padding: .3em .95em; border: 1px solid #0D0D0E; border-radius: 999px; font-weight: 500; font-size: .82rem; }
+.gp-t { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: clamp(22px, 3.2vmin, 34px); line-height: 1.1; }
+@media (prefers-reduced-motion: reduce) { .gd-basket, .gd-dot, .gp-fl, .gp-fl img { animation: none; } }
+
+@media (max-width: 820px) {
+  .sc-nav { top: 18px; left: 20px; right: auto; }
+  .sc-nav button { font-size: .78rem; padding: .5em .85em; }
+  #showcase-goods .sc-view { aspect-ratio: 1401 / 800; }
+  #showcase-goods .sc-scene { object-fit: fill; }
+  #showcase-goods .sc-hint { position: static; }
+  .gd-dot { width: 14px; height: 14px; }
+  .gd-hot::after { display: none; }
+  .gd-list { order: 4; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .gd-li { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid rgba(13,13,14,.16); border-radius: 16px; background: rgba(255,255,255,.7); text-align: left; font-family: var(--body); font-size: 13px; line-height: 1.25; color: #0D0D0E; }
+  .gd-li img { flex: none; width: 44px; height: 56px; object-fit: contain; }
+  .gd-li em { display: block; font-style: normal; font-size: 11px; opacity: .6; margin-bottom: 2px; }
+  .gp-art { height: min(58vh, 560px); }
+  .gp-art[data-n="2"] { flex-direction: column; }
+  .gp-art[data-n="2"] .gp-fl { height: 46%; max-width: 100%; }
+}

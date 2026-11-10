@@ -61,3 +61,15 @@ HASILNYA
    - Setiap video punya tombol "Watch on TikTok" yang membuka videonya.
    - Di folder "Content Video" ada juga tombol "Follow on TikTok"
      yang membuka akun TikTok-mu.
+
+
+FOLDER 01 - HALAMAN KE-2 "02 Merch" (stiker, tote bag, topi, bucket hat)
+------------------------------------------------------------------------
+Di dalam folder 01 sekarang ada 2 halaman. Pindah lewat tombol "01 Clothing | 02 Merch" di kanan atas.
+Semua gambar halaman 02 ada di  images/merch/goods/ :
+   scene.jpg      = foto latar (tanpa teks)
+   basket.webp    = keranjang + stiker (bagian yang bergerak/bergoyang)
+   sticker-*.webp, tote-*.webp, cap.webp, bucket-hat-*.webp = gambar preview yang muncul saat item diklik
+Untuk mengganti: upload file baru dengan NAMA YANG SAMA.
+Teks deskripsi: di index.html cari  id="showcase-goods"  lalu ubah data-text= DAN kalimat di dalam <p class="sc-type"> (harus sama persis).
+Nama item di pop up: ubah data-gp-title= / data-gp-group= pada baris <button class="gd-hot" ...>.
