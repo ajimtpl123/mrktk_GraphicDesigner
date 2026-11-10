@@ -78,3 +78,30 @@ LANYARD (halaman 02 Merch)
 --------------------------
 Gambar pop up: images/merch/goods/lanyard.webp (timpa dengan nama yang sama untuk mengganti).
 Di index.html cari data-gp-group="Lanyard" untuk mengubah nama/posisi titik klik pada foto latar.
+
+UPDATE HALAMAN 02 MERCH (v15)
+-----------------------------
+Background + tiap item sekarang berupa layer terpisah di images/merch/goods/ :
+   scene-bg.webp          = background karpet + kursi
+   scene-basket.webp      = keranjang (bergoyang; sticker ikut bergoyang)
+   scene-tote-white.webp  = tote bag putih + kardus
+   scene-cap.webp, scene-hat.webp, scene-tote-black.webp, scene-lanyard.webp = layer topi, bucket hat, tote hitam, lanyard
+   sticker-*.webp         = sticker (sama dengan gambar pop up)
+Hover di item = item terangkat, melayang + bergoyang, dan bercahaya (outer glow).
+Untuk mengganti layer: upload file baru dengan NAMA YANG SAMA (PNG/WEBP transparan, ukuran piksel sama agar posisinya tetap pas).
+File lama scene.jpg dan basket.webp tidak dipakai lagi (boleh dihapus).
+
+
+UPDATE HALAMAN 02 MERCH (v16)
+-----------------------------
+Foto latar (images/merch/goods/scene-bg.webp) sekarang foto utuh yang sudah berisi semua barang. Teks di foto sudah dihapus karena teks deskripsi tampil dari index.html.
+Layer tiap barang (scene-*.webp) TERSEMBUNYI saat diam. Saat di-hover, layer muncul tepat di atas barangnya, membesar sedikit dan bercahaya (outer glow), sama seperti kaos di halaman 01.
+   scene-tote-white / scene-cap / scene-hat / scene-tote-black / scene-lanyard.webp = layer tiap barang (tanpa bayangan)
+   scene-basket.webp      = layer keranjang (stiker di dalamnya sudah ikut), scene-basket-glow.webp = glow keranjang (hanya di luar siluet)
+Barang tidak lagi bergoyang/melayang sendiri, karena fotonya sudah memuat barang itu (kalau bergerak, barang yang asli akan terlihat dobel).
+Untuk mengganti layer: upload file baru dengan NAMA YANG SAMA dan posisi barang yang sama persis dengan di foto latar.
+File lama goods/scene.jpg dan goods/basket.webp tidak dipakai (boleh dihapus). preview.html adalah file preview lama dan tidak ikut diperbarui.
+
+HALAMAN 01 CLOTHING (v16)
+-------------------------
+Saat kaos melayang di-hover: ukurannya lebih besar dari kaos lain, naik ke lapisan paling atas, dan bercahaya (outer glow).
