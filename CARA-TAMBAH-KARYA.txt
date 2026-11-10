@@ -73,3 +73,8 @@ Semua gambar halaman 02 ada di  images/merch/goods/ :
 Untuk mengganti: upload file baru dengan NAMA YANG SAMA.
 Teks deskripsi: di index.html cari  id="showcase-goods"  lalu ubah data-text= DAN kalimat di dalam <p class="sc-type"> (harus sama persis).
 Nama item di pop up: ubah data-gp-title= / data-gp-group= pada baris <button class="gd-hot" ...>.
+
+LANYARD (halaman 02 Merch)
+--------------------------
+Gambar pop up: images/merch/goods/lanyard.webp (timpa dengan nama yang sama untuk mengganti).
+Di index.html cari data-gp-group="Lanyard" untuk mengubah nama/posisi titik klik pada foto latar.
