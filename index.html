@@ -92,7 +92,7 @@
     <div class="stats">
       <p class="stats-t">My experience</p>
       <button class="stat" type="button" data-pop="exp" aria-haspopup="dialog"><b data-to="2"><span class="n">2</span><i>+</i></b><span>Years of experience<br>freelance &amp; full-time</span><em class="go" aria-hidden="true">+</em></button>
-      <a class="stat" href="#work"><b data-to="100"><span class="n">100</span><i>+</i></b><span>Projects delivered<br>to clients</span><em class="go" aria-hidden="true">&darr;</em></a>
+      <button class="stat" type="button" data-pop="projects" aria-haspopup="dialog"><b data-to="100"><span class="n">100</span><i>+</i></b><span>Projects delivered<br>to clients</span><em class="go" aria-hidden="true">+</em></button>
       <button class="stat" type="button" data-pop="skills" aria-haspopup="dialog"><b data-to="3"><span class="n">3</span><i>+</i></b><span>Creative skills</span><em class="go" aria-hidden="true">+</em></button>
     </div>
 
@@ -182,12 +182,12 @@
       <a class="folder" href="#" data-folder="social" style="--i:1; --c1:#2B45FF; --c2:#B14CFF; --fg:#FFFFFF; --fg2:#0D0D0E">
         <span class="f-tab">Folder 02</span>
         <div class="f-media">
-          <!-- <img src="images/social.jpg" alt="Social Media Design"> -->
-          <span class="ph">Taruh gambar Social Media Design di sini</span>
+          <!-- <img src="images/social.jpg" alt="Broadcast & Social Design"> -->
+          <span class="ph">Taruh gambar Broadcast &amp; Social Design di sini</span>
         </div>
         <div class="f-text">
-          <h3>Social Media Design</h3>
-          <p>Feed posts, stories, and content systems that keep a brand looking consistent.</p>
+          <h3>Broadcast &amp; Social Design</h3>
+          <p>Live-stream football graphics, plus feed and story designs for brands and apps.</p>
           <span class="f-btn">Open folder &rarr;</span>
         </div>
       </a>
@@ -369,7 +369,7 @@
 
 <!-- ================= POP UP (terbuka saat kotak di "My experience" diklik) =================
      Pop up SKILLS: tambah/hapus skill dengan menambah/menghapus baris <li> di bawah.
-     Pop up EXPERIENCE: sementara masih kosong. Isi daftar pengalaman kerjamu di <ul class="pop-jobs"> (contoh format ada di komentar). -->
+     Pop up EXPERIENCE: tambah/ubah pengalaman kerja dengan menambah/mengubah baris <li> di <ul class="pop-jobs"> (tahun, posisi di perusahaan, deskripsi singkat). -->
 <div class="pop" id="pop-skills" role="dialog" aria-modal="true" aria-labelledby="pop-skills-t" hidden>
   <div class="pop-bg" data-close></div>
   <div class="pop-box" style="--c1:#FF7A18; --c2:#F22DAA; --fg:#0D0D0E">
@@ -388,18 +388,35 @@
   </div>
 </div>
 
+<div class="pop" id="pop-projects" role="dialog" aria-modal="true" aria-labelledby="pop-projects-t" hidden>
+  <div class="pop-bg" data-close></div>
+  <div class="pop-box" style="--c1:#12C2A0; --c2:#2B7BFF; --fg:#0D0D0E">
+    <div class="pop-top"><h3 id="pop-projects-t">Projects</h3><button class="pop-x" type="button" data-close aria-label="Close">&times;</button></div>
+    <div class="pop-body">
+      <!-- nama kategori project = nama folder di Selected Work; tambah/hapus baris <li> sesuai kebutuhan -->
+      <ul class="skills">
+        <li>Merch &amp; Clothing Design</li>
+        <li>Broadcast &amp; Social Design</li>
+        <li>Branding</li>
+        <li>Poster</li>
+        <li>Digital Illustration</li>
+        <li>Content Video</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
 <div class="pop" id="pop-exp" role="dialog" aria-modal="true" aria-labelledby="pop-exp-t" hidden>
   <div class="pop-bg" data-close></div>
   <div class="pop-box" style="--c1:#2B45FF; --c2:#B14CFF; --fg:#FFFFFF">
     <div class="pop-top"><h3 id="pop-exp-t">Experience</h3><button class="pop-x" type="button" data-close aria-label="Close">&times;</button></div>
     <div class="pop-body">
-      <!-- GANTI: hapus baris <p class="pop-empty"> di bawah, lalu aktifkan daftar ini (hapus tanda komentarnya) dan isi dengan pengalamanmu.
       <ul class="pop-jobs">
-        <li><time>2026</time><div><h4>Nama posisi, nama perusahaan</h4><p>Deskripsi singkat pekerjaanmu.</p></div></li>
-        <li><time>2025</time><div><h4>Nama posisi, nama perusahaan</h4><p>Deskripsi singkat pekerjaanmu.</p></div></li>
+        <li><time>2026</time><div><h4>Graphic Designer at PT. Spend Group International</h4><p>Creating design requirements for social media, marketing kits, and UI assets for a live-streaming application</p></div></li>
+        <li><time>2025</time><div><h4>Freelance Pattern Designer at SATTKA</h4><p>Making patterns for pashmina products</p></div></li>
+        <li><time>2024</time><div><h4>Warehouse Crew at PT. Yomart Rukun Selalu</h4><p>Warehouse crew, stock opname</p></div></li>
+        <li><time>2023</time><div><h4>Freelance Graphic Designer at HANSAMU RAMEN</h4><p>Designing ornaments and fixtures for the café</p></div></li>
       </ul>
-      -->
-      <p class="pop-empty">My work history is coming soon.</p>
     </div>
   </div>
 </div>

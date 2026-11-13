@@ -872,3 +872,4 @@ if (hasMouse) {
   if ('IntersectionObserver' in window) { var io = new IntersectionObserver(function (en) { en.forEach(function (e) { seen.set(e.target, e.isIntersecting); }); gsap.globalTimeline.paused(![...seen.values()].some(Boolean)); }); [hero, resumeEl].forEach(function (t) { if (t) io.observe(t); }); }
 })();
 
+

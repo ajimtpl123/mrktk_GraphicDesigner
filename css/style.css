@@ -570,3 +570,4 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
   .gp-art[data-n="2"] { flex-direction: column; }
   .gp-art[data-n="2"] .gp-fl { height: 46%; max-width: 100%; }
 }
+
