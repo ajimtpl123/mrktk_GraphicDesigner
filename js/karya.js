@@ -19,7 +19,7 @@
    ===================================================================== */
 
 /* GANTI dengan link akun TikTok-mu (buka profil TikTok-mu, salin link-nya) */
-var TIKTOK_AKUN = 'https://www.tiktok.com/@usernamekamu';
+var TIKTOK_AKUN = 'https://www.tiktok.com/@_mrktk';
 
 var KARYA = {
 
@@ -61,7 +61,7 @@ var KARYA = {
       // 'content-cover.png',
     ],
     video: [
-      // 'https://www.tiktok.com/@usernamekamu/video/1234567890123456789',
+      // 'https://www.tiktok.com/@_mrktk/video/1234567890123456789',
     ],
   },
 

@@ -368,7 +368,7 @@ document.querySelectorAll('.marquee').forEach(function (el) {
    Folder 01 punya 2 halaman (semua .sc yang punya data-hash): 01 Clothing (#showcase-merch) dan 02 Merch (#showcase-goods).
    Tombol kecil di kanan atas (data-sc-go) dipakai untuk pindah antar halaman. */
 (function () {
-  var trig = document.querySelector('.folder[data-showcase="merch"]'), panes = [].slice.call(document.querySelectorAll('.sc[data-hash]'));
+  var trigs = [].slice.call(document.querySelectorAll('.folder[data-showcase]')), trig = trigs[0], panes = [].slice.call(document.querySelectorAll('.sc[data-hash]'));
   if (!trig || !panes.length) return;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches, TYPE_MS = 15;   /* TYPE_MS = kecepatan mengetik (makin kecil makin cepat) */
   var cur = null, lastFocus = null, byId = {};
@@ -406,7 +406,7 @@ document.querySelectorAll('.marquee').forEach(function (el) {
     if (lastFocus) lastFocus.focus({ preventScroll: true });
     if (!pop && location.hash === hash) { try { history.back(); } catch (e) {} }
   }
-  trig.addEventListener('click', function (e) { e.preventDefault(); open(byId['showcase-merch'].sc, 'push'); });
+  trigs.forEach(function (t) { t.addEventListener('click', function (e) { e.preventDefault(); open(byId['showcase-' + t.dataset.showcase].sc, 'push'); }); });
   panes.forEach(function (sc) {
     sc.querySelector('.sc-x').addEventListener('click', function () { close(false); });
     [].forEach.call(sc.querySelectorAll('[data-sc-go]'), function (b) {
@@ -469,8 +469,8 @@ document.querySelectorAll('.marquee').forEach(function (el) {
 /* ===== 3d. Showcase 02 (Merch): klik item = pop up preview yang melayang =====
    Tiap tombol .gd-hot (atau item di daftar HP) punya data-gp-img (gambar preview), data-gp-group (kategori), data-gp-title (nama).
    Pop up muncul "melompat" dari posisi item yang diklik, lalu gambarnya melayang pelan seperti baju di halaman Clothing. */
-(function () {
-  var sc = document.getElementById('showcase-goods'); if (!sc) return;
+['showcase-goods', 'showcase-wl'].forEach(function (scId) {
+  var sc = document.getElementById(scId); if (!sc) return;
   var pop = sc.querySelector('.gp'), box = pop.querySelector('.gp-box'), art = pop.querySelector('.gp-art'),
       gEl = pop.querySelector('.gp-g'), tEl = pop.querySelector('.gp-t'), xBtn = pop.querySelector('.gp-x');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches, lastBtn = null, anim = null, tOut = 0;
@@ -514,7 +514,7 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   btns.forEach(function (b) { b.addEventListener('click', function () { openPop(b); }); });
   pop.addEventListener('click', function (e) { if (e.target.closest('[data-gp-close]')) closePop(); });
   sc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) { e.stopPropagation(); closePop(); } });
-})();
+});
 
 /* ===== 1b. Headline bergerak saat di-scroll: hitung progress 0 sampai 1 ===== */
 var hero = document.querySelector('.hero2');
@@ -873,3 +873,6 @@ if (hasMouse) {
 })();
 
 
+
+/* logo Warga Lokal: bentuk logo dipakai sebagai "cetakan" efek kilatan */
+[].forEach.call(document.querySelectorAll('.wl-logo'), function (w) { var i = w.querySelector('img'); function s() { w.style.setProperty('--lg', 'url("' + i.src + '")'); } s(); });
