@@ -585,7 +585,10 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 /* efek kilatan seperti foto di About me: pita cahaya bergerak bolak-balik, hanya di atas bentuk logo */
 .wl-logo::after { content: ""; position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; background: linear-gradient(105deg, transparent 42%, rgba(255,214,190,.18) 46%, rgba(255,236,222,.9) 50%, rgba(255,214,190,.18) 54%, transparent 58%) 100% 0 / 260% 100% no-repeat; -webkit-mask-image: var(--lg); mask-image: var(--lg); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; animation: portraitShine 7s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .wl-logo::after { animation: none; opacity: 0; } }
-#showcase-wl .sc-hint { left: 3.57%; top: 41%; max-width: max(17cqw, 150px); color: #fff; }
+/* petunjuk klik: bubble putih di atas foto, ekornya menunjuk ke HP; letaknya di strip kosong bawah HP supaya tidak menimpa teks deskripsi */
+#showcase-wl .sc-hint { left: 38%; top: 93.4%; right: auto; max-width: none; white-space: nowrap; text-align: left; color: #0D0D0E; background: #fff; padding: .42em 1.05em; border-radius: 999px; box-shadow: 0 .5cqw 1.5cqw rgba(0,0,0,.35); }
+#showcase-wl .sc-hint::before { content: ""; position: absolute; left: 1.7em; top: -.5em; width: 1em; height: 1em; background: #fff; border-radius: 3px 0 0 0; transform: rotate(45deg); }
+#showcase-wl .sc-hint svg { display: none; }
 .wl-art .gd-dot { background: #fff; animation-name: wlPulse; }
 .wl-art .gd-dot::before, .wl-art .gd-dot::after { background: #0D0D0E; }
 @keyframes wlPulse { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,.55); } 70%, 100% { box-shadow: 0 0 0 .9cqw rgba(255,255,255,0); } }
@@ -598,7 +601,8 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 @media (max-width: 820px) {
   #showcase-wl .sc-view { aspect-ratio: 1400 / 800; border-radius: 14px; overflow: hidden; }
   #showcase-wl .sc-scene { object-fit: fill; }
-  #showcase-wl .sc-hint { position: static; color: #0D0D0E; }
+  #showcase-wl .sc-hint { position: static; color: #0D0D0E; background: none; box-shadow: none; padding: 0; border-radius: 0; white-space: normal; }
+  #showcase-wl .sc-hint::before { display: none; }
   .wl-text { color: #0D0D0E; } .wl-text .sc-pills span { border-color: #0D0D0E; }
   .wl-logo { display: inline-block; width: auto; padding: 10px 14px; border-radius: 12px; background: #121214; } .wl-logo img { width: 120px; }
 }
