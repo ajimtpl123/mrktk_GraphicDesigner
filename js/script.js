@@ -365,8 +365,8 @@ document.querySelectorAll('.marquee').forEach(function (el) {
 })();
 
 /* ===== 3b. Halaman showcase untuk folder "Merch & Clothing Design": teks diketik + pindah antar project =====
-   Folder 01 punya 2 halaman (semua .sc yang punya data-hash): 01 Clothing (#showcase-merch) dan 02 Merch (#showcase-goods).
-   Tombol kecil di kanan atas (data-sc-go) dipakai untuk pindah antar halaman. */
+   Folder 01 sekarang satu halaman (#showcase-merch): bagian Clothing di atas, bagian Merch di bawahnya (disusun atas-bawah, seperti Broadcast & Social).
+   Teks Clothing diketik saat halaman dibuka; teks Merch diketik saat pengunjung menggulir sampai ke paragrafnya. */
 (function () {
   var trigs = [].slice.call(document.querySelectorAll('.folder[data-showcase]')), trig = trigs[0], panes = [].slice.call(document.querySelectorAll('.sc[data-hash]'));
   if (!trig || !panes.length) return;
@@ -374,20 +374,43 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   var cur = null, lastFocus = null, byId = {};
 
   panes.forEach(function (sc) {
-    var typ = sc.querySelector('.sc-type'), full = typ.dataset.text || typ.textContent, st = { sc: sc, timer: 0 };
-    typ.innerHTML = '<span class="ghost"></span><span class="live"></span>';          /* "ghost" menahan tinggi paragraf supaya tidak loncat saat mengetik */
-    var ghost = typ.firstChild, live = typ.lastChild; ghost.textContent = full;
-    st.type = function () {
-      clearTimeout(st.timer); sc.classList.remove('typed'); typ.classList.remove('typing'); live.textContent = '';
-      if (reduce) { live.textContent = full; sc.classList.add('typed'); return; }
-      var i = 0; typ.classList.add('typing');
-      st.timer = setTimeout(function step() {
-        i += 1; live.textContent = full.slice(0, i);
-        if (i < full.length) st.timer = setTimeout(step, TYPE_MS + (/[.,]/.test(full[i - 1]) ? 140 : 0));
-        else { typ.classList.remove('typing'); sc.classList.add('typed'); }
-      }, 650);
+    var st = { sc: sc, units: [], io: null };
+    /* tiap paragraf .sc-type = satu "unit" ketikan. Unit pertama mengetik begitu halaman dibuka; unit berikutnya (mis. teks Merch di bawah Clothing) mengetik saat paragrafnya terlihat di layar. */
+    [].forEach.call(sc.querySelectorAll('.sc-type'), function (typ) {
+      var full = typ.dataset.text || typ.textContent, u = { typ: typ, host: typ.closest('.sc-stage') || sc, timer: 0, started: false };
+      typ.innerHTML = '<span class="ghost"></span><span class="live"></span>';        /* "ghost" menahan tinggi paragraf supaya tidak loncat saat mengetik */
+      var ghost = typ.firstChild, live = typ.lastChild; ghost.textContent = full;
+      u.reset = function () { clearTimeout(u.timer); u.host.classList.remove('typed'); typ.classList.remove('typing'); live.textContent = ''; };
+      u.type = function () {
+        u.reset();
+        if (reduce) { live.textContent = full; u.host.classList.add('typed'); return; }
+        var i = 0; typ.classList.add('typing');
+        u.timer = setTimeout(function step() {
+          i += 1; live.textContent = full.slice(0, i);
+          if (i < full.length) u.timer = setTimeout(step, TYPE_MS + (/[.,]/.test(full[i - 1]) ? 140 : 0));
+          else { typ.classList.remove('typing'); u.host.classList.add('typed'); }
+        }, 650);
+      };
+      st.units.push(u);
+    });
+    st.stop = function () {
+      st.units.forEach(function (u) { clearTimeout(u.timer); });
+      if (st.io) { st.io.disconnect(); st.io = null; }
     };
-    st.stop = function () { clearTimeout(st.timer); };
+    st.type = function () {
+      st.stop();
+      st.units.forEach(function (u, i) { if (i === 0) u.type(); else { u.started = false; u.reset(); } });
+      var rest = st.units.slice(1); if (!rest.length) return;
+      if (reduce || !('IntersectionObserver' in window)) { rest.forEach(function (u) { u.type(); }); return; }
+      st.io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          var u = rest.filter(function (x) { return x.typ === en.target; })[0];
+          if (u && !u.started) { u.started = true; st.io.unobserve(en.target); u.type(); }
+        });
+      }, { root: sc, rootMargin: '0px 0px -12% 0px', threshold: 0 });
+      rest.forEach(function (u) { st.io.observe(u.typ); });
+    };
     byId[sc.id] = st;
   });
 
@@ -409,9 +432,6 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   trigs.forEach(function (t) { t.addEventListener('click', function (e) { e.preventDefault(); open(byId['showcase-' + t.dataset.showcase].sc, 'push'); }); });
   panes.forEach(function (sc) {
     sc.querySelector('.sc-x').addEventListener('click', function () { close(false); });
-    [].forEach.call(sc.querySelectorAll('[data-sc-go]'), function (b) {
-      b.addEventListener('click', function () { var to = byId[b.dataset.scGo]; if (to && to.sc !== cur) open(to.sc, 'replace'); });
-    });
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && cur && !cur.classList.contains('gp-open')) close(false); });
   window.addEventListener('popstate', function () {
@@ -452,7 +472,7 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   function show(el) {
     if (busy && el === target) return;                                         /* klik baju yang sama saat sedang berputar: abaikan */
     setActive(el); target = el; want = el; if (!busy) run();
-    sc.classList.add('used');                                                  /* petunjuk "Click a shirt..." sudah tidak perlu lagi */
+    sc.classList.add('used-c');                                                /* petunjuk "Click a shirt..." sudah tidak perlu lagi */
     var view = sc.querySelector('.sc-view'), r = view.getBoundingClientRect();    /* di HP model ada di atas grid baju: geser layar supaya putarannya terlihat */
     if (getComputedStyle(view).position === 'relative' && (r.top < 0 || r.bottom > window.innerHeight)) view.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
   }
@@ -466,10 +486,10 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   window.addEventListener('load', function () { shirts.forEach(function (s) { preload(s.dataset.model); }); });
 })();
 
-/* ===== 3d. Showcase 02 (Merch): klik item = pop up preview yang melayang =====
+/* ===== 3d. Bagian Merch (bawah Clothing) dan Broadcast: klik item = pop up preview yang melayang =====
    Tiap tombol .gd-hot (atau item di daftar HP) punya data-gp-img (gambar preview), data-gp-group (kategori), data-gp-title (nama).
    Pop up muncul "melompat" dari posisi item yang diklik, lalu gambarnya melayang pelan seperti baju di halaman Clothing. */
-['showcase-goods', 'showcase-wl'].forEach(function (scId) {
+['showcase-merch', 'showcase-wl'].forEach(function (scId) {
   var sc = document.getElementById(scId); if (!sc) return;
   var pop = sc.querySelector('.gp'), box = pop.querySelector('.gp-box'), art = pop.querySelector('.gp-art'),
       gEl = pop.querySelector('.gp-g'), tEl = pop.querySelector('.gp-t'), xBtn = pop.querySelector('.gp-x');
@@ -492,7 +512,7 @@ document.querySelectorAll('.marquee').forEach(function (el) {
       if (im.complete) im.classList.add('ok');
     });
     gEl.textContent = btn.dataset.gpGroup || ''; tEl.textContent = btn.dataset.gpTitle || '';
-    pop.hidden = false; sc.classList.add('gp-open', 'used');
+    pop.hidden = false; sc.classList.add('gp-open', scId === 'showcase-merch' ? 'used-g' : 'used');   /* di halaman Merch, petunjuk Clothing dan Merch hilang sendiri-sendiri */
     [].forEach.call(sc.querySelectorAll('.gd-hot.on'), function (b) { b.classList.remove('on'); }); btn.classList.add('on');
     if (anim) anim.cancel();
     if (box.animate) {

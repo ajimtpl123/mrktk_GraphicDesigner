@@ -444,7 +444,7 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 @media (hover: none) { .sc-hint .h-click { display: none; } .sc-hint .h-tap { display: inline; } }
 .sc-hint svg { flex: none; width: 1.7em; height: auto; margin-bottom: -.5em; animation: hintBob 1.9s ease-in-out infinite; }
 .sc:not([hidden]) .sc-hint { animation: hintIn .7s cubic-bezier(.2,.7,.2,1) 1.3s backwards; }
-.sc.used .sc-hint { opacity: 0; translate: 0 -6px; }
+.sc.used .sc-hint, .sc.used-c .hint-c, .sc.used-g .hint-g { opacity: 0; translate: 0 -6px; }
 @keyframes hintIn { from { opacity: 0; translate: 0 10px; } }
 @keyframes hintBob { 50% { translate: 0 .28em; } }
 @media (prefers-reduced-motion: reduce) { .sc-hint svg, .sc:not([hidden]) .sc-hint { animation: none; } }
@@ -486,11 +486,6 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 
 
 /* ========== SHOWCASE 02: MERCH COLLECTION (stiker, tote bag, topi, bucket hat) ========== */
-/* tombol pindah antar project di dalam folder 01 */
-.sc-nav { position: fixed; top: 18px; right: 196px; z-index: 5; display: flex; gap: 4px; padding: 4px; border: 1px solid rgba(13,13,14,.14); border-radius: 999px; background: rgba(255,255,255,.72); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
-.sc-nav button { padding: .5em 1.05em; border: 0; border-radius: 999px; background: transparent; color: #0D0D0E; font-family: var(--head); font-weight: 700; font-size: .85rem; white-space: nowrap; transition: background .25s ease, color .25s ease; }
-.sc-nav button:hover { background: rgba(13,13,14,.08); }
-.sc-nav button.on { background: #0D0D0E; color: #fff; }
 
 /* foto latar + keranjang berada dalam satu pembungkus supaya memudar di bawah bersama-sama */
 .gd-art { position: absolute; inset: 0; -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent 100%); mask-image: linear-gradient(to bottom, #000 86%, transparent 100%); }
@@ -517,7 +512,7 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 .gd-dot::before, .gd-dot::after { content: ""; position: absolute; left: 50%; top: 50%; width: 46%; height: 2px; translate: -50% -50%; background: #fff; border-radius: 2px; }
 .gd-dot::after { rotate: 90deg; }
 .gd-hot:hover .gd-dot { scale: 1.2; }
-.sc.used .gd-dot { animation: none; }                         /* setelah ada yang diklik, tanda berhenti berdenyut */
+.sc.used .gd-dot, .sc.used-g .gd-dot { animation: none; }                         /* setelah ada yang diklik, tanda berhenti berdenyut */
 @keyframes gdPulse { 0% { box-shadow: 0 0 0 0 rgba(13,13,14,.45); } 70%, 100% { box-shadow: 0 0 0 .9cqw rgba(13,13,14,0); } }
 
 /* ===== item Merch = layer gambar di dalam tombol. Hover/fokus: item terangkat, melayang + bergoyang (seperti baju di Clothing) dan bercahaya (outer glow) ===== */
@@ -532,7 +527,7 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 }
 
 /* petunjuk: ditaruh di area putih sebelah teks */
-#showcase-goods .sc-hint { left: 29%; top: 10%; max-width: max(19cqw, 170px); }
+#showcase-merch .gd-stage .sc-hint { left: 29%; top: 10%; max-width: max(19cqw, 170px); }
 
 /* daftar item untuk HP */
 .gd-list { display: none; }
@@ -558,11 +553,9 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 @media (prefers-reduced-motion: reduce) { .gd-basket, .gd-dot, .gp-fl, .gp-fl img, .gd-fl { animation: none; } }
 
 @media (max-width: 820px) {
-  .sc-nav { top: 18px; left: 20px; right: auto; }
-  .sc-nav button { font-size: .78rem; padding: .5em .85em; }
-  #showcase-goods .sc-view { aspect-ratio: 1401 / 800; }
-  #showcase-goods .sc-scene { object-fit: fill; }
-  #showcase-goods .sc-hint { position: static; }
+  #showcase-merch .gd-stage .sc-view { aspect-ratio: 1401 / 800; }
+  #showcase-merch .gd-stage .sc-scene { object-fit: fill; }
+  #showcase-merch .gd-stage .sc-hint { position: static; }
   .gd-dot { width: 14px; height: 14px; }
   .gd-hot::after { display: none; }
   .gd-list { order: 4; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -621,3 +614,32 @@ footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
 @media (max-width: 820px) { .wl-stage2.sc-stage { padding-top: 0; padding-bottom: 36px; } }
 
 .wl-story .gd-fl img { object-fit: cover; border-radius: 3.6cqw; }   /* layar story: gambar diisi penuh seperti di dalam HP */
+
+/* ===== Variety Coffee (bagian paling bawah Broadcast & Social, di bawah Match Day) =====
+   Pita running text, teks yang diketik, logo berkilat, dan tiap desain (hover = muncul + glow, klik = pop up) memakai kelas yang SAMA dengan Warga Lokal. */
+/* running text paling atas Broadcast & Social ("Warga Lokal * Personal Project"): tombol Back diberi garis putih supaya terlihat di atas pita hitam */
+#showcase-wl .sc-x { box-shadow: 0 0 0 2px #fff; }
+@media (max-width: 820px) { .wl-top + .sc-stage { padding-top: 40px; } }
+.vc-band .wl-run i { color: #F2CFA0; }                      /* tanda ✱ berwarna emas seperti logo (di Warga Lokal merah) */
+@media (min-width: 821px) {
+  .vc-logo { width: 5.4cqw; min-width: 0; margin: .75cqw 0 1.7cqw; }
+  .vc-text { width: 21.5%; font-size: max(11px, .9cqw); line-height: 1.45; }
+  .vc-text .sc-pills { margin-top: 1.5cqw; }
+}
+@media (max-width: 820px) {
+  .vc-stage.sc-stage { padding-top: 40px; }
+  .vc-logo { margin: 0; padding: 8px 10px; } .vc-logo img { width: 56px; } .vc-logo::after { display: none; }
+}
+
+
+/* ===== Folder 01: Merch & Clothing Design (satu halaman, disusun atas-bawah seperti Broadcast & Social) =====
+   urutan: running text "Clothing Design" > desain Clothing > ruang polos (transisi) > running text "Merch Design" > desain Merch.
+   Running text memakai kelas .wl-band / .wl-run yang sama dengan Broadcast & Social, jadi tampilannya selalu sama. */
+#showcase-merch { flex-direction: column; --mx-gap: #FFFFFF; }   /* GANTI warna ruang transisi di sini (kode warna polos) */
+#showcase-merch .sc-stage { flex: none; margin: 0 auto; }
+#showcase-merch .sc-x { box-shadow: 0 0 0 2px #fff; }           /* tombol Back tetap terlihat di atas pita hitam */
+.mx-gap { flex: none; width: 100%; height: clamp(64px, 10vw, 160px); background: var(--mx-gap, #FFFFFF); }
+@media (max-width: 820px) {
+  #showcase-merch .sc-stage { padding-top: 28px; }
+  .mx-gap { height: 56px; }
+}
