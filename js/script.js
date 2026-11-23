@@ -896,3 +896,165 @@ if (hasMouse) {
 
 /* logo Warga Lokal: bentuk logo dipakai sebagai "cetakan" efek kilatan */
 [].forEach.call(document.querySelectorAll('.wl-logo'), function (w) { var i = w.querySelector('img'); function s() { w.style.setProperty('--lg', 'url("' + i.src + '")'); } s(); });
+
+/* =====================================================================
+   Desain feed (paling bawah folder 02): "And feeds design..." -> silinder poster berputar -> detail tiap poster
+   Semua dikendalikan oleh scroll di dalam folder (#showcase-wl). Tidak butuh library lain.
+   Alur (satuan "layar" = tinggi layar yang di-scroll):
+     0 - 0.9     judul memudar ke atas, poster merakit diri jadi silinder
+     0.45 - 3.0  silinder berputar PERSIS 360 derajat
+     2.5 - 3.0   kamera turun, poster pertama menghadap layar & membesar
+     3.0 - ...   detail: tiap poster bergantian maju ke depan, menghadap layar, jauh lebih besar dari yang lain
+   Angka yang boleh diubah ada di bagian "ATUR DI SINI".
+   ===================================================================== */
+(function () {
+  var sc = document.getElementById('showcase-wl'); if (!sc) return;
+  var root = sc.querySelector('.fd'); if (!root) return;
+  var track = root.querySelector('.fd-track'), pin = root.querySelector('.fd-pin'),
+      title = root.querySelector('.fd-title'), words = [].slice.call(root.querySelectorAll('.fd-title .w')),
+      fx = root.querySelector('.fd-fx'), persp = root.querySelector('.fd-persp'), tilt = root.querySelector('.fd-tilt'),
+      cards = [].slice.call(root.querySelectorAll('.fd-card')), count = root.querySelector('.fd-count'),
+      countB = root.querySelector('.fd-count b'), hint = root.querySelector('.fd-hint'),
+      glow1 = root.querySelector('.fd-glow.g1'), glow2 = root.querySelector('.fd-glow.g2'), floor = root.querySelector('.fd-floor');
+  var N = cards.length; if (!N) return;
+  var STEP = 360 / N, RAD = Math.PI / 180;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- ATUR DI SINI ---------- */
+  var T_ASM = 0.9;        // lama poster merakit jadi silinder
+  var T_SPIN0 = 0.45;     // mulai berputar
+  var T_SPIN1 = 3.0;      // selesai berputar 360 derajat (sekaligus awal bagian detail)
+  var T_D0 = 2.5;         // mulai turun kamera & poster pertama maju
+  var PER = 0.42;         // jarak scroll untuk tiap poster di bagian detail (makin besar = makin lama tiap poster)
+  var T_END = 0.7;        // ruang scroll sesudah poster terakhir
+  var TILT_D = 24, TILT_M = 18;   // kemiringan kamera (derajat) di desktop / HP
+  var BLUR_MAX = 3.4, SPLIT_MAX = 6;   // kekuatan blur & pecah warna saat scroll cepat (0 = mati)
+  /* ---------------------------------- */
+
+  var total = T_SPIN1 + (N - 1 + 0.7) * PER + T_END;
+  var G = { w: 0, h: 0, ch: 0, cw: 0, Rc: 0, zp: 0, sp: 1, P: 1800, tilt: TILT_D, rs: 1.8 };
+  var cur = 0, prevCur = 0, last = 0, raf = 0, parked = false, inited = false;
+  var cache = [];                                        // opacity terakhir tiap kartu (hemat tulis style)
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function ss(t) { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); }
+  function easeOut(t) { t = clamp(t, 0, 1); return 1 - Math.pow(1 - t, 3); }
+  function easeIO(t) { t = clamp(t, 0, 1); return 0.5 - 0.5 * Math.cos(Math.PI * t); }
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function layout() {
+    var w = sc.clientWidth, h = sc.clientHeight; if (!w || !h) return false;
+    var m = w <= 820;
+    var ch = Math.min(h * (m ? 0.24 : 0.40), w * (m ? 0.52 : 0.42)), cw = ch * 0.8;
+    var r0 = cw * 0.22, Rc = r0 + cw / 2;
+    var rs = m ? 1.6 : 1.8;                                    // seberapa lebar lingkaran saat mode detail
+    var P = Math.max(1500, h * 2), zp = (Rc * rs + cw * 0.4) * 1.5 + 100;
+    zp = Math.min(zp, P * 0.62);                               // poster utama harus JAUH di depan ujung luar kartu lain (jarak dekat membuat urutan kedalaman 3D browser salah)
+    var mag = P / (P - zp);
+    var hd = Math.min(h * 0.80, (w * (m ? 0.86 : 0.5)) / 0.8);
+    G.w = w; G.h = h; G.ch = ch; G.cw = cw; G.Rc = Rc; G.zp = zp; G.P = P; G.rs = rs; G.tilt = m ? TILT_M : TILT_D;
+    G.sp = hd / (ch * mag);
+    pin.style.height = h + 'px';
+    pin.style.setProperty('--cw', cw + 'px'); pin.style.setProperty('--ch', ch + 'px');
+    track.style.height = (h + total * h) + 'px';
+    persp.style.perspective = P + 'px';
+    return true;
+  }
+
+  function park() {
+    parked = true; fx.style.visibility = 'hidden'; fx.style.filter = 'none';
+  }
+
+  function draw(u, vel) {
+    // ----- judul -----
+    var ei = clamp(u + 1, 0, 1), tp = clamp(u / 0.75, 0, 1);
+    for (var k = 0; k < words.length; k++) {
+      var a = ss((ei - 0.3 - k * 0.14) / 0.34), st = words[k].style;
+      st.opacity = a; st.transform = 'translateY(' + ((1 - a) * 28).toFixed(1) + 'px)'; st.filter = a >= 1 ? 'none' : 'blur(' + ((1 - a) * 14).toFixed(1) + 'px)';
+    }
+    title.style.opacity = (1 - ss(tp)).toFixed(3);
+    title.style.transform = 'translate(-50%,-50%) translateY(' + (-tp * 0.1 * G.h).toFixed(1) + 'px) scale(' + (1 + tp * 0.14).toFixed(3) + ')';
+    title.style.filter = tp > 0.02 ? 'blur(' + (tp * 14).toFixed(1) + 'px)' : 'none';
+    // ----- latar bergeser pelan -----
+    glow1.style.transform = 'translate3d(' + (u * 16).toFixed(1) + 'px,' + (-u * 12).toFixed(1) + 'px,0)';
+    glow2.style.transform = 'translate3d(' + (-u * 14).toFixed(1) + 'px,' + (u * 10).toFixed(1) + 'px,0)';
+    // ----- silinder -----
+    fx.style.visibility = u > 0.01 ? 'visible' : 'hidden';
+    var asm = easeOut(u / T_ASM);
+    floor.style.opacity = asm.toFixed(2);
+    var d = ss((u - T_D0) / (T_SPIN1 - T_D0));                          // 0 = silinder, 1 = mode detail
+    var theta, idx = 0;
+    if (u < T_SPIN1) { theta = -360 * easeIO((u - T_SPIN0) / (T_SPIN1 - T_SPIN0)); }
+    else {
+      var ds = clamp((u - T_SPIN1) / PER, 0, N - 1), i0 = Math.floor(ds), uu = ds - i0;
+      if (i0 >= N - 1) { i0 = N - 1; uu = 0; }
+      idx = i0 + ss((uu - 0.3) / 0.4);
+      theta = -360 - idx * STEP;
+    }
+    tilt.style.transform = 'rotateX(' + (-lerp(G.tilt, 0, d)).toFixed(2) + 'deg)';
+    var RS = lerp(1, G.rs, d), CS = lerp(1, 0.8, d), P = G.P;
+    for (var i = 0; i < N; i++) {
+      var phi = (((i * STEP + theta) % 360) + 540) % 360 - 180, pr = phi * RAD;
+      var aA = clamp(asm * 1.5 - (i / N) * 0.5, 0, 1);                    // tiap poster merakit bergantian
+      var rr = G.Rc * RS * lerp(0.25, 1, aA);
+      var x = rr * Math.sin(pr), z = rr * Math.cos(pr), y = (1 - aA) * 0.18 * G.h;
+      var psi = phi - 90, s = lerp(0.55, 1, aA) * CS;
+      var f = d * ss(1 - Math.abs(phi) / STEP);                           // seberapa "maju ke depan" poster ini
+      if (f > 0) { x = lerp(x, 0, f); z = lerp(z, G.zp, f); psi = lerp(psi, 0, f); s = lerp(s, G.sp, f); }
+      var sr = Math.sin(psi * RAD), cr = Math.cos(psi * RAD);
+      if (-x * sr + (P - z) * cr < 0) psi += 180;                         // sisi yang menghadap kamera selalu menampilkan poster (tidak terbalik)
+      var el = cards[i];
+      el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,' + z.toFixed(1) + 'px) rotateY(' + psi.toFixed(2) + 'deg) scale(' + s.toFixed(4) + ')';
+      var op = clamp(aA * 1.6, 0, 1); op = op >= 0.995 ? 1 : +op.toFixed(2);
+      if (cache[i] !== op) { cache[i] = op; el.style.opacity = op; }
+      var depth = (1 - Math.cos(pr)) / 2, dim = (1 - d) * 0.45 * depth + d * (1 - f) * 0.5;
+      el.style.setProperty('--dim', dim.toFixed(3));
+    }
+    // ----- efek gerak: blur + pecah warna merah/biru saat scroll cepat -----
+    var v = reduce ? 0 : Math.abs(vel) * (1 - d * 0.6), b = Math.min(v * 0.8, BLUR_MAX), r = Math.min(v * 1.4, SPLIT_MAX);
+    fx.style.filter = b < 0.15 ? 'none' : 'blur(' + b.toFixed(2) + 'px) drop-shadow(' + r.toFixed(2) + 'px 0 0 rgba(255,50,80,.55)) drop-shadow(' + (-r).toFixed(2) + 'px 0 0 rgba(40,110,255,.55))';
+    // ----- penghitung & petunjuk scroll -----
+    if (d > 0.05) wantHi(Math.round(idx));
+    count.style.opacity = d.toFixed(2); countB.textContent = pad(Math.min(N, Math.round(idx) + 1));
+    hint.style.opacity = (clamp((ei - 0.85) / 0.15, 0, 1) * (1 - clamp(u / 0.35, 0, 1))).toFixed(2);
+  }
+
+  function frame(t) {
+    raf = 0;
+    if (!G.h && !layout()) return;
+    var sr = sc.getBoundingClientRect(), tr = track.getBoundingClientRect();
+    var target = (sr.top - tr.top) / G.h;
+    var dt = last ? Math.min((t - last) / 1000, 0.1) : 0.016; last = t;
+    if (!inited) { cur = target; inited = true; }
+    prevCur = cur;
+    cur = (reduce || sc.hasAttribute('data-fd-instant')) ? target : cur + (target - cur) * (1 - Math.exp(-dt * 9));
+    if (Math.abs(target - cur) < 0.0004) cur = target;
+    var vel = dt > 0 ? (cur - prevCur) / dt : 0;
+    if (cur < -1.4 || cur > total + 1) { if (!parked) park(); }          // jauh dari layar: tidak perlu dihitung
+    else { parked = false; draw(cur, vel); }
+    if (cur !== target || Math.abs(vel) > 0.01) raf = requestAnimationFrame(frame); else last = 0;
+  }
+  function kick() { if (!raf) raf = requestAnimationFrame(frame); }
+
+  var hiReq = {};                                           // versi besar (tajam) hanya diunduh untuk poster yang sebentar lagi tampil di depan
+  function wantHi(k) {
+    for (var o = -1; o <= 3; o++) {
+      var i = (k + o + N) % N; if (hiReq[i]) continue; hiReq[i] = 1;
+      var im = cards[i].querySelector('img'), hi = im && im.getAttribute('data-hi'); if (!hi) continue;
+      (function (im, hi) { var pre = new Image(); pre.onload = function () { im.src = hi; }; pre.src = hi; })(im, hi);
+    }
+  }
+  var imgsLoaded = false;                                   // poster baru diunduh saat bagian ini sudah dekat (hemat kuota)
+  function loadImgs() {
+    if (imgsLoaded) return; imgsLoaded = true;
+    cards.forEach(function (c) { var im = c.querySelector('img[data-src]'); if (im) { im.onload = function () { this.classList.add('ld'); }; im.src = im.getAttribute('data-src'); im.removeAttribute('data-src'); } });
+  }
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { if (es[0].isIntersecting) loadImgs(); }, { root: sc, rootMargin: '400% 0px 400% 0px' }).observe(root);
+  else loadImgs();
+
+  sc.addEventListener('scroll', kick, { passive: true });
+  window.addEventListener('resize', function () { G.h = 0; kick(); });
+  if (window.ResizeObserver) new ResizeObserver(function () { G.h = 0; kick(); }).observe(sc);
+  kick();
+})();
