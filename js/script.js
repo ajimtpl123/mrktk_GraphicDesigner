@@ -489,7 +489,7 @@ document.querySelectorAll('.marquee').forEach(function (el) {
 /* ===== 3d. Bagian Merch (bawah Clothing) dan Broadcast: klik item = pop up preview yang melayang =====
    Tiap tombol .gd-hot (atau item di daftar HP) punya data-gp-img (gambar preview), data-gp-group (kategori), data-gp-title (nama).
    Pop up muncul "melompat" dari posisi item yang diklik, lalu gambarnya melayang pelan seperti baju di halaman Clothing. */
-['showcase-merch', 'showcase-wl'].forEach(function (scId) {
+['showcase-merch', 'showcase-wl', 'showcase-branding'].forEach(function (scId) {
   var sc = document.getElementById(scId); if (!sc) return;
   var pop = sc.querySelector('.gp'), box = pop.querySelector('.gp-box'), art = pop.querySelector('.gp-art'),
       gEl = pop.querySelector('.gp-g'), tEl = pop.querySelector('.gp-t'), xBtn = pop.querySelector('.gp-x');
@@ -1057,4 +1057,50 @@ if (hasMouse) {
   window.addEventListener('resize', function () { G.h = 0; kick(); });
   if (window.ResizeObserver) new ResizeObserver(function () { G.h = 0; kick(); }).observe(sc);
   kick();
+})();
+
+
+/* ===== 3e. Branding Page 1: animasi stop-motion maskot (patah-patah, seperti video referensi) =====
+   Urutan: logo (Scene 1) tahan sebentar, lalu 4 pose maskot berganti cepat: Scene 3 > 2 > 5 > 4, diulang beberapa putaran, lalu kembali ke logo.
+   Atur di sini: LOGO_MS = lama logo tampil, POSE_MS = lama tiap pose (makin kecil makin cepat), LOOPS = jumlah putaran pose. */
+(function () {
+  var box = document.querySelector('.bn-motion'); if (!box) return;
+  var imgs = [].slice.call(box.querySelectorAll('img')), LOGO_MS = 1800, POSE_MS = 280, LOOPS = 4, POSES = [2, 1, 4, 3];
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || imgs.length < 5) return;   /* gerak dimatikan: logo saja */
+  var seq = [[0, LOGO_MS]], t = 0, pos = 0, on = false;
+  for (var l = 0; l < LOOPS; l++) POSES.forEach(function (p) { seq.push([p, POSE_MS]); });
+  function show(i) { imgs.forEach(function (im, k) { im.classList.toggle('on', k === i); }); }
+  function step() {
+    if (!on) return;
+    var s = seq[pos]; show(s[0]);
+    pos = (pos + 1) % seq.length; t = setTimeout(step, s[1]);
+  }
+  function setOn(v) { if (v === on) return; on = v; clearTimeout(t); if (v) { pos = 0; step(); } else show(0); }
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { setOn(e[0].isIntersecting); }, { threshold: 0 }).observe(box);
+})();
+
+
+/* ===== 3f. Branding Page 5: teks di kiri diketik (huruf per huruf) saat halaman ini terlihat. TYPE_MS = kecepatan (makin kecil makin cepat) ===== */
+(function () {
+  var box = document.querySelector('.bn-copy'); if (!box) return;
+  var TYPE_MS = 15, reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches, timer = 0, started = false, units = [];
+  [].forEach.call(box.querySelectorAll('.bn-type'), function (p) {
+    var full = p.dataset.text; p.innerHTML = '<span class="ghost"></span><span class="live"></span>';   /* "ghost" menahan tinggi paragraf supaya tidak loncat */
+    p.firstChild.textContent = full; units.push({ p: p, live: p.lastChild, full: full });
+  });
+  function reset() { clearTimeout(timer); started = false; units.forEach(function (u) { u.live.textContent = ''; u.p.classList.remove('typing'); }); }
+  function type() {
+    reset(); started = true;
+    if (reduce) { units.forEach(function (u) { u.live.textContent = u.full; }); return; }
+    var k = 0, i = 0; units[0].p.classList.add('typing');
+    timer = setTimeout(function step() {
+      var u = units[k]; i += 1; u.live.textContent = u.full.slice(0, i);
+      if (i < u.full.length) timer = setTimeout(step, TYPE_MS + (/[.,:]/.test(u.full[i - 1]) ? 140 : 0));
+      else { u.p.classList.remove('typing'); if (k < units.length - 1) { k += 1; i = 0; units[k].p.classList.add('typing'); timer = setTimeout(step, 420); } }
+    }, 300);
+  }
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (e) {
+    if (e[0].isIntersecting) { if (!started) type(); } else if (box.closest('.sc').hidden) reset();     /* ketik ulang setiap halaman dibuka */
+  }, { threshold: .6 }).observe(box);
+  else units.forEach(function (u) { u.live.textContent = u.full; });
 })();
