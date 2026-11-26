@@ -61,7 +61,11 @@ var KARYA = {
       // 'content-cover.png',
     ],
     video: [
-      // 'https://www.tiktok.com/@_mrktk/video/1234567890123456789',
+      'https://www.tiktok.com/@_mrktk/video/7597496001318128916',
+      'https://www.tiktok.com/@_mrktk/video/7690229701100440853',
+      'https://www.tiktok.com/@_mrktk/video/7593727479043378439',
+      'https://www.tiktok.com/@_mrktk/video/7667231356140801298',
+      'https://www.tiktok.com/@_mrktk/video/7651982727234833684',
     ],
   },
 
