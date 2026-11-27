@@ -58,14 +58,16 @@ var KARYA = {
   /* Folder 06: Content Video (video TikTok) */
   content: {
     gambar: [
-      'content-cover.png',
+      // 'content-cover.png',
     ],
+    /* THUMBNAIL video: taruh gambarnya di images/karya/ lalu tulis namanya di cover: '...' (contoh cover: 'video-1.jpg').
+       Kalau cover dikosongkan, tampil kotak gelap dengan tombol play. Video diputar saat kursor diarahkan / diketuk. */
     video: [
-      'https://www.tiktok.com/@_mrktk/video/7597496001318128916?is_from_webapp=1&sender_device=pc&web_id=7622933279598970386',
-      'https://www.tiktok.com/@_mrktk/video/7690229701100440853?is_from_webapp=1&sender_device=pc&web_id=7622933279598970386',
-      'https://www.tiktok.com/@_mrktk/video/7667231356140801298?is_from_webapp=1&sender_device=pc&web_id=7622933279598970386',
-      'https://www.tiktok.com/@_mrktk/video/7648879651103821063?is_from_webapp=1&sender_device=pc&web_id=7622933279598970386',
-      'https://www.tiktok.com/@_mrktk/video/7640330025119632661?is_from_webapp=1&sender_device=pc&web_id=7622933279598970386',
+      { url: 'https://www.tiktok.com/@_mrktk/video/7597496001318128916', cover: '' },
+      { url: 'https://www.tiktok.com/@_mrktk/video/7690229701100440853', cover: '' },
+      { url: 'https://www.tiktok.com/@_mrktk/video/7593727479043378439', cover: '' },
+      { url: 'https://www.tiktok.com/@_mrktk/video/7667231356140801298', cover: '' },
+      { url: 'https://www.tiktok.com/@_mrktk/video/7651982727234833684', cover: '' },
     ],
   },
 

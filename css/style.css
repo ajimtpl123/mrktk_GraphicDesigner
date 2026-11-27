@@ -736,3 +736,14 @@ img { max-width: 100%; }
 .bn-type .live { position: absolute; inset: 0; }
 .bn-type.typing .live::after { content: ""; display: inline-block; width: 2px; height: 1.05em; margin-left: 2px; vertical-align: -.16em; background: #fff; animation: scBlink .8s steps(1) infinite; }
 .bn-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+
+/* ===== Video TikTok: thumbnail, putar saat hover / ketuk ===== */
+.gal-thumb { position: relative; cursor: pointer; background: linear-gradient(160deg, #1b1b1f, #0b0b0c); outline-offset: 3px; }
+.gal-thumb > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.gal-thumb > iframe { position: absolute; inset: 0; opacity: 0; transition: opacity .25s; }
+.gal-thumb.on > iframe { opacity: 1; }
+.gal-play { position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%; background: rgba(255,255,255,.92); box-shadow: 0 6px 20px rgba(0,0,0,.35); transition: transform .2s; }
+.gal-play::after { content: ""; position: absolute; left: 22px; top: 17px; border-style: solid; border-width: 11px 0 11px 18px; border-color: transparent transparent transparent #0D0D0E; }
+.gal-thumb:hover .gal-play, .gal-thumb:focus-visible .gal-play { transform: scale(1.12); }
+.gal-thumb.on .gal-play { opacity: 0; pointer-events: none; }
