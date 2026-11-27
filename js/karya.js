@@ -58,7 +58,7 @@ var KARYA = {
   /* Folder 06: Content Video (video TikTok) */
   content: {
     gambar: [
-      // 'content-cover.png',
+       'content-cover.png',
     ],
     video: [
       'https://www.tiktok.com/@_mrktk/video/7597496001318128916',
