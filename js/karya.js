@@ -58,14 +58,16 @@ var KARYA = {
   /* Folder 06: Content Video (video TikTok) */
   content: {
     gambar: [
-       'content-cover.png',
+      'content-cover.webp',
     ],
+    /* THUMBNAIL video: taruh gambarnya di images/karya/ lalu tulis namanya di cover: '...' (contoh cover: 'video-1.jpg').
+       Kalau cover dikosongkan, tampil kotak gelap dengan tombol play. Video diputar saat kursor diarahkan / diketuk. */
     video: [
-      'https://www.tiktok.com/@_mrktk/video/7597496001318128916',
-      'https://www.tiktok.com/@_mrktk/video/7690229701100440853',
-      'https://www.tiktok.com/@_mrktk/video/7593727479043378439',
-      'https://www.tiktok.com/@_mrktk/video/7667231356140801298',
-      'https://www.tiktok.com/@_mrktk/video/7651982727234833684',
+      { url: 'https://www.tiktok.com/@_mrktk/video/7597496001318128916', cover: '' },
+      { url: 'https://www.tiktok.com/@_mrktk/video/7690229701100440853', cover: '' },
+      { url: 'https://www.tiktok.com/@_mrktk/video/7593727479043378439', cover: '' },
+      { url: 'https://www.tiktok.com/@_mrktk/video/7667231356140801298', cover: '' },
+      { url: 'https://www.tiktok.com/@_mrktk/video/7651982727234833684', cover: '' },
     ],
   },
 
