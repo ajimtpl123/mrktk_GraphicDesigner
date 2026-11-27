@@ -323,30 +323,12 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   document.body.appendChild(box);
   var lastFocus = null;
 
-  /* Video TikTok: tampil sebagai THUMBNAIL. Pemutar TikTok baru dibuat saat kursor diarahkan (HP: saat diketuk), dan dihapus lagi saat kursor pergi.
-     Jadi hanya 1 video yang berjalan, dan folder terbuka ringan. Item daftar bisa teks link ATAU { url: '...', cover: 'nama-gambar.jpg' } */
-  function videoCard(item) {
-    var v = (item && item.url) || item, cover = (item && item.cover) || '';
+  function videoCard(v) {
     var id = (String(v).match(/video\/(\d+)/) || [])[1], isTT = /^https?:/i.test(v);
     var btn = '<a class="gal-btn" href="' + esc(isTT ? v : tt) + '" target="_blank" rel="noopener">Watch on TikTok &nearr;</a>';
-    if (isTT && id) return '<div class="gal-vid"><div class="gal-frame gal-thumb" role="button" tabindex="0" data-vid="' + id + '" aria-label="Play TikTok video">'
-      + (cover ? '<img src="' + DIR + esc(cover) + '" alt="" loading="lazy">' : '') + '<span class="gal-play" aria-hidden="true"></span></div>' + btn + '</div>';
+    if (isTT && id) return '<div class="gal-vid"><div class="gal-frame"><iframe src="https://www.tiktok.com/player/v1/' + id + '?rel=0" allow="fullscreen; encrypted-media" loading="lazy" title="TikTok video"></iframe></div>' + btn + '</div>';
     if (isTT) return '<div class="gal-vid">' + btn + '</div>';                    /* link pendek/tanpa ID: cukup tombol */
     return '<div class="gal-vid"><div class="gal-frame"><video src="' + DIR + esc(v) + '" controls playsinline preload="metadata"></video></div>' + btn + '</div>';   /* file .mp4 */
-  }
-
-  var active = null, hoverT = 0;
-  function stopVid() {
-    clearTimeout(hoverT); if (!active) return;
-    var f = active.querySelector('iframe'); if (f) f.remove(); active.classList.remove('on'); active = null;
-  }
-  function playVid(th) {
-    if (active === th) return; stopVid(); active = th;
-    var f = document.createElement('iframe');
-    f.src = 'https://www.tiktok.com/player/v1/' + th.dataset.vid + '?rel=0&autoplay=1&loop=1';
-    f.allow = 'autoplay; fullscreen; encrypted-media'; f.title = 'TikTok video';
-    f.addEventListener('load', function () { th.classList.add('on'); try { f.contentWindow.postMessage({ 'x-tiktok-player': true, type: 'play' }, '*'); } catch (e) {} });
-    th.appendChild(f);
   }
 
   function open(f) {
@@ -364,27 +346,12 @@ document.querySelectorAll('.marquee').forEach(function (el) {
     box.querySelector('.gal-x').focus();
   }
   function close() {
-    stopVid(); box.hidden = true; box.innerHTML = '';          /* video ikut berhenti */
+    box.hidden = true; box.innerHTML = '';                      /* video ikut berhenti */
     document.documentElement.style.overflow = ''; if (lastFocus) lastFocus.focus();
   }
 
   folders.forEach(function (f) { f.addEventListener('click', function (e) { e.preventDefault(); open(f); }); });
-  box.addEventListener('pointerover', function (e) {                /* mouse diarahkan ke thumbnail -> putar (jeda 250ms agar tidak ikut terputar saat kursor hanya lewat) */
-    if (e.pointerType !== 'mouse') return;
-    var th = e.target.closest('.gal-thumb'); if (!th) return;
-    clearTimeout(hoverT); hoverT = setTimeout(function () { playVid(th); }, 250);
-  });
-  box.addEventListener('pointerout', function (e) {                 /* kursor pergi -> kembali ke thumbnail */
-    if (e.pointerType !== 'mouse') return;
-    var th = e.target.closest('.gal-thumb'); if (!th || th.contains(e.relatedTarget)) return;
-    clearTimeout(hoverT); if (active === th) stopVid();
-  });
-  box.addEventListener('keydown', function (e) {
-    var th = e.target.closest && e.target.closest('.gal-thumb');
-    if (th && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); playVid(th); }
-  });
   box.addEventListener('click', function (e) {
-    var th = e.target.closest('.gal-thumb'); if (th) { playVid(th); return; }   /* HP: ketuk = putar */
     var z = box.querySelector('.gal-zoom');
     if (e.target.closest('.gal-zoom')) { z.hidden = true; z.innerHTML = ''; return; }
     if (e.target.closest('[data-close]')) return close();
