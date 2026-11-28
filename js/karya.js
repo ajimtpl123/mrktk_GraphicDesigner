@@ -58,7 +58,7 @@ var KARYA = {
   /* Folder 06: Content Video (video TikTok) */
   content: {
     gambar: [
-      'content-cover.webp',
+      'content-cover.png',
     ],
     /* THUMBNAIL video: taruh gambarnya di images/karya/ lalu tulis namanya di cover: '...' (contoh cover: 'video-1.jpg').
        Kalau cover dikosongkan, tampil kotak gelap dengan tombol play. Video diputar saat kursor diarahkan / diketuk. */
