@@ -6,6 +6,7 @@
    2. Tulis nama filenya di daftar "gambar" di bawah ini (harus sama persis,
       huruf besar-kecilnya juga, dan jangan pakai spasi, contoh: poster-1.png)
       -> gambar PALING ATAS otomatis jadi cover folder
+      (atau tulis  sampul: 'nama.png'  di folder itu kalau cover tidak mau ikut tampil di dalam folder)
    3. Untuk video TikTok, tempel LINK videonya di daftar "video"
    4. Simpan. Selesai!
 
@@ -57,8 +58,9 @@ var KARYA = {
 
   /* Folder 06: Content Video (video TikTok) */
   content: {
+    /* sampul = gambar yang HANYA jadi cover kartu folder (tidak ikut tampil di dalam folder). Hapus baris sampul kalau tidak dipakai. */
+    sampul: 'content-cover.png',
     gambar: [
-      'content-cover.png',
     ],
     /* THUMBNAIL video: taruh gambarnya di images/karya/ lalu tulis namanya di cover: '...' (contoh cover: 'video-1.jpg').
        Kalau cover dikosongkan, tampil kotak gelap dengan tombol play. Video diputar saat kursor diarahkan / diketuk. */

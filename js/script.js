@@ -316,7 +316,8 @@ document.querySelectorAll('.marquee').forEach(function (el) {
   /* gambar pertama tiap folder otomatis jadi sampul folder */
   folders.forEach(function (f) {
     var d = data[f.dataset.folder], m = f.querySelector('.f-media');
-    if (d && d.gambar && d.gambar.length && m) m.innerHTML = '<img src="' + DIR + esc(d.gambar[0]) + '" alt="' + esc(f.querySelector('h3').textContent) + '" loading="lazy">';
+    var cv = d && (d.sampul || (d.gambar && d.gambar[0]));            /* sampul: gambar khusus untuk kartu folder (tidak tampil di dalam folder). Kalau kosong, pakai gambar pertama */
+    if (cv && m) m.innerHTML = '<img src="' + DIR + esc(cv) + '" alt="' + esc(f.querySelector('h3').textContent) + '" loading="lazy">';
   });
 
   var box = document.createElement('div'); box.className = 'gal'; box.hidden = true; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true');
