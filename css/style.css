@@ -756,15 +756,6 @@ img { max-width: 100%; }
 .btn.ghost { background: transparent; color: var(--ink); border-color: rgba(236,236,232,.45); }
 .btn.ghost:hover, .btn.ghost:focus-visible { background: var(--ink); border-color: var(--ink); color: #0D0D0E; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
-.hero-cta { position: absolute; left: 5vw; bottom: clamp(20px, 5vh, 52px); z-index: 4; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; opacity: max(0, calc(1 - var(--p, 0) * 3)); }
-.hero-cta .cta-row { margin-top: 0; }
-.open-chip { display: inline-flex; align-items: center; gap: .6em; padding: .45em .95em; border: 1px solid rgba(236,236,232,.28); border-radius: 999px; font-family: var(--small-font); font-size: .95rem; color: rgba(236,236,232,.85); }
-.open-chip i { width: 9px; height: 9px; border-radius: 50%; background: #C6FF3D; animation: chipPulse 2s ease-out infinite; }
-@keyframes chipPulse { 0% { box-shadow: 0 0 0 0 rgba(198,255,61,.55); } 70%, 100% { box-shadow: 0 0 0 9px rgba(198,255,61,0); } }
 .stage nav ul a.nav-cv { color: var(--hero-ink); border: 1.5px solid rgba(236,236,232,.45); border-radius: 999px; padding: .3em .95em; }
 .stage nav ul a.nav-cv:hover { background: var(--hero-ink); color: #0D0D0E; }
-/* layar lebar: tombol di sisi kanan yang kosong (tengah), supaya tidak menabrak baris headline */
-@media (orientation: landscape) and (max-width: 1199px) { .hero-cta { display: none; } }   /* layar landscape sempit: sudah ada tombol Contact & CV di menu atas */
-@media (min-width: 1200px) { .hero-cta { left: auto; right: 5vw; bottom: auto; top: 50%; translate: 0 -50%; align-items: flex-end; } .hero-cta .cta-row { justify-content: flex-end; } }
-@media (max-width: 640px) { .hero-cta { right: 5vw; } .hero-cta .btn { padding: .75em 1.15em; font-size: .92rem; } .open-chip { font-size: .85rem; } }
-@media (prefers-reduced-motion: reduce) { .open-chip i { animation: none; } .btn { transition: none; } }
+@media (orientation: landscape) and (max-width: 1199px) { @media (min-width: 1200px) { @media (max-width: 640px) { @media (prefers-reduced-motion: reduce) { 
