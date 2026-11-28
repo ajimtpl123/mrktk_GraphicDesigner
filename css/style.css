@@ -758,4 +758,17 @@ img { max-width: 100%; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 .stage nav ul a.nav-cv { color: var(--hero-ink); border: 1.5px solid rgba(236,236,232,.45); border-radius: 999px; padding: .3em .95em; }
 .stage nav ul a.nav-cv:hover { background: var(--hero-ink); color: #0D0D0E; }
-@media (orientation: landscape) and (max-width: 1199px) { @media (min-width: 1200px) { @media (max-width: 640px) { @media (prefers-reduced-motion: reduce) { 
+
+/* ========== PENDIDIKAN: kartu senada dengan kotak "My experience" ========== */
+.edu-sec { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 40px; margin-top: 104px; padding-top: 44px; border-top: 1px solid var(--line); }
+.edu-card { position: relative; overflow: hidden; isolation: isolate; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: clamp(26px, 3.6vw, 40px); border: 1px solid var(--line); border-radius: 28px; background: rgba(236,236,232,.02); transition: border-color .25s, background .25s, translate .25s; }
+.edu-card::before { content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; left: 0; width: 45%; background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,.16) 50%, transparent 100%); translate: -140% 0; pointer-events: none; }
+.edu-card:hover { border-color: var(--accent); background: rgba(255,82,82,.07); translate: 0 -4px; }
+.edu-card:hover::before { animation: stat-shine .9s ease; }
+.edu-yr { font-family: var(--small-font); font-size: 1.05rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.edu-card h3 { margin: 0; font-family: var(--head); font-weight: 800; font-size: clamp(1.7rem, 3.4vw, 2.5rem); line-height: 1.05; letter-spacing: -.03em; }
+.edu-card p { margin: 0; color: var(--muted); font-weight: 500; line-height: 1.35; }
+.edu-gpa { margin-top: 8px; padding: .4em 1em; border: 1px solid var(--accent); border-radius: 999px; font-family: var(--head); font-weight: 700; font-size: .92rem; color: var(--accent); }
+@media (max-width: 700px) { .edu-sec { grid-template-columns: 1fr; margin-top: 80px; } }
+@media (prefers-reduced-motion: reduce) { .edu-card { transition: none; } .edu-card:hover::before { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
